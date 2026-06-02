@@ -1,0 +1,7 @@
+signal,recommended_action,severity
+high_fatigue,reduce_intensity_or_rest,high
+poor_sleep,reduce_intensity,medium
+joint_pain,active_recovery_or_rest,high
+reduced_time,shorten_keeping_intent,low
+more_time,extend_existing_z2_block,low
+heatwave,reschedule_or_reduce,medium

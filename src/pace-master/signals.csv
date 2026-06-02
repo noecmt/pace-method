@@ -1,0 +1,5 @@
+signal,threshold,proposal
+goal_reached_or_cancelled,immediate,partial_discovery
+sessions_skipped,3_weeks,partial_discovery_or_rolling
+metric_stagnation,4_weeks,rolling_or_discovery
+life_change,declared,discovery
