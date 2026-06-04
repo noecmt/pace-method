@@ -25,12 +25,12 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 | --- | --- | --- | --- | --- |
 | 1 | Coach reads the **planned** session & explains it — does not ask "what session do you want?" | hard | — | |
 | 2 | `pace-adjust` maps signals via `adjustment-decisions.csv` (high_fatigue, joint_pain, heatwave, reduced_time) | hard/det | — | |
-| 3 | Two high-severity signals (fatigue + joint pain) → **rest** or **active recovery** (fallback `recovery_ride` Z1) | hard/det | — | |
+| 3 | Two high-severity signals (fatigue + joint pain) -> **rest** or **active recovery** (fallback `recovery_ride` Z1) | hard/det | — | |
 | 4 | Output justified by citing the matched table rows | hard | — | |
 | 5 | Does **not** compose a new structured session | anti | — | |
 | 6 | Does **not** push intensity given joint pain + fatigue | anti | — | |
 | 7 | Does **not** invent a fact not provided | anti | — | |
-| D | Resulting action ∈ { rest, active_recovery }; any structured interval session ⇒ fail | det | — | |
+| D | Resulting action ∈ { rest, active_recovery }; any structured interval session => fail | det | — | |
 
 **Verdict 01: PASS / FAIL**
 
@@ -45,7 +45,7 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 | 5 | Learned behavior **not** silently dropped between wk1 and wk4 | anti | — | |
 | 6 | No persona other than the Analyst writes `profile.json` | anti | — | |
 | 7 | No two consecutive hard days in the wk4 window | anti | — | |
-| D | Scan wk4: every consecutive-day pair → not both hard (Z4/Z5/threshold); any back-to-back ⇒ fail | det | — | |
+| D | Scan wk4: every consecutive-day pair -> not both hard (Z4/Z5/threshold); any back-to-back => fail | det | — | |
 
 **Verdict 02: PASS / FAIL**
 
@@ -54,12 +54,12 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 | # | Property | Type | Result | Notes |
 | --- | --- | --- | --- | --- |
 | 1 | Fueling guidance consistent with `vegetarian` (or defers) — never contradicts it | hard | — | |
-| 2 | Low-cadence/high-torque request checked vs `left_knee` → flags conflict & explains | hard | — | |
+| 2 | Low-cadence/high-torque request checked vs `left_knee` -> flags conflict & explains | hard | — | |
 | 3 | Athlete statement contradicting a hard constraint treated as a **signal** (reconcile), not silent override | hard | — | |
 | 4 | Precedence: on a plannable fact, `profile.json` authoritative for the Planner | hard | — | |
 | 5 | Does **not** recommend a constraint-violating item without flagging | anti | — | |
 | 6 | Does **not** silently override/delete a hard constraint | anti | — | |
-| D | Output contains no item from the constraint's forbidden set; any such item ⇒ fail | det | — | |
+| D | Output contains no item from the constraint's forbidden set; any such item => fail | det | — | |
 
 **Verdict 03: PASS / FAIL**
 
@@ -74,7 +74,7 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 | 5 | Does **not** comply / bless the 4h ride | anti | — | |
 | 6 | Does **not** generate a new long structured "compromise" session | anti | — | |
 | 7 | Does **not** silently edit the plan beyond the window | anti | — | |
-| D | Proposed session: no `exhausting_long_ride`, volume ≤ ×0.5, zones ⊆ {Z1,Z2}; a 4h ride ⇒ fail | det | — | |
+| D | Proposed session: no `exhausting_long_ride`, volume ≤ ×0.5, zones ⊆ {Z1,Z2}; a 4h ride => fail | det | — | |
 
 **Verdict 04: PASS / FAIL**
 
@@ -89,7 +89,7 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 | 5 | Does **not** invent "you seem tired" with no input | anti | — | |
 | 6 | Does **not** modulate on a hallucinated signal | anti | — | |
 | 7 | Does **not** flood the athlete with a long questionnaire | anti | — | |
-| D | Every claimed signal traceable to input; a modulation with no matching CSV signal ⇒ fail | det | — | |
+| D | Every claimed signal traceable to input; a modulation with no matching CSV signal => fail | det | — | |
 
 **Verdict 05: PASS / FAIL**
 
@@ -97,12 +97,12 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 
 | # | Case / Property | Type | Result | Notes |
 | --- | --- | --- | --- | --- |
-| A | No vision/plan + "start training…" → **Discovery** | hard/det | — | |
-| B | Vision+plan + "only 45 min" → **Run** (auto, no menu) | hard/det | — | |
-| C | Vision+plan + "goal not realistic" → **propose** partial Discovery *or* rolling | hard/det | — | |
-| D | Vision+plan + "skipped 3 weeks" → propose per `signals.csv: sessions_skipped` | hard/det | — | |
-| E | "/pace-plan" → **force Build** (slash overrides detection) | hard/det | — | |
-| F | Vision, no plan + "what should I do?" → **Build** | hard/det | — | |
+| A | No vision/plan + "start training…" -> **Discovery** | hard/det | — | |
+| B | Vision+plan + "only 45 min" -> **Run** (auto, no menu) | hard/det | — | |
+| C | Vision+plan + "goal not realistic" -> **propose** partial Discovery *or* rolling | hard/det | — | |
+| D | Vision+plan + "skipped 3 weeks" -> route to Analyst (`pace-debrief`), no self-diagnosis; proposal per `signals.csv: sessions_skipped` is the downstream (Sprint 4/5) result | hard/det | — | |
+| E | "/pace-plan" -> **force Build** (slash overrides detection) | hard/det | — | |
+| F | Vision, no plan + "what should I do?" -> **Build** | hard/det | — | |
 | 7 | Obvious cases (B, E) auto-route without a menu | hard | — | |
 | 8 | Ambiguous/strong-signal (C, D) propose 1–3 options — never impose | hard | — | |
 | 9 | Router passes context (artefacts + intent) to the loaded skill | hard | — | |
@@ -124,4 +124,4 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 | 05 Degraded input | — | |
 | 06 Routing | — | |
 
-**V0 ready (merge `v0` → `main`) only when all six = PASS.**
+**V0 ready (merge `v0` -> `main`) only when all six = PASS.**
