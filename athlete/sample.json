@@ -1,0 +1,47 @@
+{
+  "_comment": "Sample athlete profile for scenario testing. Structured long-term state. Sole writer in the method: the Analyst (pace-debrief). The Vision carries the why; this file carries the plannable data. On a plannable fact, this file is authoritative for the Planner.",
+  "athlete_id": "sample",
+  "sport": "cycling",
+  "level": "intermediate",
+  "fitness": {
+    "fitness_marker": "ftp",
+    "ftp_watts": 250,
+    "ftp_updated": "2026-04-15",
+    "current_phase": "build"
+  },
+  "constraints": [
+    { "id": "weekly_hours", "type": "time", "value": "6-8h/week", "hard": true },
+    { "id": "long_ride_day", "type": "scheduling", "value": "long ride only on Sundays", "hard": true },
+    { "id": "diet", "type": "nutrition", "value": "vegetarian", "hard": true },
+    { "id": "left_knee", "type": "health", "value": "left knee sensitive to high torque / low cadence", "hard": false }
+  ],
+  "preferred_methods": ["polarized"],
+  "equipment": ["power_meter", "indoor_trainer", "heart_rate_monitor"],
+  "rpe_calibration": "tends to under-report effort: an athlete-reported 'moderate' often maps to RPE 7",
+  "learned_behaviors": [
+    {
+      "id": "no_back_to_back_hard",
+      "observation": "responds badly to two consecutive hard days (elevated fatigue, poor session quality on day 2)",
+      "rule": "never schedule two hard sessions on consecutive days; insert Z1/Z2 or rest between them",
+      "source": "debrief",
+      "confidence": "high",
+      "learned_on": "2026-03-02"
+    },
+    {
+      "id": "morning_responder",
+      "observation": "quality intervals go markedly better in the morning than in the evening",
+      "rule": "prefer scheduling threshold/VO2max sessions in the morning",
+      "source": "debrief",
+      "confidence": "medium",
+      "learned_on": "2026-03-20"
+    },
+    {
+      "id": "heat_sensitive",
+      "observation": "performance and recovery degrade sharply in heat above ~30C",
+      "rule": "reduce or reschedule intensity during heatwaves",
+      "source": "debrief",
+      "confidence": "medium",
+      "learned_on": "2026-05-10"
+    }
+  ]
+}

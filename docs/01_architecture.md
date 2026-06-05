@@ -131,13 +131,13 @@ Git provides the audit trail and validation: every plan change is a **reviewable
 ## Distribution: three tiers
 
 ```
-Skills (git clone)  ->  Plugin (1-command install)  ->  Hosted connector (service)
+Skills (git clone)  ->  Plugin (1-command install)  ->  Connector (Strava MCP)
    V0                       V1                            V2+
 ```
 
 - **Skills** — `git clone`, zero runtime. Target: tech-savvy athletes and developers.
 - **Plugin** — `plugin.json` + `marketplace.json` package the skills (+ slash commands + connector config). `/plugin marketplace add … && /plugin install …`. Also works in **Claude Desktop** via *Customize -> Browse plugins* (UI-friendly, provided by Anthropic, nothing to build).
-- **Hosted connector** — a hosted Strava/Garmin MCP server -> "Connect" in one click. An optional service. Can render UI in the chat (maps, charts).
+- **Connector** — since June 2026 Strava ships an **official remote MCP** (read-only, OAuth, subscribers-only), so there is **nothing to host**: the athlete connects it in one click in their host. PACE consumes it as a read-only *signal provider* feeding the artefacts via the personas (**never a new extension axis**, never from `pace-master` directly); skills detect its presence and degrade gracefully to manual entry. Garmin and others later.
 
 ---
 
@@ -161,4 +161,4 @@ MCP is an open standard (created by Anthropic, adopted by OpenAI/Google/Microsof
 4. **Artefact-level evals** — checklists (see `04_evaluation.md`).
 5. **Git as validation** — every Plan mutation is an inspectable diff.
 
-*Last updated: May 2026*
+*Last updated: June 2026*

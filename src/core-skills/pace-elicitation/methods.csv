@@ -1,0 +1,11 @@
+num,category,name,description,when_to_use
+1,opening,open_question,let the athlete talk freely about their practice and goals,start of discovery
+2,clarification,probe_on_ambiguity,dig into a vague or contradictory answer,vague answer
+3,prioritization,trade_off,force a choice between two competing goals,multiple goals
+4,contradiction,reflect_back,restate what was said to surface a contradiction with the profile or vision,answer conflicts with known state
+5,constraint,constraint_elicitation,ask what is non-negotiable (time available - health - equipment),before assessing plan feasibility
+6,projection,scenario_projection,project the athlete into race day to clarify the real goal,goal is fuzzy or abstract
+7,calibration,scale_anchoring,anchor effort words (RPE - "hard" - "easy") to a numeric scale,subjective feedback that must be quantified
+8,reflection,what_works,ask what has worked and what has failed in past training,building the learned_behaviors baseline
+9,focus,one_thing,ask for the single most important thing right now,athlete overwhelmed or over-broad
+10,closing,summarize_confirm,summarize the vision and ask for explicit confirmation,end of discovery before writing the vision

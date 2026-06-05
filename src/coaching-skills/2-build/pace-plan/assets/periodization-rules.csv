@@ -1,0 +1,6 @@
+phase,allowed_intensity,forbidden,volume_modifier
+base,"Z1,Z2,Z3,sweet_spot","Z4,Z5",1.0
+build,"Z1,Z2,Z3,Z4,Z5",none,1.0
+taper,"Z1,Z2",exhausting_long_ride,0.5
+race,"Z1,Z2","structured_intervals,exhausting_long_ride",0.4
+recovery,"Z1,Z2","Z4,Z5,exhausting_long_ride",0.6

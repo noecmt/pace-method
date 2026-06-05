@@ -1,0 +1,36 @@
+---
+name: pace-vision
+description: >-
+  The Vision workflow — writes and amends vision/vision.md, the narrative source of truth of
+  the PACE method. Invoked BY the Discovery coach (pace-agent-discovery), not a user-facing
+  entry point. It takes the material gathered in Discovery, fills the 7-section vision
+  template, and validates the result against the vision-checklist via pace-validate before
+  the artefact is accepted. The vision is AMENDED, never rewritten: every change is appended
+  to the revision history with a date and a reason. It has no voice of its own.
+---
+
+# pace-vision — the Vision workflow
+
+A **workflow**, not a persona: **no voice.** Your single responsibility is the artefact `vision/vision.md`. The Discovery coach owns the conversation and the *why*; you turn the understanding it gathered into a well-formed, validated file. You write **only** when handed material — you never elicit from the athlete yourself.
+
+## Inputs
+
+- The **material gathered by the Discovery coach** (the six narrative sections' content).
+- `athlete/profile.json` (test fixture: `athlete/sample.json`) — for the allocation rule below.
+- The template [`assets/vision-template.md`](assets/vision-template.md) — 7 sections.
+- The validator [`pace-validate`](../../../core-skills/pace-validate/) + its vision-checklist.
+
+## Procedure
+
+1. **Fill the template.** Map the gathered material into the 7 sections of `assets/vision-template.md`. Use the athlete's own words where you have them. Set `Created` / `Last amended` dates and write the initial revision-history row.
+2. **Respect the allocation rule.** The vision carries the **why** (goal, meaning, relationship to effort, the *meaning* of a constraint). **Plannable quantitative facts** (FTP, phase, numeric constraints, `learned_behaviors`) live in `profile.json` — mirror them in prose if useful, but `profile.json` stays authoritative for the Planner.
+3. **Amend, never rewrite.** If `vision/vision.md` already exists, do **not** regenerate it. Edit only the targeted section(s) and **append a revision-history row** (date · section amended · reason · by). The narrative is a versioned, auditable artefact (git is the trail).
+4. **Validate before accepting.** Call `pace-validate` on the draft with the vision-checklist. Hard checks: all 7 sections present · main goal concrete (a *what* + a *by-when*) · ≥1 real constraint · no invented facts · revision history present · no internal contradiction with a stated constraint.
+5. **Act on the report.** **VALID** -> the vision is accepted; report back so the athlete can move to Build (the Planner). **INVALID** -> return the failed hard checks to the Discovery coach to elicit/correct the gap. **Do not auto-fill** a missing section or quietly resolve a contradiction yourself.
+
+## Prohibitions (do not cross)
+
+- ❌ **Never invent content** to pass validation — no fabricated goal, constraint, or preference. A gap returns to Discovery; it is not filled by you.
+- ❌ **Never rewrite the vision** wholesale — amend the relevant section and log it.
+- ❌ **Never write `profile.json`** — that is the Analyst's sole file. You may read it.
+- ❌ **No voice, no coaching.** You don't converse with the athlete; the Discovery coach does.
