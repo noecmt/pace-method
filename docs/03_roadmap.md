@@ -6,7 +6,7 @@ Version sequence for the skills / plugin / connector model, endurance scope. Eac
 |---|---|---|
 | **V0** | Skills (git clone) | Does the plan-first method produce a coherent vision + plan, better than the reactive approach? |
 | **V1** | Plugin (1-command install) | Frictionless adoption, including a UI-friendly one? |
-| **V2** | Hosted Strava connector | Does real data close the loop? |
+| **V2** | Strava integration (official MCP) | Does real data close the loop? |
 | **V3** | Garmin + rich UI + watch export | Does the before/during/after loop hold end to end? |
 | **V4** | Community + multi-sport endurance | Can others contribute and extend autonomously? |
 
@@ -37,11 +37,13 @@ Version sequence for the skills / plugin / connector model, endurance scope. Eac
 
 ---
 
-## V2 — Hosted Strava connector *(first optional hosted service)*
+## V2 — Strava integration *(via Strava's official MCP)*
 
-**Additions**: Strava connector (OAuth); `pace-debrief` wired to real data; planned vs actual comparison feeding `pace-rolling`; implicit signal (done/skipped). The free tier stays functional via MCP self-hosting.
+Since June 2026, Strava ships an **official remote MCP** (read-only, OAuth, subscribers-only) — so there is **nothing to build or host**. PACE consumes it as a read-only signal provider, via the personas (never a new extension axis, never from `pace-master` directly).
 
-**Criterion**: detection of a systematic planned/actual deviation and adjustment of the recommendations. The hosted service removes the connector's install friction.
+**Additions**: capability detection + **manual-entry fallback** (PACE works without Strava); `pace-debrief` wired to real data (planned-vs-actual at the **summary** level — avg power vs target zone, duration, time-in-zone — never per-second); a `strava_baseline` in `profile.json` (sole writer: the Analyst); Strava signals routed to the **right tables** (today's modulation -> `adjustment-decisions.csv`; multi-week trend -> `signals.csv`; post-session execution -> `pace-debrief`); `pace-rolling` calibrated on real recent load. Note: community self-hosting is **no longer free** (paid API + anti-intermediary restrictions) -> non-subscribers fall back to manual entry.
+
+**Criterion**: detection of a systematic planned/actual deviation and adjustment of the recommendations. Strava's official MCP removes the connector's install friction — no infra to build.
 
 ---
 
@@ -59,4 +61,4 @@ Version sequence for the skills / plugin / connector model, endurance scope. Eac
 
 **Criterion**: a coach contributes a method (Markdown/CSV) and a developer a sport or a domain, **without modifying the trunk**. Modularity is proven in practice — a new sport adds no agent, a domain attaches in parallel.
 
-*Last updated: May 2026*
+*Last updated: June 2026*
