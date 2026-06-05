@@ -18,6 +18,8 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 | Evaluator | Claude (host LLM) |
 
 > Seeded from the Sprint 3 dry-run artefacts (`athlete/sample.json` + `vision.md@dryrun` + `plan.md@dryrun`). Two reads of the same rolling plan: **State A** = build, normal day (today = 2026-06-05, planned `recovery_ride` 45 min Z1); **State B** = taper, D-5 (today = Tue Aug 25, planned short Z2 spin 40 min, taper-legal). Full reasoning trace: `docs/internal/dryrun-sprint5/DRYRUN.md` (gitignored).
+>
+> A follow-up commit wires the `knowledge_base/principles/*.md` into four personas (Planner, check-in, coach, adjust) as **load-on-demand narrative knowledge**. This is additive: the principles *agree with* the CSV rows (they are the *why* behind them) and change **no** deterministic decision, so the 6/6 verdict above holds unchanged. Re-lint after wiring: 0 errors.
 
 ---
 

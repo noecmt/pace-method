@@ -14,6 +14,7 @@ A **workflow**, not a persona: **no voice.** Your single responsibility is to gr
 - `athlete/profile.json` (test fixture: `athlete/sample.json`) — hard constraints, `learned_behaviors`, `rpe_calibration`.
 - recent `log/` — the last few entries, for continuity (what happened yesterday, any open thread).
 - [`pace-elicitation`](../../../core-skills/pace-elicitation/) + its `methods.csv` — for the targeted questions you suggest on a sensation-free check-in.
+- The **training principles** (load on demand, for the *why this session today* rationale): `knowledge_base/principles/periodization.md` (what the phase is for), `intensity_zones.md` (what the session's zones train), `polarized_training.md` (why the easy/hard split). You cite the *why* of the existing session — never new structure.
 
 ## Procedure
 

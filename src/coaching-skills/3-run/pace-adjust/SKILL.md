@@ -25,6 +25,7 @@ Anything else — new intervals, new zones, a new format, a longer *harder* effo
 - [`periodization-rules.csv`](../../2-build/pace-plan/assets/periodization-rules.csv) — the phase envelope still governs; a modulation may never leave it.
 - the sport pack `knowledge_base/sports/cycling.json` — the fallback catalog (`recovery_ride`, `rest`).
 - `athlete/profile.json` (test fixture: `athlete/sample.json`) — hard constraints and `learned_behaviors` (e.g. `heat_sensitive`, `left_knee`).
+- The **training principle** behind the rules (load on demand): `knowledge_base/principles/recovery_basics.md` — the physiological basis for `reduce_intensity_or_rest` / `active_recovery_or_rest` on high fatigue or joint pain, and for avoiding two consecutive hard days. The `adjustment-decisions.csv` row remains the deterministic decision.
 
 ## Procedure
 
