@@ -1,0 +1,55 @@
+{
+  "sport_id": "cycling",
+  "version": "1.0",
+  "primary_metric": "power_watts",
+  "fitness_marker": "ftp",
+  "references": [
+    "Allen H., Coggan A.R., McGregor S. — Training and Racing with a Power Meter, 3rd ed., VeloPress, 2019.",
+    "Andrew Coggan — Power Training Levels (TrainingPeaks): https://www.trainingpeaks.com/blog/power-training-levels/"
+  ],
+  "intensity_zones": {
+    "system": "coggan_7zones",
+    "zones": [
+      { "id": 1, "name": "Active recovery", "ftp_pct": [0.00, 0.55] },
+      { "id": 2, "name": "Endurance",       "ftp_pct": [0.56, 0.75] },
+      { "id": 3, "name": "Tempo",           "ftp_pct": [0.76, 0.90] },
+      { "id": 4, "name": "Threshold",       "ftp_pct": [0.91, 1.05] },
+      { "id": 5, "name": "VO2max",          "ftp_pct": [1.06, 1.20] },
+      { "id": 6, "name": "Anaerobic",       "ftp_pct": [1.21, 1.50] },
+      { "id": 7, "name": "Sprint",          "ftp_pct": [1.51, 3.00] }
+    ]
+  },
+  "key_sessions": {
+    "endurance_long": {
+      "purpose": "Z2 volume, base aerobic capacity",
+      "typical_duration_min": [90, 240],
+      "intensity": "Z2 dominant, conversation possible"
+    },
+    "recovery_ride": {
+      "purpose": "Active recovery",
+      "typical_duration_min": [30, 60],
+      "intensity": "Strict Z1, no forced climbs"
+    },
+    "tempo": {
+      "purpose": "Ability to sustain Z3, base/build transition",
+      "typical_duration_min": [60, 120],
+      "intensity": "Z3 for 30-40min in one continuous block, or 2x20min with 5min Z1 recovery"
+    },
+    "threshold_intervals": {
+      "purpose": "Raise the lactate threshold",
+      "typical_duration_min": [60, 90],
+      "intensity": "Z4 as 2x15-20min or 3x10min, 5min Z1 recovery"
+    },
+    "vo2max_intervals": {
+      "purpose": "Stimulate maximal aerobic capacity",
+      "typical_duration_min": [60, 75],
+      "intensity": "Z5 as 5x3min or 6x4min, equal Z1 recovery"
+    },
+    "sweet_spot": {
+      "purpose": "Good stress/recovery ratio in base/build",
+      "typical_duration_min": [60, 90],
+      "intensity": "88-94% FTP (high Z3 / low Z4), 2x20min or 3x15min, 5min Z1 recovery"
+    }
+  },
+  "periodization": ["polarized", "pyramidal", "linear"]
+}
