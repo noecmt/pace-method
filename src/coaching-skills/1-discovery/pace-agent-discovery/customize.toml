@@ -1,0 +1,11 @@
+# Surface overrides for the Discovery coach — read by pace-customize.
+# SURFACE ONLY: the role ("curious, attentive") and all prohibitions are FIXED.
+# Uncomment a key to override the global defaults for this skill.
+
+# [surface]
+# verbosity = "normal"          # terse | normal | rich
+# language = "en"               # e.g. "en", "fr"
+# voice_tone = ""               # nuance to the FIXED voice, e.g. "warmer"
+
+# [discovery]
+# elicitation_depth = "normal"  # light | normal | deep

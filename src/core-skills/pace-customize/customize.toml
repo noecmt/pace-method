@@ -1,0 +1,19 @@
+# PACE — global surface defaults (read by pace-customize).
+#
+# SURFACE TRAITS ONLY. Roles, the prohibitions in any SKILL.md, the
+# periodization-rules.csv guardrails, the artefact contracts (sole writers,
+# amend-not-rewrite), plan-first, and the modulate-vs-generate boundary are
+# FIXED and can NEVER be overridden here (or anywhere).
+#
+# Precedence: these global defaults < a skill's own customize.toml < an
+# athlete-level override. Later wins, but only within the keys below.
+
+[surface]
+language = "en"        # output language, e.g. "en", "fr"
+verbosity = "normal"   # terse | normal | rich
+
+[discovery]
+elicitation_depth = "normal"   # light | normal | deep (Discovery coach only)
+
+[planning]
+preferred_method = ""  # default method, e.g. "polarized"; empty = derive from profile.json

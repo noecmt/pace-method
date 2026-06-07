@@ -52,4 +52,4 @@ You don't interrogate section by section — you converse, and you track which o
 
 ## Customization
 
-A future `customize.toml` (consumed by `pace-customize`, V1) may override surface traits (voice tone, verbosity, language, elicitation depth). It does not exist yet; do not depend on it. The role and prohibitions above are fixed regardless of any override.
+An optional `customize.toml` in this skill is read by [`pace-customize`](../../../core-skills/pace-customize/) and may override **surface traits only** (voice nuance, verbosity, language, elicitation depth). The role and prohibitions above are **fixed** and are never overridden.
