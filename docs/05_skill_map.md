@@ -25,7 +25,8 @@ src/
 │   │   └── assets/{vision-checklist.md, plan-checklist.md}
 │   └── pace-customize/
 │       ├── SKILL.md
-│       └── customize.toml
+│       ├── customize.toml
+│       └── pace.config.template.toml   <- athlete instance config (connectors + integration IDs)
 └── coaching-skills/
     ├── 1-discovery/
     │   ├── pace-agent-discovery/{SKILL.md, customize.toml}
@@ -45,6 +46,11 @@ knowledge_base/
 └── sports/{cycling.json, _schema.md}
 
 extensions/
+├── connectors/                    <- capability layer (read / storage / calendar); not a 4th axis
+│   ├── _schema.md
+│   ├── read.md, strava.md
+│   ├── storage.md, storage-{github,notion,gdrive}.md
+│   └── calendar.md, calendar-{local,gcal,notion}.md
 ├── domains/_schema.md
 └── methods/_schema.md
 ```
@@ -70,6 +76,8 @@ extensions/
 | `pace-debrief` | workflow | log, plan | log, signals, `profile.json` (learned_behaviors) | — | V0 (minimal) |
 
 > **Minimal V0 scope** (plan-first validation): `pace-master`, `pace-elicitation`, `pace-validate`, `pace-agent-discovery` + `pace-vision`, `pace-agent-planner` + `pace-plan`, `pace-agent-coach` + `pace-checkin` + `pace-adjust`, and `pace-debrief` **in a minimal declarative version** (just appending a `learned_behavior` to `profile.json` — needed for scenario 02). The rest (`pace-rolling`, `pace-customize`, and the measured/Strava debrief) comes later.
+
+> **Connector layer** (`extensions/connectors/`, V1): a capability attached to the artefacts — `read` (Strava), `storage` (local / GitHub / Notion / Drive), `calendar` (`plan/calendar.csv` / Google / Notion). Consumed *inside* the workflows (read: `pace-checkin` / `pace-debrief` / `pace-rolling`; storage: every persisting workflow + `pace-master` session setup; calendar: `pace-plan` / `pace-rolling` / `pace-adjust`), configured in `pace-customize`, and **degrading gracefully to local** so no data is ever lost. Never a 4th extension axis, never a persona, never called from `pace-master` to decide.
 
 ---
 

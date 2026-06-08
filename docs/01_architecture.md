@@ -131,13 +131,13 @@ Git provides the audit trail and validation: every plan change is a **reviewable
 ## Distribution: three tiers
 
 ```
-Skills (git clone)  ->  Plugin (1-command install)  ->  Connector (Strava MCP)
-   V0                       V1                            V2+
+Skills (git clone)  ->  Plugin (1-command install)  ->  Connector layer (read / storage / calendar)
+   V0                       V1                            V1 (storage · calendar · Strava Phase 1) -> V2 (Strava measured)
 ```
 
 - **Skills** — `git clone`, zero runtime. Target: tech-savvy athletes and developers.
 - **Plugin** — `plugin.json` + `marketplace.json` package the skills (+ slash commands + connector config). `/plugin marketplace add … && /plugin install …`. Also works in **Claude Desktop** via *Customize -> Browse plugins* (UI-friendly, provided by Anthropic, nothing to build).
-- **Connector** — since June 2026 Strava ships an **official remote MCP** (read-only, OAuth, subscribers-only), so there is **nothing to host**: the athlete connects it in one click in their host. PACE consumes it as a read-only *signal provider* feeding the artefacts via the personas (**never a new extension axis**, never from `pace-master` directly); skills detect its presence and degrade gracefully to manual entry. Garmin and others later.
+- **Connector** — a **capability layer attached to the artefacts**, in **three classes**: `read` (external signal/data — e.g. Strava's **official remote MCP**, read-only, OAuth, subscribers-only, nothing to host), `storage` (where the artefacts live — local · GitHub · Notion · Google Drive), and `calendar` (deliver upcoming sessions — `plan/calendar.csv` · Google Calendar · Notion). A connector is detected at use time and **degrades gracefully** to a local default (manual entry / local filesystem / `plan/calendar.csv`), so PACE works fully without any of them. It is **never a fourth extension axis** (the axes stay sport / domain / method), **never a persona**, and **never called from `pace-master`** to make a decision — it only changes *where data is read from / written to*. Timeline: storage + calendar + Strava **Phase-1 qualitative** read land in **V1**; Strava's **measured** loop (planned-vs-actual KPIs, `strava_baseline`) is **V2**. Garmin and others later. See `extensions/connectors/_schema.md`.
 
 ---
 
