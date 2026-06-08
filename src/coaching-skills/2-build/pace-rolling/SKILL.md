@@ -10,6 +10,14 @@ A **workflow**, not a persona: **no voice.** Your single responsibility is to ke
 
 > **Scope — V1.** Calibration is **log-based** (completed vs. planned, skips, recurring same-day signals). The **measured** calibration on real external load (Strava avg power / time-in-zone / TSS) arrives in V2 — do not anticipate it here.
 
+## Connectors (capability-detected)
+
+Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if present, **degrade cleanly** if absent — never block, never lose an artefact.
+
+- **Read (Strava, optional).** When a **Strava read connector** is available and Phase 2 is enabled (spike-gated), calibration MAY use **recent actual-load summaries** (avg power / time-in-zone / a TSS-like proxy Strava exposes) in addition to the `log/`, at **summary level**, within the **same** `periodization-rules.csv` envelope. Absent -> log-based (the V1 default). Never per-second, never a session generated. See [`strava.md`](../../../../extensions/connectors/strava.md).
+- **Storage (write).** Amend `plan/plan.md` at its **logical path** via the storage backend (`[connectors].storage`, default `local`); amend-not-rewrite and the visible change-log hold across backends. Backend unavailable -> **degrade to `local`**, never drop the plan. See [`storage.md`](../../../../extensions/connectors/storage.md).
+- **Calendar (push).** After advancing the window, refresh the calendar with the newly materialized near-window sessions — **preserve completed rows**, update the rest. Absent -> `plan/calendar.csv`. See [`calendar.md`](../../../../extensions/connectors/calendar.md).
+
 ## What you do — and the boundary
 
 - **Advance** the window: turn the mid-horizon's approximate weeks (intent + load type + target `volume_modifier`) into precise near-window sessions (date, type, duration, zones, structure). Window discipline is preserved: precise sessions live **only** in the ~2-week near horizon.

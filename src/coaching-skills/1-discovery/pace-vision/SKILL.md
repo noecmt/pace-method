@@ -20,6 +20,12 @@ A **workflow**, not a persona: **no voice.** Your single responsibility is the a
 - The template [`assets/vision-template.md`](assets/vision-template.md) — 7 sections.
 - The validator [`pace-validate`](../../../core-skills/pace-validate/) + its vision-checklist.
 
+## Connectors (capability-detected)
+
+The artefact is persisted through the **storage layer** — [`_schema.md`](../../../../extensions/connectors/_schema.md) protocol: probe the capability, use it if present, **degrade cleanly** if absent (PACE never loses an artefact):
+
+- **Storage (write).** Write/amend `vision/vision.md` at its **logical path**; the backend (`pace-customize` `[connectors].storage`, default `local`) maps it to a file / GitHub commit / Notion page. The **amend-not-rewrite** and revision-history contracts hold identically across backends. If the configured backend is unavailable, **degrade to `local`** and say so — never silently drop the vision. See [`storage.md`](../../../../extensions/connectors/storage.md).
+
 ## Procedure
 
 1. **Fill the template.** Map the gathered material into the 7 sections of `assets/vision-template.md`. Use the athlete's own words where you have them. Set `Created` / `Last amended` dates and write the initial revision-history row.
