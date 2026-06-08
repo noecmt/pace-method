@@ -17,3 +17,11 @@ elicitation_depth = "normal"   # light | normal | deep (Discovery coach only)
 
 [planning]
 preferred_method = ""  # default method, e.g. "polarized"; empty = derive from profile.json
+
+# Connectors are NOT surface traits — they are the MCP capability layer (read + write).
+# Detection + graceful degradation happen at use time (see extensions/connectors/_schema.md).
+[connectors]
+storage = "local"   # local | github | notion | gdrive — where athlete artefacts live (default local filesystem)
+calendar = "local"  # local | gcal | notion — where upcoming sessions are delivered (default: plan/calendar.csv)
+strava = false      # true = use the Strava MCP read connector when available; else manual entry
+# To add more read connectors when available, add a flag here (e.g. intervals = false, nolio = false)

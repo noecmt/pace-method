@@ -45,6 +45,12 @@ Read **this skill's [`customize.toml`](customize.toml)** as the global default, 
 - ❌ **Never change a persona's role** or grant it another persona's ownership (e.g. let anyone but the Analyst write `profile.json`).
 - ❌ **Never introduce a runtime/script** — customization is Markdown-applied only.
 
-## Future (Stage C — MCP layer)
+## Connector & storage configuration (the MCP layer)
 
-This skill is also the intended **single configuration point** for the connector/storage capability layer: which storage backend holds the athlete artefacts (local filesystem / GitHub MCP / Notion), and whether the Strava MCP is connected. That contract is designed with the MCP layer (read + write), using the same `customize.toml` plus the plugin's native `userConfig`; it is **not** specified here yet.
+This skill is also the **single place that records the connector configuration** — which **storage backend** holds the athlete artefacts, where **upcoming sessions** are delivered (the **calendar** connector), and whether the **Strava read connector** is used. Config lives in `[connectors]` of `customize.toml` (and may also be supplied by the plugin's native `userConfig`):
+
+- `storage` — `local` (default) | `github` | `notion` | `gdrive`. Where artefacts live (see [`../../../extensions/connectors/storage.md`](../../../extensions/connectors/storage.md)).
+- `calendar` — `local` (default) | `gcal` | `notion`. Where upcoming sessions are delivered; `local` writes `plan/calendar.csv` (see [`../../../extensions/connectors/calendar.md`](../../../extensions/connectors/calendar.md)).
+- `strava` — `true|false`. Use the Strava MCP read connector **when available** (see [`../../../extensions/connectors/strava.md`](../../../extensions/connectors/strava.md)).
+
+**You only record/expose this config — you do not read Strava, deliver to a calendar, or write GitHub yourself.** The consuming skills (read in `pace-checkin` / `pace-debrief` / `pace-rolling`; calendar in `pace-plan` / `pace-rolling` / `pace-adjust`) and the storage layer apply it, each running the **capability-detection + graceful-degradation** protocol of [`../../../extensions/connectors/_schema.md`](../../../extensions/connectors/_schema.md): if the MCP is absent, degrade (manual entry / local filesystem / `plan/calendar.csv`). **No runtime** — this stays text the host follows. A connector is a capability attached to an artefact: it **never** becomes a persona, is **never** called from `pace-master`, and **never** generates a session.
