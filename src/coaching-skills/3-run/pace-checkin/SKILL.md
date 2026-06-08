@@ -16,6 +16,14 @@ A **workflow**, not a persona: **no voice.** Your single responsibility is to gr
 - [`pace-elicitation`](../../../core-skills/pace-elicitation/) + its `methods.csv` — for the targeted questions you suggest on a sensation-free check-in.
 - The **training principles** (load on demand, for the *why this session today* rationale): `knowledge_base/principles/periodization.md` (what the phase is for), `intensity_zones.md` (what the session's zones train), `polarized_training.md` (why the easy/hard split). You cite the *why* of the existing session — never new structure.
 
+## Connectors (capability-detected)
+
+Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if present, **degrade cleanly** if absent — never block, never invent or lose data.
+
+- **Read (Strava, optional).** If a Strava read connector is available, you MAY read **summaries** of the last few activities for **qualitative context only** (Phase 1) — e.g. "recent rides have run short". This enriches the briefing; it is **not** a signal source — a same-day adjustment still requires a signal the athlete actually reported, mapped via `adjustment-decisions.csv`. Absent -> the athlete's words and `log/`; never invent a metric (scenario 05). See [`strava.md`](../../../../extensions/connectors/strava.md).
+- **Storage (write).** Write the check-in `log/` entry at its **logical path** via the storage backend (`[connectors].storage`, default `local`). Backend unavailable -> **degrade to `local`**, never drop the entry. See [`storage.md`](../../../../extensions/connectors/storage.md).
+- **Calendar (status).** When the session is confirmed done or skipped, set its calendar **status** -> `completed` / `skipped` (status only — you never create or move events; that is `pace-plan` / `pace-rolling` / `pace-adjust`). Absent -> update the `status` column in `plan/calendar.csv`. See [`calendar.md`](../../../../extensions/connectors/calendar.md).
+
 ## Procedure
 
 1. **Locate today's session.** Find today's date in the plan's **near-horizon** table. Read its type, duration, zones, structure, and the block/phase it sits in. Three edge cases: a **rest day** -> state plainly that rest *is* the plan today (it is a prescribed session, not an absence of one); a date **outside the ~2-week near window** -> explain window discipline (no precise session is committed yet that far out) and do **not** invent one; today's row **missing** -> report the gap to the coach rather than fabricate a session.

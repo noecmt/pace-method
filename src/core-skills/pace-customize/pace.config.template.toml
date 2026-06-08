@@ -1,0 +1,40 @@
+# pace.config.toml — athlete instance config
+#
+# COPY THIS FILE to the root of your PACE artefact repo as `pace.config.toml`.
+# This file is YOURS — it contains private URLs/IDs and should NOT be committed
+# to the public PACE method pack.
+#
+# Precedence: pack defaults (customize.toml) < this file. Later wins, but only
+# within the keys below. Hard rules, artefact contracts, and prohibitions are FIXED
+# and can never be overridden here.
+
+[surface]
+language = "en"        # output language: "en" | "fr" | ...
+verbosity = "normal"   # terse | normal | rich
+
+# ── Connectors ────────────────────────────────────────────────────────────────
+# Which backend to use for each connector class.
+# Graceful degradation is automatic: if the chosen backend is unavailable,
+# PACE falls back to the local default (filesystem / local-csv / manual entry).
+[connectors]
+storage = "local"    # local | github | notion | gdrive
+calendar = "local"   # local | gcal | notion
+strava = false       # true = use Strava MCP read connector when available
+
+# To add more read connectors when available:
+# intervals = false
+# nolio = false
+
+# ── Integration pointers ──────────────────────────────────────────────────────
+# URLs and IDs for the active backends above.
+# Leave empty ("") for backends you are not using.
+[integrations]
+
+# Storage
+notion_root_page = ""     # URL of your root PACE page in Notion
+github_repo = ""          # URL of your GitHub artefact repo
+gdrive_folder_id = ""     # Google Drive folder ID
+
+# Calendar
+gcal_calendar_id = "primary"    # Google Calendar ID ("primary" or a specific ID)
+notion_calendar_db_id = ""      # Notion sessions database ID (created on first use if empty)

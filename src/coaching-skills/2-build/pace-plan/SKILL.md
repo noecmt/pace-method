@@ -22,6 +22,13 @@ A **workflow**, not a persona: **no voice.** Your single responsibility is the a
 - The validator [`pace-validate`](../../../core-skills/pace-validate/) + its plan-checklist.
 - `athlete/profile.json` (test fixture: `athlete/sample.json`) — for the constraint cross-check.
 
+## Connectors (capability-detected)
+
+Persist and deliver through the connector layer — [`_schema.md`](../../../../extensions/connectors/_schema.md) protocol: probe, use if present, **degrade cleanly** if absent (never block, never lose an artefact):
+
+- **Storage (write).** Write/amend `plan/plan.md` at its **logical path**; the backend (`pace-customize` `[connectors].storage`, default `local`) maps it to a file / GitHub commit / Notion page. The **window-discipline**, **amend-not-rewrite**, and **visible change-log** contracts hold identically across backends. Backend unavailable -> **degrade to `local`** and say so; never silently drop the plan. See [`storage.md`](../../../../extensions/connectors/storage.md).
+- **Calendar (push).** On accept (and on each amend), mirror the **near-window** sessions to the calendar connector — `pace-plan` is the **initial push**. The calendar is a one-way **view** of the plan (it reflects the plan, never shapes it). Connector absent -> write `plan/calendar.csv`. See [`calendar.md`](../../../../extensions/connectors/calendar.md).
+
 ## Procedure
 
 1. **Fill the 3-horizon template.** Far = season blocks (phase + approx dates + intent, no sessions). Mid = approximate weeks (intent + load type + `volume_modifier`, **no precise sessions**). Near = the ~2-week window of precise sessions (date, type, duration, zones, structure). Record `Sport`, `fitness marker`, and the **source vision reference/commit**.
@@ -33,7 +40,7 @@ A **workflow**, not a persona: **no voice.** Your single responsibility is the a
 
 ## Amending an existing plan
 
-If `plan/plan.md` exists, **advance the window**, don't regenerate the season: edit the near horizon, append a change-log row (date · change · diff-visible · reason), and leave the stable far/mid horizons untouched unless the strategy explicitly changed them (then log that too).
+If `plan/plan.md` exists, **advance the window**, don't regenerate the season: edit the near horizon, append a change-log row (date · change · diff-visible · reason), and leave the stable far/mid horizons untouched unless the strategy explicitly changed them (then log that too). After amending, **refresh the calendar view** for the changed window (preserve completed rows) via the calendar connector.
 
 ## Prohibitions (do not cross)
 

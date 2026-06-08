@@ -27,6 +27,13 @@ Anything else — new intervals, new zones, a new format, a longer *harder* effo
 - `athlete/profile.json` (test fixture: `athlete/sample.json`) — hard constraints and `learned_behaviors` (e.g. `heat_sensitive`, `left_knee`).
 - The **training principle** behind the rules (load on demand): `knowledge_base/principles/recovery_basics.md` — the physiological basis for `reduce_intensity_or_rest` / `active_recovery_or_rest` on high fatigue or joint pain, and for avoiding two consecutive hard days. The `adjustment-decisions.csv` row remains the deterministic decision.
 
+## Connectors (capability-detected)
+
+Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if present, **degrade cleanly** if absent — never block, never lose an artefact.
+
+- **Storage (write).** Write the `log/` adjust entry at its **logical path** via the storage backend (`[connectors].storage`, default `local`). Backend unavailable -> **degrade to `local`**, never drop the entry. See [`storage.md`](../../../../extensions/connectors/storage.md).
+- **Calendar (update).** When you modulate today's session, **update the existing** calendar event/row (description + duration, or `status` = `adjusted` / `skipped`) — **update, never delete-and-recreate**. You touch only today's single session, never the rest of the window. Absent -> update the row in `plan/calendar.csv`. See [`calendar.md`](../../../../extensions/connectors/calendar.md).
+
 ## Procedure
 
 1. **Map each reported signal to a row (deterministic).** For every signal the athlete actually reported, read its `adjustment-decisions.csv` row -> `recommended_action` + `severity`. Cite the rows you matched (this is the near-deterministic check). Do **not** invent a signal that is not in the input.
@@ -35,7 +42,7 @@ Anything else — new intervals, new zones, a new format, a longer *harder* effo
 3. **Apply the severity-stacking rule.** When **two or more high-severity signals stack** (e.g. `high_fatigue` + `joint_pain`), the outcome is **rest or active recovery from the fallback catalog** — *not* a scaled-down hard session. Two high signals always resolve toward op (b); a brave shrunken interval set is a fail (scenario 01).
 4. **Never push intensity; honor constraints.** No modulation raises intensity or duration against a fatigue/pain signal. Respect the profile: `joint_pain` + `left_knee` -> never high-torque/low-cadence; `heatwave` + `heat_sensitive` -> reduce or reschedule out of the heat.
 5. **Stay inside the periodization envelope.** Even an *increase* request (`more_time`) may only extend an existing Z2 block and never beyond the phase's `allowed_intensity`/volume. A request that the phase **forbids** (e.g. a 4-hour `exhausting_long_ride` in taper, scenario 04) is **refused**: offer the planned light session or active recovery, never the forbidden effort. The decision is grounded in the taper row of `periodization-rules.csv`.
-6. **Emit the modulated session + log it.** Return the modulated session to the coach with the matched rows cited (signal -> action -> chosen op). Append a short dated entry to `log/` (e.g. `log/<date>-adjust.md`): the signals acted on, the table rows, and the resulting session. These same-day signals are **local** to adjust — they are *not* the strong, log-persisted routing signals that the Analyst (`pace-debrief`) emits via `signals.csv`.
+6. **Emit the modulated session + log it.** Return the modulated session to the coach with the matched rows cited (signal -> action -> chosen op). Append a short dated entry to `log/` (e.g. `log/<date>-adjust.md`): the signals acted on, the table rows, and the resulting session, and **refresh today's calendar entry** (update the existing event/row, never recreate). These same-day signals are **local** to adjust — they are *not* the strong, log-persisted routing signals that the Analyst (`pace-debrief`) emits via `signals.csv`.
 
 ## Prohibitions (do not cross)
 

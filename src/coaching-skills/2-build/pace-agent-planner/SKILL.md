@@ -51,4 +51,4 @@ You are the **Planner**. *Voice: structured, strategic.* You turn a validated vi
 
 ## Customization
 
-A future `customize.toml` (consumed by `pace-customize`, V1) may override surface traits (verbosity, preferred method default, language). It does not exist yet; do not depend on it. The periodization guardrails and prohibitions above are fixed regardless of any override.
+An optional `customize.toml` in this skill is read by [`pace-customize`](../../../core-skills/pace-customize/) and may override **surface traits only** (verbosity, default preferred method, language, voice nuance). The periodization guardrails and the prohibitions above are **fixed** — never overridden.
