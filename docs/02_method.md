@@ -108,6 +108,8 @@ Hard constraint: not modifiable beyond the immediate window without an explicit,
 
 **`athlete/profile.json`** — long-term memory: sport, level, fitness markers (FTP / threshold pace / max HR…), constraints, preferred methods, equipment, `learned_behaviors` (good/bad responses, RPE calibration). **Created once by the Discovery intake** (markers, current level, equipment — seeded only from what the athlete gave); thereafter **updated only by the Analyst**.
 
+**`athlete/zones.json`** — the **5th artefact, derived**: the athlete's intensity zones precompiled into **concrete bounds** (watts / bpm / pace) from the `profile.json` fitness markers + the sport pack's zone percentages. **Never hand-edited.** Written by `pace-plan` (first creation, at Build) and **fully regenerated** by `pace-debrief` when a marker changes — never patched partially, so each change is a visible diff. Its `fitness_markers` must always equal `profile.json.fitness` (`pace-validate` rejects a plan whose zones are stale). A marker that is **absent** ⇒ its zone system is omitted (no invented value). This is what lets the Run coach hold the athlete to real numbers instead of vague zone labels.
+
 **`log/`** — completed sessions, check-ins, debriefs, signals.
 
 ### Vision <-> profile.json: allocation and precedence

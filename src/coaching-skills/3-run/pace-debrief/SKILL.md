@@ -20,6 +20,7 @@ The **Discovery intake creates** `athlete/profile.json` once (markers, level, eq
 - `plan/plan.md` — to compare **planned vs. actual** (what was scheduled vs. what happened).
 - recent `log/` — prior check-ins, adjustments, debriefs (a pattern needs more than one data point).
 - `athlete/profile.json` (test fixture: `athlete/sample.json`) — the file you maintain; read it before you append.
+- `athlete/zones.json` (fixture: `athlete/sample-zones.json`) + the sport pack `knowledge_base/sports/cycling.json` (zone percentages) — when a fitness marker changes, you **fully regenerate** this derived artefact (below).
 - [`../../../pace-master/signals.csv`](../../../pace-master/signals.csv) — its **`threshold`** column is *yours* (when an observation is worth emitting); the `proposal` column is `pace-master`'s.
 
 ## Connectors (capability-detected)
@@ -30,7 +31,7 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
   - **Phase 1 (qualitative)** — read the executed activity **summary** (avg/normalized power, duration, time-in-zone if exposed) to ground planned-vs-actual in words ("the ride held Z2 as planned"). No new fields, no per-second data.
   - **Phase 2 (measured, spike-gated)** — maintain `strava_baseline` in `profile.json` (**you remain its sole writer**); compare at **summary** level (never per-second); route signals to the right table (same-day -> `adjustment-decisions.csv`; multi-week -> `signals.csv`; execution -> `learned_behavior` / log). Persist **KPIs, not GPS**.
   - Connector **absent** -> degrade to the athlete's report; **never fabricate** a metric (scenario 05). See [`strava.md`](../../../../extensions/connectors/strava.md).
-- **Storage (write).** Write `athlete/profile.json` and the `log/` entry at their **logical paths** via the storage backend (`[connectors].storage`, default `local`); your **sole-writer** rule on `profile.json` is unchanged across backends. Backend unavailable -> **degrade to `local`**, never drop the update. See [`storage.md`](../../../../extensions/connectors/storage.md).
+- **Storage (write).** Write `athlete/profile.json`, **the regenerated `athlete/zones.json` (when a marker changed)**, and the `log/` entry at their **logical paths** via the storage backend (`[connectors].storage`, default `local`); your **sole-writer** rule on `profile.json` is unchanged across backends. Backend unavailable -> **degrade to `local`**, never drop the update. See [`storage.md`](../../../../extensions/connectors/storage.md).
 - **Calendar (status).** When the report confirms a session was completed or skipped, set its calendar **status** -> `completed` / `skipped` (status only — you never create or move events). Absent -> update the `status` column in `plan/calendar.csv`. See [`calendar.md`](../../../../extensions/connectors/calendar.md).
 
 ## Procedure
@@ -40,6 +41,7 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 3. **Append a `learned_behavior` when a durable pattern is confirmed.** When the report (with the log history) confirms a repeatable behavioral fact — not a one-off — append one object to `profile.json.learned_behaviors`, using the exact schema already in the file: `id`, `observation`, `rule` (a concrete, plannable instruction), `source: "debrief"`, `confidence` (`low|medium|high`), `learned_on` (the date). Example (scenario 02): "second hard day in a row was awful" -> `id: no_back_to_back_hard`, `observation:` responds badly to two consecutive hard days, `rule:` never schedule two hard sessions on consecutive days; insert Z1/Z2 or rest between them.
 4. **Append, never overwrite.** Add to `learned_behaviors`; do not rewrite or delete an existing behavior. If a new report *contradicts* a prior behavior, record the new observation and adjust `confidence` — keep the history; don't erase it.
 5. **Reconcile a contradiction, don't bury it.** If the report conflicts with a hard constraint or a stated fact, surface it (and, where it belongs, correct the authoritative entry in `profile.json`) — never silently rewrite a hard constraint to make the conflict disappear (scenario 03).
+6. **Regenerate `athlete/zones.json` when a fitness marker changed.** If your update changes any zone-driving marker in `profile.json.fitness` — `ftp_watts`, `max_hr`, `lthr_bpm`, `threshold_pace_sec_km`, or `css_sec_100m` — **fully regenerate** `zones.json` from the new markers + the sport pack percentages (same derivation `pace-plan` uses), set `generated_by: pace-debrief` and a fresh `generated_at`, and copy the new markers into `fitness_markers` so it stays consistent with `profile.json` (the `pace-validate` coherence gate). **Never patch `zones.json` partially** — regenerate the whole file, so the versioned diff shows every bound that moved. A marker that became absent => its zone system is **omitted** (not invented). If no marker changed, leave `zones.json` untouched.
 
 ## Prohibitions (do not cross)
 
@@ -47,4 +49,5 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 - ❌ **Never fabricate** a fact, sensation, or metric the athlete did not report (scenario 05).
 - ❌ **Never overwrite or delete** an existing `learned_behavior` or hard constraint — append and adjust confidence (scenario 02/03).
 - ❌ **Never route or impose** on a strong signal — you emit it; `pace-master` proposes.
-- ❌ You are the **only** writer of *updates* to `profile.json` (the Discovery intake creates it; thereafter no other persona writes it), and you write nothing else (no vision, no plan).
+- ❌ **Never patch `zones.json` partially** or invent a marker to fill it — regenerate the whole file from the changed markers (or omit a system whose marker is gone).
+- ❌ You are the **only** writer of *updates* to `profile.json` (the Discovery intake creates it; thereafter no other persona writes it). The only *other* file you write is the **derived `zones.json`**, and only to regenerate it on a marker change — no vision, no plan.
