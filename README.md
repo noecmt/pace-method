@@ -2,7 +2,7 @@
 
 **An open-source, plan-first coaching method for endurance sports, distributed as AI agent skills.**
 
-![Plugin](https://img.shields.io/badge/plugin-v0.3.0-blue)
+![Plugin](https://img.shields.io/badge/plugin-v0.4.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Language](https://img.shields.io/badge/language-Markdown-blue)
 
@@ -12,7 +12,9 @@ It imposes a **plan-first** logic: understand the athlete -> build a coherent se
 
 ## Status
 
-The method is **implemented as skills and packaged as a plugin** (`v0.3.0`, the V1 roadmap milestone). Cycling first; running / triathlon / swimming next. The skills run fully on the **local filesystem** with zero external dependencies; optional **connectors** (Strava, GitHub, Notion, Google) enrich or relocate the data without ever being required.
+The method is **implemented as skills and packaged as a plugin** (`v0.4.0`, within the V1 roadmap milestone). Cycling first; running / triathlon / swimming next. The skills run fully on the **local filesystem** with zero external dependencies; optional **connectors** (Strava, GitHub, Notion, Google) enrich or relocate the data without ever being required.
+
+`v0.4.0` adds **concrete intensity zones** (the coach holds you to real watts / bpm / pace, never vague labels), a Discovery **intake** that captures your fitness markers, a first-run **onboarding** wizard, a single source of output language, and a **curated 5-command surface**.
 
 ## Install
 
@@ -23,13 +25,23 @@ PACE ships as a Claude Code / Claude Desktop **plugin** (the `pace` plugin in th
 /plugin install pace@pace-method
 ```
 
-Then just describe your situation — a goal, a plan, today's session, how you feel, a race. The orchestrator **`pace-master`** reads your state, detects the mode (Discovery / Build / Run), and routes to the right coach. Nothing else to configure: artefacts are written to the current folder by default.
+On a **first run**, a short **onboarding** sets your language, storage, and connectors (saved to `pace.config.toml`), then hands you to Discovery. After that, just describe your situation — a goal, today's session, how you feel, a race — or use a curated command:
+
+```text
+/pace            start here (onboards on first run, otherwise routes)
+/pace-discovery  revisit your goal / profile
+/pace-plan       (re)build the plan
+/pace-today      today's planned session
+/pace-debrief    report what you did / how you feel
+```
+
+The orchestrator **`pace-master`** reads your state, detects the mode (Discovery / Build / Run), and routes to the right coach. Artefacts are written to the current folder by default.
 
 Prefer no install? `git clone` the repo and point your agent at `src/` — the skills are plain Markdown.
 
 ## How it works
 
-The three modes — **Discovery -> Build -> Run** — produce a narrative vision, a periodized plan, and a daily execution loop that explains and modulates the planned session **without ever regenerating it**. The hard rule: the day's state modulates *how* a planned session is executed; it never dictates *what* the session is.
+The three modes — **Discovery -> Build -> Run** — produce a narrative vision, a periodized plan, and a daily execution loop that explains and modulates the planned session **without ever regenerating it**, holding you to the concrete zone bounds (watts / bpm / pace) derived from your fitness markers. The hard rule: the day's state modulates *how* a planned session is executed; it never dictates *what* the session is.
 
 ## Connectors (optional, capability-detected)
 

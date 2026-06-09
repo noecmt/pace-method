@@ -1,5 +1,6 @@
 ---
 name: pace-validate
+user-invocable: false
 description: >-
   Validation gate for PACE narrative artefacts. Invoked BY another PACE skill (the Vision
   workflow, the Planner) — not a user-facing entry point — to check a `vision/vision.md`
@@ -21,12 +22,12 @@ A **core skill**, not a persona: **no voice, writes nothing.** It is the **sole 
   - plan -> [`assets/plan-checklist.md`](assets/plan-checklist.md)
 - For a **plan**, also the periodization table (deterministic checks):
   `../../coaching-skills/2-build/pace-plan/assets/periodization-rules.csv`.
-- For cross-checks: `athlete/profile.json` (a plannable fact / `learned_behavior` may make an artefact invalid — e.g. scenario 02).
+- For cross-checks: `athlete/profile.json` (a plannable fact / `learned_behavior` may make an artefact invalid — e.g. scenario 02) and `athlete/zones.json` (the derived zones must exist and stay coherent with the profile's markers).
 
 ## Procedure
 
 1. Load the checklist for the artefact type.
-2. Run every **hard check** in order. For a plan, the intensity-legality and volume-coherence checks are **deterministic**: compare each near-horizon session's zones against the `allowed_intensity` / `forbidden` of its phase row in  `periodization-rules.csv`, and its volume against `volume_modifier`.
+2. Run every **hard check** in order. For a plan, the intensity-legality and volume-coherence checks are **deterministic**: compare each near-horizon session's zones against the `allowed_intensity` / `forbidden` of its phase row in  `periodization-rules.csv`, and its volume against `volume_modifier`. The **zones-coherence** check is also deterministic: `athlete/zones.json` must exist and its `fitness_markers` must equal the current `athlete/profile.json.fitness` markers (stale or missing zones => INVALID).
 3. Run the **soft checks** as quality signals (not blockers).
 4. Emit a **validation report** (below).
 

@@ -12,6 +12,7 @@ Used by `pace-validate` to check `plan/plan.md`. Several checks are **determinis
 - [ ] **Window discipline**: only the ~2-week near horizon contains precise sessions; beyond it stays at the intent level.
 - [ ] **Respects vision constraints**: no session conflicts with a "what doesn't work" / hard constraint from the vision or a `learned_behavior` in the profile (scenario 02).
 - [ ] **Derived from a validated vision** (a vision reference / commit is recorded).
+- [ ] **Zones coherence (deterministic)**: `athlete/zones.json` **exists** and is **not stale** — every marker in `zones.fitness_markers` equals the current value in `athlete/profile.json.fitness`. A missing `zones.json`, or any divergence (a marker changed in the profile but not regenerated in the zones), => **not valid**. (A marker absent from the profile must be absent from the zones too — omitted, not invented.)
 
 ## Soft checks (quality)
 

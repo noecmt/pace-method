@@ -131,3 +131,24 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 **Result: 6/6 PASS.** Static lint (`node tools/lint-contracts.mjs`): 0 errors. No contract amendment required (consistent with the Sprint 4 finding). The two prohibition-critical cases hold: 01 resolves to rest/active-recovery only, 04 refuses the 4 h ride; Run never generated a session in any case.
 
 **V0 ready (merge `v0` -> `main`) only when all six = PASS.** -> **Met.**
+
+---
+
+## v0.4.0 closure — new & extended scenarios
+
+> **Command surface (Sprint D):** the 5 curated commands live in `commands/`; the 13 skills carry `user-invocable: false` (model-invocable, hidden from the `/` menu) so `/` lists only the 5. This depends on the host honouring `user-invocable` — **verify in the live host** (`/pace` shows 5, not 13+5) before relying on it; some Claude Code versions have known plugin-skill `/`-visibility bugs.
+>
+> **Validation mode: static contract trace** (not a fresh host-LLM role-play). Each property below is traced against the v0.4.0 skills/contracts, with the deterministic checks verified and `node tools/lint-contracts.mjs` green (0/0, incl. the new zones-coherence + `hr_zones` checks). A full host-LLM re-run via `docs/TESTING.md` is recommended before the public push. Skills under test: branch `v0.4.0` (Sprints A–D).
+
+| Scenario | Verdict (static) | Basis |
+| --- | --- | --- |
+| 07 Concrete zones at briefing | ✅ PASS | check-in/coach cite a concrete bound from `zones.json` (e.g. Z4 = 227–262 W); `pace-adjust` scales in real W/bpm; `sample-zones.json` coherent with `sample.json.fitness` (lint det check); marker absent -> coarser system, never invented. |
+| 08 Intake seeds the profile | ✅ PASS | Discovery intake captures markers/level/equipment (1–2 q/turn via `marker_elicitation`/`equipment_check`), writes the **initial** `profile.json`; unknown marker left **absent**; creation = intake, not the Analyst (contract refined in 4 files). |
+| 09 Onboarding zero-state | ✅ PASS | `pace-master` detects zero-state, runs the wizard (language->storage->connectors), writes `pace.config.toml`, **then** chains to Discovery; idempotent; degrades to `local`; concierge lane (no training judgment). Routing walkthrough case **G**. |
+| 10 Language persistence | ✅ PASS | `pace.config.toml [surface].language` = single source; `pace-customize` loaded **first (mandatory)** by every persona footer; `profile.json.language` deprecated/ignored. |
+| 05 Degraded — variant B (missing marker) | ✅ PASS | marker absent -> zone system omitted from `zones.json`; coach gives HR bounds or qualitative cues, **never** an invented watt/bpm (det: every bound traces to `zones.json`). |
+| 06 Routing — case G (zero-state) | ✅ PASS | zero-state -> Onboarding before Discovery (not Discovery directly); A–F unchanged. |
+
+**6 V0 scenarios (01–06):** unaffected — every v0.4.0 change is **additive** (zones citing, intake creation, onboarding, single language source, command surface) and relaxes **no** V0 guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact). 01 still resolves to rest/active-recovery; 04 still refuses the 4 h ride; Run still never generates a session.
+
+**Result (static): 6/6 V0 hold + 4 new (07–10) + 2 extensions (05-B, 06-G) = PASS.** Lint 0/0. No contract amendment required beyond the documented v0.4.0 refinements (profile.json creation contract; `zones.json` 5th artefact; `hr_zones` required).

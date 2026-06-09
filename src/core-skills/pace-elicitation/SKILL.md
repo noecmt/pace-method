@@ -1,5 +1,6 @@
 ---
 name: pace-elicitation
+user-invocable: false
 description: >-
   Elicitation toolkit for PACE coaching personas (the Discovery coach above all, and any
   persona that must ask the athlete a question). Invoked BY another PACE skill — not a

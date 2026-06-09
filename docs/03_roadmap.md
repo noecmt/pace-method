@@ -33,6 +33,8 @@ Version sequence for the skills / plugin / connector model, endurance scope. Eac
 
 **Additions**: `plugin.json` + `marketplace.json`; slash commands; `pace-rolling`, `pace-customize`; extension contracts (`_schema.md`); the **connector capability layer** (`extensions/connectors/` — `read` / `storage` / `calendar` classes + instances: storage on local / GitHub / Notion / Drive, calendar on `plan/calendar.csv` / Google / Notion, and the Strava **Phase-1 qualitative** read), all capability-detected and degrading gracefully to local; non-dev install guide. (`pace-debrief` already exists in minimal V0; its **measured** version arrives in V2.)
 
+**v0.4.0 (within V1)** — credibility + first impression: the **derived zones artefact** `athlete/zones.json` (concrete watts/bpm/pace bounds, so the Run coach holds the athlete to real numbers) + the **Discovery intake** that seeds the fitness markers / level / equipment into `profile.json`; a **zero-state onboarding wizard** and a **single language source** (`pace.config.toml`); a **curated 5-command surface** (`/pace`, `/pace-discovery`, `/pace-plan`, `/pace-today`, `/pace-debrief`) over the 13 internal skills.
+
 **Criterion**: on a clean machine, one-command install -> working Discovery + plan + run, terminal and desktop.
 
 ---

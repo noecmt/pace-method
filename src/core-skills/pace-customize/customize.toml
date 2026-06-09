@@ -9,7 +9,7 @@
 # athlete-level override. Later wins, but only within the keys below.
 
 [surface]
-language = "en"        # output language, e.g. "en", "fr"
+language = "en"        # output language, e.g. "en", "fr". SINGLE SOURCE = pace.config.toml [surface].language (overrides this default); profile.json.language is deprecated/ignored.
 verbosity = "normal"   # terse | normal | rich
 
 [discovery]

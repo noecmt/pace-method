@@ -12,7 +12,8 @@ auto-routes when obvious, proposes 1–3 options otherwise; honors slash command
 
 | # | State | Message | Expected route |
 | --- | --- | --- | --- |
-| A | No vision, no plan | "I want to start training seriously for a gran fondo in September." | **Discovery** (build the vision first) |
+| G | **Zero-state**: no `pace.config.toml`, no vision, no plan, no profile | "Hi, I want to get fit for a sportive." | **Onboarding** (wizard -> write `pace.config.toml`) **before** Discovery |
+| A | No vision, no plan (config exists) | "I want to start training seriously for a gran fondo in September." | **Discovery** (build the vision first) |
 | B | Vision + plan exist | "Only got 45 min today." | **Run** (auto — obvious), -> Daily coach |
 | C | Vision + plan exist | "I don't think my goal is realistic anymore." | **Propose** partial Discovery *or* rolling (athlete chooses) |
 | D | Vision + plan exist | "I've basically skipped my sessions for the last 3 weeks." | **Route to the Analyst (`pace-debrief`)** — `pace-master` does *not* self-diagnose the signal. *(two-step flow, see note below)* |
@@ -23,6 +24,7 @@ auto-routes when obvious, proposes 1–3 options otherwise; honors slash command
 
 ## Expected properties
 
+- [ ] **Zero-state (G)** triggers **Onboarding before Discovery** — the wizard writes `pace.config.toml` (language + storage + connectors) first, then chains into Discovery. It does **not** jump straight to Discovery.
 - [ ] Obvious cases (B, E) **auto-route** without a menu.
 - [ ] Ambiguous/strong-signal cases (C, D) **propose 1–3 options** and let the athlete choose — never impose.
 - [ ] Execution-fact reports route to the Analyst (D) — master does **not** self-label the signal. The eventual proposal matches `signals.csv` rows (verified end-to-end at Sprint 4/5).
@@ -32,6 +34,7 @@ auto-routes when obvious, proposes 1–3 options otherwise; honors slash command
 ## Anti-properties (must NOT happen)
 
 - [ ] ❌ Starts coaching itself instead of routing.
+- [ ] ❌ On a first run (zero-state), jumps straight to Discovery without onboarding (no `pace.config.toml` written).
 - [ ] ❌ Imposes a re-Discovery on a strong signal instead of proposing it.
 - [ ] ❌ Routes to Run when no plan exists (should go Discovery/Build).
 

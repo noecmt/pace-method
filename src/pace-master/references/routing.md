@@ -6,20 +6,26 @@ Loaded on demand by `pace-master`. This is the detailed logic behind the four-st
 
 ## 1. Read state
 
-Check the athlete repo for the three persistent artefacts:
+Check the athlete repo for the config + the three persistent artefacts:
 
 | Artefact | Present means |
 | --- | --- |
+| `pace.config.toml` | The workspace has been set up (language, storage, connectors). **Absent + nothing else => first run -> Onboarding.** |
 | `vision/vision.md` | Discovery has happened at least once. |
 | `plan/plan.md` | A plan exists -> Run is possible. |
 | `athlete/profile.json` | Structured long-term state (FTP, phase, constraints, `learned_behaviors`). Test fixture: `athlete/sample.json`. |
 
-State drives what is *possible*: **no `plan/plan.md` => Run is off the table.**
+State drives what is *possible*: **zero-state (none of the four) => Onboarding before anything else**; **no `plan/plan.md` => Run is off the table.**
+
+### Onboarding (zero-state, before Discovery)
+
+When **none** of `pace.config.toml` / vision / plan / profile exists, `pace-master` runs a short setup wizard **itself** (concierge lane — configuration, never a training judgment): **language** -> `[surface].language`; **storage** (`local`|`github`|`notion`|`gdrive`) -> `[connectors].storage`; **connectors** (calendar `local`|`gcal`|`notion`, Strava on/off) -> `[connectors]`. It writes `pace.config.toml` (from `pace.config.template.toml`), then **chains into Discovery** in the chosen language. Unavailable backend -> fall back to `local` and say so. `pace.config.toml` already present -> do not relaunch (offer "reconfigure?").
 
 ## 2. State × intent matrix
 
 | Vision? | Plan? | Athlete intent | Mode / route |
 | --- | --- | --- | --- |
+| no | no | **zero-state** (no config either) — anything | **Onboarding** (wizard -> write `pace.config.toml` -> Discovery) |
 | no | no | wants to start / has a goal | **Discovery** |
 | yes | no | "what now?" / ready to train | **Build** |
 | yes | yes | about today's planned session, time, feeling *now* | **Run** (Daily coach) |
@@ -37,10 +43,11 @@ Decide *how* to act, in this order. The governing line: **state facts about the 
 
 ## 4. Slash-command force table
 
-A literal token forces the route regardless of detection (V0: recognised in plain text; no registered plugin command until Sprint 7).
+A command (or the same token in plain text) forces the route regardless of detection. As of v0.4.0 these are **real plugin commands** in `commands/` (the curated surface); each delegates back to `pace-master` with the same force, so behaviour is identical to a bare token. The 13 skills carry `user-invocable: false` (model-invocable, hidden from the `/` menu), so `/` lists only the 5 commands.
 
-| Token | Forces | Notes |
+| Command | Forces | Notes |
 | --- | --- | --- |
+| `/pace` | default entry | onboard on zero-state, otherwise detect + route. Not a force. |
 | `/pace-discovery` | Discovery | even if a vision already exists (partial re-Discovery). |
 | `/pace-plan` | Build | even if no vision yet — but the Planner will then bounce back if its vision input is missing. |
 | `/pace-today` | Run (Daily coach) | requires a plan; if none, say so and fall back to Discovery/Build. |
@@ -105,4 +112,6 @@ Each case traced through the procedure above; the result must match the scenario
 
 - **F — vision exists, no plan, "what should I do?"** State: vision yes, plan no. Intent: ready to proceed. Matrix -> **Build** (the plan is the missing artefact; Run is impossible without a plan). Lane: auto-route. ✅ Build.
 
-**Anti-properties to keep:** never start coaching instead of routing; never impose re-Discovery on a signal; never route to Run when no plan exists.
+- **G — zero-state (no `pace.config.toml`, no vision, no plan, no profile), "hi, I want to get into shape for a sportive."** State: nothing exists at all -> **first run**. `pace-master` runs the **onboarding wizard itself** (language -> storage -> connectors), writes `pace.config.toml`, then **chains into Discovery** in the chosen language. ✅ Onboarding **before** Discovery — not Discovery directly. (Concierge-lane configuration, no training judgment.)
+
+**Anti-properties to keep:** never start coaching instead of routing; never impose re-Discovery on a signal; never route to Run when no plan exists; **on zero-state, never jump straight to Discovery — onboard first**.
