@@ -1,5 +1,6 @@
 ---
 name: pace-adjust
+user-invocable: false
 description: >-
   The Adjust workflow — modulates today's already-planned session against same-day signals, using adjustment-decisions.csv. Invoked BY the Daily coach (pace-agent-coach) when the athlete reports a signal (fatigue, joint pain, limited time, heat, poor sleep, extra time), not a user-facing entry point. It maps each reported signal to its table row, then applies the modulation as EXACTLY ONE of two operations — a bounded scaling of the planned session that keeps its intent, or a substitution with a fallback-catalog session (active recovery / rest). It NEVER composes a new structured session, never acts on a signal the athlete did not report, never exceeds the phase's periodization envelope, and has no voice.
 ---

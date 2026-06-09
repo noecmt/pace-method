@@ -43,10 +43,11 @@ Decide *how* to act, in this order. The governing line: **state facts about the 
 
 ## 4. Slash-command force table
 
-A literal token forces the route regardless of detection (V0: recognised in plain text; no registered plugin command until Sprint 7).
+A command (or the same token in plain text) forces the route regardless of detection. As of v0.4.0 these are **real plugin commands** in `commands/` (the curated surface); each delegates back to `pace-master` with the same force, so behaviour is identical to a bare token. The 13 skills carry `user-invocable: false` (model-invocable, hidden from the `/` menu), so `/` lists only the 5 commands.
 
-| Token | Forces | Notes |
+| Command | Forces | Notes |
 | --- | --- | --- |
+| `/pace` | default entry | onboard on zero-state, otherwise detect + route. Not a force. |
 | `/pace-discovery` | Discovery | even if a vision already exists (partial re-Discovery). |
 | `/pace-plan` | Build | even if no vision yet — but the Planner will then bounce back if its vision input is missing. |
 | `/pace-today` | Run (Daily coach) | requires a plan; if none, say so and fall back to Discovery/Build. |

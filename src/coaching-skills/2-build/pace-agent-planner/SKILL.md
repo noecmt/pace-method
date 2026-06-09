@@ -1,5 +1,6 @@
 ---
 name: pace-agent-planner
+user-invocable: false
 description: >-
   The Planner — the PACE persona that builds the training plan from a validated vision. Loaded
   (usually by pace-master) in Build mode: when a vision/vision.md exists and the plan is missing

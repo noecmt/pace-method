@@ -1,5 +1,6 @@
 ---
 name: pace-master
+user-invocable: false
 description: >-
   Default entry point for ANY endurance-coaching interaction in PACE (cycling, running, triathlon, swimming). Use this FIRST whenever the athlete talks about training, a plan, a session, a goal, fatigue, a race, or progress — before any other PACE skill.pace-master does NOT coach: it reads the athlete's state, detects the mode (Discovery / Build / Run), and either answers a meta/navigation question directly or routes to the right persona/workflow, passing the context. It never generates a session,never makes a training judgment, and never emits a signal.
 ---
@@ -58,16 +59,17 @@ The dividing line: **you may state facts about the system and about the existenc
 
 ## Slash-command override
 
-A literal command token in the message **forces** the route, regardless of detection:
+A command token (or the same token typed in plain text) **forces** the route, regardless of detection:
 
-| Token | Forces |
+| Command | Forces |
 |---|---|
+| `/pace` | nothing — the **default entry**: onboard on zero-state, else detect + route |
 | `/pace-discovery` | Discovery |
 | `/pace-plan` | Build |
 | `/pace-today` | Run (Daily coach) |
 | `/pace-debrief` | Debrief (Analyst) |
 
-> V0 note: there is no plugin yet (slash commands are registered in Sprint 7). For now these are tokens you recognise in plain text and honour — the forcing behaviour is the same.
+> These are **real plugin commands** (in `commands/`) as of v0.4.0 — the curated user surface. Each delegates straight back here (`pace-master`) with the same force, so routing and the forcing behaviour are **identical** whether the route arrives as a registered command or as a bare token in plain text. The 13 skills stay registered as internal machinery, invoked by description — they are not part of the command surface: each carries **`user-invocable: false`** in its frontmatter, so it remains model-invocable (the model routes to it) but is **hidden from the `/` menu**. Net result: `/` shows the 5 curated commands, not the 13 skills.
 
 ## Strong signals -> proposals (`signals.csv`)
 

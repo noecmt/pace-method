@@ -1,5 +1,6 @@
 ---
 name: pace-rolling
+user-invocable: false
 description: >-
   The Rolling workflow — advances the plan's ~2-week near horizon before it runs dry, and calibrates the upcoming window to the athlete's RECENT ACTUAL load and adherence from the log. Invoked BY pace-master (on a rolling proposal — near window nearly exhausted, sessions_skipped, metric_stagnation) or by the Planner, never a user-facing entry point. It materializes the next near-window sessions from the existing mid-horizon intents, stays strictly inside periodization-rules.csv, honors every hard constraint and learned_behavior, and AMENDS plan/plan.md with a visible change-log row. It NEVER rewrites the season, never composes session types absent from the sport pack, never leaves the phase envelope, never reacts to a single day, and has no voice.
 ---

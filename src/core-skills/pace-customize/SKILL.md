@@ -1,5 +1,6 @@
 ---
 name: pace-customize
+user-invocable: false
 description: >-
   The customization core skill — reads a skill's customize.toml and applies SURFACE overrides (output language, verbosity, a persona's tonal nuance, Discovery elicitation depth, default preferred method) to PACE personas and workflows. Invoked BY a persona/workflow as it loads (or by pace-master), never a user-facing entry point. It resolves the override precedence (skill default -> athlete override) and applies ONLY surface traits. It NEVER overrides a role, a prohibition, the periodization guardrails, the artefact contracts, plan-first, or the modulate-vs-generate boundary — those are fixed. No runtime: it is Markdown instructions a host LLM follows, not a script.
 ---

@@ -1,5 +1,6 @@
 ---
 name: pace-validate
+user-invocable: false
 description: >-
   Validation gate for PACE narrative artefacts. Invoked BY another PACE skill (the Vision
   workflow, the Planner) — not a user-facing entry point — to check a `vision/vision.md`

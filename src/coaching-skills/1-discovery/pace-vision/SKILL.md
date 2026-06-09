@@ -1,5 +1,6 @@
 ---
 name: pace-vision
+user-invocable: false
 description: >-
   The Vision workflow — writes and amends vision/vision.md, the narrative source of truth of
   the PACE method. Invoked BY the Discovery coach (pace-agent-discovery), not a user-facing

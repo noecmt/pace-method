@@ -1,5 +1,6 @@
 ---
 name: pace-checkin
+user-invocable: false
 description: >-
   The check-in workflow — reads plan/plan.md, locates today's already-planned session, and explains why THIS session today. Invoked BY the Daily coach (pace-agent-coach), not a user-facing entry point. It finds the session for today in the near horizon, builds the rationale (phase intent + place in the plan + the learned_behaviors it honors), records a short check-in entry to log/, and flags any same-day signal the athlete reported so the coach can hand off to pace-adjust. It NEVER generates, modulates, or invents a session, never fabricates a sensation the athlete did not give, and has no voice of its own.
 ---

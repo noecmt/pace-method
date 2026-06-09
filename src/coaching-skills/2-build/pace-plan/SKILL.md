@@ -1,5 +1,6 @@
 ---
 name: pace-plan
+user-invocable: false
 description: >-
   The Plan workflow — writes and amends plan/plan.md, the hierarchical rolling-horizon training
   plan of the PACE method. Invoked BY the Planner (pace-agent-planner), not a user-facing entry

@@ -1,5 +1,6 @@
 ---
 name: pace-debrief
+user-invocable: false
 description: >-
   The Analyst — the PACE workflow that turns an athlete's report of EXECUTED training or physical state into structured memory. Routed here (by pace-master) when the athlete reports on what they actually did or how their body responded ("that second hard day wrecked me", "I've skipped two weeks", "my FTP test went up"). It is the SOLE writer of UPDATES to athlete/profile.json (the file is first created by the Discovery intake; thereafter only the Analyst amends it). Minimal V0: it records a structured log entry, emits a strong signal into log/ when an observation crosses a signals.csv threshold, and — when a durable pattern is confirmed — appends a learned_behavior to profile.json. Analytical and neutral, it does NOT coach, plan, modulate, or generate sessions.
 ---
