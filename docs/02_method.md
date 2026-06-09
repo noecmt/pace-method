@@ -64,7 +64,7 @@ Voice <-> skill mapping (see `05_skill_map.md`):
 
 **Daily coach** *(voice: motivating, concrete)* — The everyday interface. Takes the temperature, **explains why this session today in this block**, decides whether an adjustment is needed. **NEVER generates a session** — it already exists in the plan. This is the most important prohibition in the whole method (boundary defined in "Modulate vs generate" below).
 
-**Analyst / debrief** *(voice: factual, measured)* — Takes the post-session feedback, structures the log, compares planned vs actual, computes drift, emits signals (on track / drift / strong signal). It is **the sole writer of `athlete/profile.json`**: on a clear signal, it persists a `learned_behavior` there. In V0: minimal declarative (appends a `learned_behavior` from manually entered feedback). In V2: wired to Strava data, **without changing its role**.
+**Analyst / debrief** *(voice: factual, measured)* — Takes the post-session feedback, structures the log, compares planned vs actual, computes drift, emits signals (on track / drift / strong signal). It is **the sole writer of *updates* to `athlete/profile.json`** (the file is first created by the Discovery intake): on a clear signal, it persists a `learned_behavior` there. In V0: minimal declarative (appends a `learned_behavior` from manually entered feedback). In V2: wired to Strava data, **without changing its role**.
 
 ### Main workflows
 
@@ -106,7 +106,7 @@ Near horizon   -> precise sessions (~2 wks) — type, duration, zones, intervals
 
 Hard constraint: not modifiable beyond the immediate window without an explicit, visible change (git diff).
 
-**`athlete/profile.json`** — long-term memory: sport, level, constraints, preferred methods, equipment, `learned_behaviors` (good/bad responses, RPE calibration).
+**`athlete/profile.json`** — long-term memory: sport, level, fitness markers (FTP / threshold pace / max HR…), constraints, preferred methods, equipment, `learned_behaviors` (good/bad responses, RPE calibration). **Created once by the Discovery intake** (markers, current level, equipment — seeded only from what the athlete gave); thereafter **updated only by the Analyst**.
 
 **`log/`** — completed sessions, check-ins, debriefs, signals.
 
@@ -115,7 +115,7 @@ Hard constraint: not modifiable beyond the immediate window without an explicit,
 Both may speak of "constraints" or "what works." To avoid ambiguity:
 
 - **`vision/vision.md`** carries the **human narrative intent** — the *why*, the goal, the relationship to effort. Amended by the Discovery coach, never rewritten.
-- **`athlete/profile.json`** carries the **structured / quantitative state** — FTP, phase, constraints usable as data, preferred methods, and the `learned_behaviors`. Updated by the Analyst/debrief.
+- **`athlete/profile.json`** carries the **structured / quantitative state** — FTP, phase, constraints usable as data, preferred methods, and the `learned_behaviors`. **Created by the Discovery intake** (which seeds the fitness markers the Planner later turns into the derived `athlete/zones.json`), then updated by the Analyst/debrief.
 
 **Precedence**: on a *plannable* fact (a value, a constraint, a learned behavior), **`profile.json` is authoritative for the Planner**; the Vision provides the meaning, not the data. If the two diverge, that's a signal — the Discovery coach reconciles by amending the Vision, the Analyst corrects `profile.json`.
 

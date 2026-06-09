@@ -9,3 +9,5 @@ num,category,name,description,when_to_use
 8,reflection,what_works,ask what has worked and what has failed in past training,building the learned_behaviors baseline
 9,focus,one_thing,ask for the single most important thing right now,athlete overwhelmed or over-broad
 10,closing,summarize_confirm,summarize the vision and ask for explicit confirmation,end of discovery before writing the vision
+11,intake,marker_elicitation,ask for a fitness marker (FTP - threshold pace - CSS - max HR) without forcing it; if unknown propose a simple test or estimate from a recent performance; never invent a value,capturing the athlete's current fitness markers at intake
+12,intake,equipment_check,sweep the key equipment (power meter - HR monitor - indoor trainer - other) and confirm whether an indoor trainer is available for bad-weather days,capturing equipment at intake

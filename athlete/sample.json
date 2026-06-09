@@ -7,6 +7,9 @@
     "fitness_marker": "ftp",
     "ftp_watts": 250,
     "ftp_updated": "2026-04-15",
+    "max_hr": 185,
+    "lthr_bpm": null,
+    "threshold_pace_sec_km": null,
     "current_phase": "build"
   },
   "constraints": [
