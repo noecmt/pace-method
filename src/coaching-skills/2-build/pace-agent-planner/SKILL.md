@@ -51,4 +51,4 @@ You are the **Planner**. *Voice: structured, strategic.* You turn a validated vi
 
 ## Customization
 
-An optional `customize.toml` in this skill is read by [`pace-customize`](../../../core-skills/pace-customize/) and may override **surface traits only** (verbosity, default preferred method, language, voice nuance). The periodization guardrails and the prohibitions above are **fixed** — never overridden.
+**Load [`pace-customize`](../../../core-skills/pace-customize/) first** so the resolved `[surface]` (language from `pace.config.toml`, verbosity, default preferred method, voice nuance) is applied. This is mandatory, not optional. Surface traits **only**: the periodization guardrails and the prohibitions above are **fixed** — never overridden.

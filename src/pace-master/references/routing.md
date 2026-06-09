@@ -6,20 +6,26 @@ Loaded on demand by `pace-master`. This is the detailed logic behind the four-st
 
 ## 1. Read state
 
-Check the athlete repo for the three persistent artefacts:
+Check the athlete repo for the config + the three persistent artefacts:
 
 | Artefact | Present means |
 | --- | --- |
+| `pace.config.toml` | The workspace has been set up (language, storage, connectors). **Absent + nothing else => first run -> Onboarding.** |
 | `vision/vision.md` | Discovery has happened at least once. |
 | `plan/plan.md` | A plan exists -> Run is possible. |
 | `athlete/profile.json` | Structured long-term state (FTP, phase, constraints, `learned_behaviors`). Test fixture: `athlete/sample.json`. |
 
-State drives what is *possible*: **no `plan/plan.md` => Run is off the table.**
+State drives what is *possible*: **zero-state (none of the four) => Onboarding before anything else**; **no `plan/plan.md` => Run is off the table.**
+
+### Onboarding (zero-state, before Discovery)
+
+When **none** of `pace.config.toml` / vision / plan / profile exists, `pace-master` runs a short setup wizard **itself** (concierge lane — configuration, never a training judgment): **language** -> `[surface].language`; **storage** (`local`|`github`|`notion`|`gdrive`) -> `[connectors].storage`; **connectors** (calendar `local`|`gcal`|`notion`, Strava on/off) -> `[connectors]`. It writes `pace.config.toml` (from `pace.config.template.toml`), then **chains into Discovery** in the chosen language. Unavailable backend -> fall back to `local` and say so. `pace.config.toml` already present -> do not relaunch (offer "reconfigure?").
 
 ## 2. State × intent matrix
 
 | Vision? | Plan? | Athlete intent | Mode / route |
 | --- | --- | --- | --- |
+| no | no | **zero-state** (no config either) — anything | **Onboarding** (wizard -> write `pace.config.toml` -> Discovery) |
 | no | no | wants to start / has a goal | **Discovery** |
 | yes | no | "what now?" / ready to train | **Build** |
 | yes | yes | about today's planned session, time, feeling *now* | **Run** (Daily coach) |
@@ -105,4 +111,6 @@ Each case traced through the procedure above; the result must match the scenario
 
 - **F — vision exists, no plan, "what should I do?"** State: vision yes, plan no. Intent: ready to proceed. Matrix -> **Build** (the plan is the missing artefact; Run is impossible without a plan). Lane: auto-route. ✅ Build.
 
-**Anti-properties to keep:** never start coaching instead of routing; never impose re-Discovery on a signal; never route to Run when no plan exists.
+- **G — zero-state (no `pace.config.toml`, no vision, no plan, no profile), "hi, I want to get into shape for a sportive."** State: nothing exists at all -> **first run**. `pace-master` runs the **onboarding wizard itself** (language -> storage -> connectors), writes `pace.config.toml`, then **chains into Discovery** in the chosen language. ✅ Onboarding **before** Discovery — not Discovery directly. (Concierge-lane configuration, no training judgment.)
+
+**Anti-properties to keep:** never start coaching instead of routing; never impose re-Discovery on a signal; never route to Run when no plan exists; **on zero-state, never jump straight to Discovery — onboard first**.

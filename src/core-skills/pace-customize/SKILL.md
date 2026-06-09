@@ -13,7 +13,7 @@ A **core skill**, not a persona: **no voice, writes no artefact.** It is the one
 `customize.toml` may adjust **how** a skill sounds and how deep it probes — **never what it is or what it may do.**
 
 **May be overridden (surface allow-list):**
-- `language` — output language (e.g. `en`, `fr`).
+- `language` — output language (e.g. `en`, `fr`). **Single source: `pace.config.toml` `[surface].language`** (see *Language has a single source* below).
 - `verbosity` — `terse | normal | rich`.
 - `voice_tone` — a *nuance* to a persona's **fixed** voice (e.g. "warmer", "more concise"); never a new role.
 - `elicitation_depth` — `light | normal | deep` (Discovery only).
@@ -24,7 +24,13 @@ A **core skill**, not a persona: **no voice, writes no artefact.** It is the one
 
 ## Precedence
 
-Read **this skill's [`customize.toml`](customize.toml)** as the global default, then **the target skill's own `customize.toml`**, then **an athlete-level override** if the athlete provides one. Later wins — **but only within the surface allow-list**. Anything outside it is dropped.
+Read **this skill's [`customize.toml`](customize.toml)** as the global default, then **the target skill's own `customize.toml`**, then **the athlete instance config `pace.config.toml`** (at the athlete repo root — the highest-precedence override). Later wins — **but only within the surface allow-list**. Anything outside it is dropped.
+
+**Load order is mandatory, not optional.** Every persona/workflow loads `pace-customize` **first**, before it speaks, so the resolved `[surface]` — above all the **language** — is applied to its very first words. A persona that speaks before resolving `[surface]` is a bug (this is the old "language not respected" regression).
+
+## Language has a single source
+
+`pace.config.toml` `[surface].language` is the **one authoritative source** of output language. The only writer of it is the **onboarding wizard** (via `pace.config.toml`); to change the language, reconfigure — do not edit it elsewhere. **`profile.json.language` is deprecated and ignored** — it is *not* a language source. (This removes the contradiction that caused the regression: `profile.json` said `fr` while the pack default said `en`, so each persona re-read the default and reverted to English. Now there is exactly one source.)
 
 ## Inputs
 

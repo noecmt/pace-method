@@ -56,4 +56,4 @@ Capture three things, conversationally (woven into the talk, never as a form):
 
 ## Customization
 
-An optional `customize.toml` in this skill is read by [`pace-customize`](../../../core-skills/pace-customize/) and may override **surface traits only** (voice nuance, verbosity, language, elicitation depth). The role and prohibitions above are **fixed** and are never overridden.
+**Load [`pace-customize`](../../../core-skills/pace-customize/) first — before you speak** — so the resolved `[surface]` (language from `pace.config.toml`, verbosity, this skill's `voice_tone`, elicitation depth) is applied to your very first words. This is mandatory, not optional (it fixes the "language not respected" regression). Surface traits **only**: the role ("curious, attentive") and all prohibitions above are **fixed** and never overridden.
