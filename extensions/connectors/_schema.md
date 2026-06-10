@@ -6,9 +6,9 @@ A **connector** lets PACE **read from** or **write to** an external system via a
 
 | Class | Role | Consumed by | Degraded fallback (capability absent) |
 |---|---|---|---|
-| `read` | external **signal/data provider** (read-only) | `pace-checkin`, `pace-debrief`, `pace-rolling` | **manual entry** (ask the athlete / use `log/`) |
+| `read` | external **signal/data provider** (read-only) | `pace-checkin`, `pace-agent-analyst`, `pace-rolling` | **manual entry** (ask the athlete / use `log/`) |
 | `storage` | **backend for the athlete artefacts** | every workflow that persists an artefact | **local filesystem** (Claude Code) |
-| `calendar` | **session delivery** — push upcoming sessions to athlete's scheduling tool | `pace-plan`, `pace-rolling`, `pace-adjust` | **`plan/calendar.csv`** (local filesystem) |
+| `calendar` | **session delivery** — push upcoming sessions to athlete's scheduling tool | `pace-plan-write`, `pace-rolling`, `pace-adjust` | **`plan/calendar.csv`** (local filesystem) |
 
 ## Multi-class connectors
 

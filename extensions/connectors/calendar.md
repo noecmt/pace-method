@@ -12,11 +12,11 @@ Pushes **upcoming planned sessions** from `plan/plan.md` to the athlete's schedu
 
 ## Writers
 
-`pace-plan` (initial push), `pace-rolling` (rolling window), `pace-adjust` (single session update). No other skill touches the calendar connector.
+`pace-plan-write` (initial push), `pace-rolling` (rolling window), `pace-adjust` (single session update). No other skill touches the calendar connector.
 
 ## Hard rules
 
-- **One-way: PACE -> calendar.** Never read the calendar as a training signal; that path goes through `pace-checkin` / `pace-debrief`.
+- **One-way: PACE -> calendar.** Never read the calendar as a training signal; that path goes through `pace-checkin` / `pace-agent-analyst`.
 - **Reflects the plan, never shapes it.** An entry in the calendar has no authority over `plan/plan.md`.
 - **Never generates a session.** The calendar entry copies what is already in the plan.
 - PACE works fully without any calendar connector (`local-csv` is always available).

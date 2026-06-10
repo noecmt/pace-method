@@ -61,10 +61,10 @@ A command (or the same token in plain text) forces the route regardless of detec
 Athlete reports an execution/state fact (prose)
         │
         ▼
-[pace-master]  classify -> "this is executed-training/state" -> ROUTE to pace-debrief
+[pace-master]  classify -> "this is executed-training/state" -> ROUTE to pace-agent-analyst
         │                                   (master does NOT label the signal)
         ▼
-[pace-debrief / Analyst]  structure the feedback -> emit a structured signal into log/
+[pace-agent-analyst / Analyst]  structure the feedback -> emit a structured signal into log/
         │                 (sole writer of signals & profile.json)
         ▼
 [pace-master]  read the emitted signal -> map via signals.csv (proposal column) -> PROPOSE
@@ -78,7 +78,7 @@ Athlete chooses (e.g. partial Discovery vs rolling)
 - `threshold` — **Analyst-facing**: when an observation is worth emitting (e.g. `3_weeks`).
 - `proposal` — **master-facing**: what to propose once the signal exists.
 
-> Sprint sequencing: `pace-debrief` is built in Sprint 4. Until then, the **master-side** behaviour that Sprint 2 must get right is the *first* step — correctly **routing an execution/state fact to the Analyst** instead of self-diagnosing. The downstream proposal is verified end-to-end at Sprint 4/5.
+> Sprint sequencing: `pace-agent-analyst` is built in Sprint 4. Until then, the **master-side** behaviour that Sprint 2 must get right is the *first* step — correctly **routing an execution/state fact to the Analyst** instead of self-diagnosing. The downstream proposal is verified end-to-end at Sprint 4/5.
 
 ## 6. Context passing
 
@@ -106,7 +106,7 @@ Each case traced through the procedure above; the result must match the scenario
 
 - **C — vision + plan, "I don't think my goal is realistic anymore."** Intent: a **doubt about the goal** (not an executed-training fact). Matrix -> propose partial Discovery *or* rolling. Lane: **propose 1–3** (genuine fork). ✅ Proposes, never imposes. No Analyst detour (this is goal-intent, not an execution fact).
 
-- **D — vision + plan, "I've basically skipped my sessions for the last 3 weeks."** Intent: a fact about **executed training**. Classification -> Analyst's domain. Matrix -> **Debrief**. Lane: route to `pace-debrief`; master does **not** label `sessions_skipped` itself. The Analyst emits the signal; master then maps `signals.csv: sessions_skipped -> partial_discovery_or_rolling` and **proposes**. **Sprint-2 pass criterion: routes to the Analyst without self-diagnosing.** ✅ (downstream proposal verified at Sprint 4/5).
+- **D — vision + plan, "I've basically skipped my sessions for the last 3 weeks."** Intent: a fact about **executed training**. Classification -> Analyst's domain. Matrix -> **Debrief**. Lane: route to `pace-agent-analyst`; master does **not** label `sessions_skipped` itself. The Analyst emits the signal; master then maps `signals.csv: sessions_skipped -> partial_discovery_or_rolling` and **proposes**. **Sprint-2 pass criterion: routes to the Analyst without self-diagnosing.** ✅ (downstream proposal verified at Sprint 4/5).
 
 - **E — any state, "/pace-plan".** Slash token present. Force table -> **Build**, overriding detection. ✅ Forced Build.
 

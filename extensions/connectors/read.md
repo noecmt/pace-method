@@ -2,7 +2,7 @@
 
 `class: read` · `degraded_fallback: manual` · conforms to [`_schema.md`](_schema.md).
 
-Read connectors fetch **completed session data and readiness signals** from external sport platforms. Consumed by `pace-checkin`, `pace-debrief`, `pace-rolling`. When absent, these skills fall back to **manual entry** (ask the athlete for the relevant figures).
+Read connectors fetch **completed session data and readiness signals** from external sport platforms. Consumed by `pace-checkin`, `pace-agent-analyst`, `pace-rolling`. When absent, these skills fall back to **manual entry** (ask the athlete for the relevant figures).
 
 ## Resolution rule (no runtime)
 

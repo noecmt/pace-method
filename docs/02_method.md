@@ -56,11 +56,11 @@ Voice <-> skill mapping (see `05_skill_map.md`):
 | Discovery coach | `pace-agent-discovery` |
 | Planner | `pace-agent-planner` |
 | Daily coach | `pace-agent-coach` |
-| Analyst / debrief | `pace-debrief` |
+| Analyst / debrief | `pace-agent-analyst` |
 
 **Discovery coach** *(voice: curious, attentive)* — Leads the in-depth conversation. Explores, asks the right questions (via `core-skills/pace-elicitation`), spots contradictions. **Generates neither plan nor session.** Can be restarted *partially* (revising a single aspect). Writes via the `pace-vision` workflow.
 
-**Planner** *(voice: structured, strategic)* — Builds the plan from the vision + the profile + the knowledge, following the rolling horizon. **Does not talk to the athlete** — works on the artefacts. Writes via `pace-plan`; maintains the window via `pace-rolling`.
+**Planner** *(voice: structured, strategic)* — Builds the plan from the vision + the profile + the knowledge, following the rolling horizon. **Does not talk to the athlete** — works on the artefacts. Writes via `pace-plan-write`; maintains the window via `pace-rolling`.
 
 **Daily coach** *(voice: motivating, concrete)* — The everyday interface. Takes the temperature, **explains why this session today in this block**, decides whether an adjustment is needed. **NEVER generates a session** — it already exists in the plan. This is the most important prohibition in the whole method (boundary defined in "Modulate vs generate" below).
 
@@ -71,11 +71,11 @@ Voice <-> skill mapping (see `05_skill_map.md`):
 | Workflow | Role | Reads | Writes |
 |---|---|---|---|
 | `pace-vision` | Create/edit/validate the vision | profile, athlete answers | `vision/vision.md` |
-| `pace-plan` | Create/edit/validate the plan | vision, profile, knowledge | `plan/plan.md` |
+| `pace-plan-write` | Create/edit/validate the plan | vision, profile, knowledge | `plan/plan.md` |
 | `pace-rolling` | Move the window forward (weekly) | plan, recent log | `plan/plan.md` (amended) |
 | `pace-checkin` | Explain today's session | plan, session, day's state | short-term log |
 | `pace-adjust` | Modulate the planned session | session, `adjustment-decisions.csv` | modulated session |
-| `pace-debrief` | Collect feedback, measure | log, plan | log, signals, **`profile.json` (learned_behaviors)** |
+| `pace-agent-analyst` | Collect feedback, measure | log, plan | log, signals, **`profile.json` (learned_behaviors)** |
 
 ---
 
@@ -108,7 +108,7 @@ Hard constraint: not modifiable beyond the immediate window without an explicit,
 
 **`athlete/profile.json`** — long-term memory: sport, level, fitness markers (FTP / threshold pace / max HR…), constraints, preferred methods, equipment, `learned_behaviors` (good/bad responses, RPE calibration). **Created once by the Discovery intake** (markers, current level, equipment — seeded only from what the athlete gave); thereafter **updated only by the Analyst**.
 
-**`athlete/zones.json`** — the **5th artefact, derived**: the athlete's intensity zones precompiled into **concrete bounds** (watts / bpm / pace) from the `profile.json` fitness markers + the sport pack's zone percentages. **Never hand-edited.** Written by `pace-plan` (first creation, at Build) and **fully regenerated** by `pace-debrief` when a marker changes — never patched partially, so each change is a visible diff. Its `fitness_markers` must always equal `profile.json.fitness` (`pace-validate` rejects a plan whose zones are stale). A marker that is **absent** ⇒ its zone system is omitted (no invented value). This is what lets the Run coach hold the athlete to real numbers instead of vague zone labels.
+**`athlete/zones.json`** — the **5th artefact, derived**: the athlete's intensity zones precompiled into **concrete bounds** (watts / bpm / pace) from the `profile.json` fitness markers + the sport pack's zone percentages. **Never hand-edited.** Written by `pace-plan-write` (first creation, at Build) and **fully regenerated** by `pace-agent-analyst` when a marker changes — never patched partially, so each change is a visible diff. Its `fitness_markers` must always equal `profile.json.fitness` (`pace-validate` rejects a plan whose zones are stale). A marker that is **absent** ⇒ its zone system is omitted (no invented value). This is what lets the Run coach hold the athlete to real numbers instead of vague zone labels.
 
 **`log/`** — completed sessions, check-ins, debriefs, signals.
 
@@ -130,7 +130,7 @@ Both may speak of "constraints" or "what works." To avoid ambiguity:
 2. Daily coach (pace-checkin): takes the temperature, explains the session
 3. If an adjustment is needed -> pace-adjust: reads adjustment-decisions.csv -> modulates
 4. Log update
-5. (post-session) Analyst (pace-debrief): collects, measures, emits signals
+5. (post-session) Analyst (pace-agent-analyst): collects, measures, emits signals
 6. If a strong signal -> pace-master proposes partial Discovery or rolling
 ```
 

@@ -24,7 +24,7 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 
 - **Read (Strava, optional).** If a Strava read connector is available, you MAY read **summaries** of the last few activities for **qualitative context only** (Phase 1) — e.g. "recent rides have run short". This enriches the briefing; it is **not** a signal source — a same-day adjustment still requires a signal the athlete actually reported, mapped via `adjustment-decisions.csv`. Absent -> the athlete's words and `log/`; never invent a metric (scenario 05). See [`strava.md`](../../../../extensions/connectors/strava.md).
 - **Storage (write).** Write the check-in `log/` entry at its **logical path** via the storage backend (`[connectors].storage`, default `local`). Backend unavailable -> **degrade to `local`**, never drop the entry. See [`storage.md`](../../../../extensions/connectors/storage.md).
-- **Calendar (status).** When the session is confirmed done or skipped, set its calendar **status** -> `completed` / `skipped` (status only — you never create or move events; that is `pace-plan` / `pace-rolling` / `pace-adjust`). Absent -> update the `status` column in `plan/calendar.csv`. See [`calendar.md`](../../../../extensions/connectors/calendar.md).
+- **Calendar (status).** When the session is confirmed done or skipped, set its calendar **status** -> `completed` / `skipped` (status only — you never create or move events; that is `pace-plan-write` / `pace-rolling` / `pace-adjust`). Absent -> update the `status` column in `plan/calendar.csv`. See [`calendar.md`](../../../../extensions/connectors/calendar.md).
 
 ## Procedure
 
@@ -40,4 +40,4 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 - ❌ **Never invent a sensation, signal, or state** the athlete did not provide (scenario 05). A gap is asked about or assumed-explicitly, not filled.
 - ❌ **Never apply an adjustment** with no corresponding `adjustment-decisions.csv` signal in the input.
 - ❌ **No voice, no coaching** — the Daily coach speaks; you produce the rationale and the log entry.
-- ❌ **Never write `athlete/profile.json`** — the Analyst (`pace-debrief`) is its sole writer. You may read it.
+- ❌ **Never write `athlete/profile.json`** — the Analyst (`pace-agent-analyst`) is its sole writer. You may read it.
