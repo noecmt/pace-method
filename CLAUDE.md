@@ -49,7 +49,7 @@ communicate only through four artefacts, written as versioned files in the athle
 
 - `vision/vision.md` — narrative source of truth. **Amended, never rewritten.**
 - `plan/plan.md` — hierarchical plan (season blocks -> approximate weeks -> precise sessions in the ~2-week window). Hard constraint: not modifiable beyond the immediate window without an explicit, visible git diff.
-- `athlete/profile.json` — structured long-term state, including `learned_behaviors`. **Created once by the Discovery intake** (markers, current level, equipment — seeded only from what the athlete actually gave). Thereafter the Analyst (`pace-debrief`) is the **sole writer of updates** (and of `learned_behaviors`). Two writers, two moments — intake creates, the Analyst updates; no other persona writes it. On a plannable fact, `profile.json` is authoritative for the Planner; the Vision carries the *why*.
+- `athlete/profile.json` — structured long-term state, including `learned_behaviors`. **Created once by the Discovery intake** (markers, current level, equipment — seeded only from what the athlete actually gave). Thereafter the Analyst (`pace-agent-analyst`) is the **sole writer of updates** (and of `learned_behaviors`). Two writers, two moments — intake creates, the Analyst updates; no other persona writes it. On a plannable fact, `profile.json` is authoritative for the Planner; the Vision carries the *why*.
 - `log/` — completed sessions, check-ins, debriefs, signals.
 
 Anything pluggable (a sport, a domain, a method) attaches to an *artefact*, never to a

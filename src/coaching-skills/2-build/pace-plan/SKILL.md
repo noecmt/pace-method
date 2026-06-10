@@ -1,5 +1,5 @@
 ---
-name: pace-plan
+name: pace-plan-write
 user-invocable: false
 description: >-
   The Plan workflow — writes and amends plan/plan.md, the hierarchical rolling-horizon training
@@ -10,7 +10,7 @@ description: >-
   against the plan-checklist via pace-validate before the plan is accepted. It has no voice.
 ---
 
-# pace-plan — the Plan workflow
+# pace-plan-write — the Plan workflow
 
 A **workflow**, not a persona: **no voice.** Your single responsibility is the artefact `plan/plan.md`. The Planner decides the strategy; you render it into the template, enforce thedeterministic rules, and gate it through validation. You never invent training structure that the Planner did not specify, and you never talk to the athlete.
 
@@ -29,12 +29,12 @@ A **workflow**, not a persona: **no voice.** Your single responsibility is the a
 Persist and deliver through the connector layer — [`_schema.md`](../../../../extensions/connectors/_schema.md) protocol: probe, use if present, **degrade cleanly** if absent (never block, never lose an artefact):
 
 - **Storage (write).** Write/amend `plan/plan.md` **and the derived `athlete/zones.json`** at their **logical paths**; the backend (`pace-customize` `[connectors].storage`, default `local`) maps each to a file / GitHub commit / Notion page. The **window-discipline**, **amend-not-rewrite**, and **visible change-log** contracts hold identically across backends. Backend unavailable -> **degrade to `local`** and say so; never silently drop the plan or the zones. See [`storage.md`](../../../../extensions/connectors/storage.md).
-- **Calendar (push).** On accept (and on each amend), mirror the **near-window** sessions to the calendar connector — `pace-plan` is the **initial push**. The calendar is a one-way **view** of the plan (it reflects the plan, never shapes it). Connector absent -> write `plan/calendar.csv`. See [`calendar.md`](../../../../extensions/connectors/calendar.md).
+- **Calendar (push).** On accept (and on each amend), mirror the **near-window** sessions to the calendar connector — `pace-plan-write` is the **initial push**. The calendar is a one-way **view** of the plan (it reflects the plan, never shapes it). Connector absent -> write `plan/calendar.csv`. See [`calendar.md`](../../../../extensions/connectors/calendar.md).
 
 ## Procedure
 
 1. **Fill the 3-horizon template.** Far = season blocks (phase + approx dates + intent, no sessions). Mid = approximate weeks (intent + load type + `volume_modifier`, **no precise sessions**). Near = the ~2-week window of precise sessions (date, type, duration, zones, structure). Record `Sport`, `fitness marker`, and the **source vision reference/commit**.
-2. **Derive `athlete/zones.json` first — before any precise session.** A precise session needs concrete bounds (watts/bpm/pace), so materialize the derived zones artefact from `profile.json.fitness` + the sport pack's zone percentages. You are its **first writer** (`generated_by: pace-plan`). For each marker that is **actually present** in `profile.json.fitness`, build the matching zone array:
+2. **Derive `athlete/zones.json` first — before any precise session.** A precise session needs concrete bounds (watts/bpm/pace), so materialize the derived zones artefact from `profile.json.fitness` + the sport pack's zone percentages. You are its **first writer** (`generated_by: pace-plan-write`). For each marker that is **actually present** in `profile.json.fitness`, build the matching zone array:
    - **Power** (cycling, `ftp_watts`): `min_watts = floor(ftp × pct_min)`, `max_watts = floor(ftp × pct_max)` from `intensity_zones.zones` `ftp_pct`. (FTP 250 -> Z4 = 227–262 W.)
    - **HR** (`max_hr` or `lthr_bpm`): use `lthr_bpm` if present (more precise), else `max_hr`; `min_bpm/max_bpm = floor(ref × pct)` from `hr_zones` `lthr_pct`/`max_hr_pct`. Set `hr_reference` to the marker used.
    - **Pace** (running `threshold_pace_sec_km`, swimming `css_sec_100m`): `round(marker × pct)` per the sport pack's pace zones.

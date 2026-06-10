@@ -28,7 +28,7 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 ## Inputs
 
 - `plan/plan.md` — the **far/mid horizons are stable**; the **near horizon** is the window you advance. Read the change log to see where the window currently ends.
-- recent `log/` — completed sessions vs. planned, skipped sessions, `pace-adjust`/`pace-debrief` entries: the **actual recent load and adherence**.
+- recent `log/` — completed sessions vs. planned, skipped sessions, `pace-adjust`/`pace-agent-analyst` entries: the **actual recent load and adherence**.
 - `athlete/profile.json` (test fixture: `athlete/sample.json`) — `current_phase`, hard constraints, `learned_behaviors`, fitness marker. Authoritative for plannable facts.
 - the sport pack `knowledge_base/sports/cycling.json` — `key_sessions` (the only session structures you may schedule).
 - the phase rules [`../pace-plan/assets/periodization-rules.csv`](../pace-plan/assets/periodization-rules.csv) and the template [`../pace-plan/assets/plan-template.md`](../pace-plan/assets/plan-template.md).

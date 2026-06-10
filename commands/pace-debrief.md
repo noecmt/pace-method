@@ -3,7 +3,7 @@ description: Report what you actually did or how your body responded. Forces the
 argument-hint: [what you did / how you feel]
 ---
 
-Load the **pace-master** skill and **force the Debrief route** (equivalent to the `/pace-debrief` token), then hand off to the Analyst (`pace-debrief`).
+Load the **pace-master** skill and **force the Debrief route** (equivalent to the `/pace-debrief` token), then hand off to the Analyst (`pace-agent-analyst`).
 
 Athlete message: $ARGUMENTS
 

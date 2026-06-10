@@ -46,15 +46,15 @@ The dividing line: **you may state facts about the system and about the existenc
 |---|---|---|---|
 | **Onboarding** | Zero-state — no `pace.config.toml` / vision / plan / profile | run the setup wizard yourself (concierge), then -> `pace-agent-discovery` | `pace.config.toml` |
 | **Discovery** | No vision yet, or the athlete questions the goal/their situation | `pace-agent-discovery` (-> `pace-vision`) | `vision/vision.md` |
-| **Build** | A vision exists and the plan is missing or must change | `pace-agent-planner` (-> `pace-plan`) | `plan/plan.md` |
+| **Build** | A vision exists and the plan is missing or must change | `pace-agent-planner` (-> `pace-plan-write`) | `plan/plan.md` |
 | **Run** | A plan exists; it's about today's already-planned session | `pace-agent-coach` (-> `pace-checkin` / `pace-adjust`) | session + log |
-| **Debrief** (part of Run) | The athlete reports on **executed** training / physical state | `pace-debrief` (the Analyst) | log, signals, `profile.json` |
+| **Debrief** (part of Run) | The athlete reports on **executed** training / physical state | `pace-agent-analyst` (the Analyst) | log, signals, `profile.json` |
 
 **Hard precondition:** never route to **Run** if no `plan/plan.md` exists. No plan -> go Discovery (if no vision) or Build (vision exists).
 
 ### Classification rule — who handles a statement
 
-- A statement about **executed training or physical state** ("I skipped 3 weeks", "my legs are wrecked since Tuesday", "I never did the threshold blocks") -> **route to the Analyst(`pace-debrief`)**. The Analyst — and only the Analyst — turns prose into a structured signal in `log/`. **You do not diagnose or label the signal yourself.**
+- A statement about **executed training or physical state** ("I skipped 3 weeks", "my legs are wrecked since Tuesday", "I never did the threshold blocks") -> **route to the Analyst (`pace-agent-analyst`)**. The Analyst — and only the Analyst — turns prose into a structured signal in `log/`. **You do not diagnose or label the signal yourself.**
 - A statement of **goal/plan intent or doubt** ("I don't think my goal is realistic", "I want to target a gran fondo") -> a Discovery/Build concern you **propose or route** directly. No Analyst needed.
 
 ## Slash-command override

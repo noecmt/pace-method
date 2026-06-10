@@ -42,12 +42,12 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 
 | # | Property | Type | Result | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | Week 1: Analyst (`pace-debrief`) sole writer; appends `learned_behavior` with a concrete `rule` | hard | ✅ | `pace-debrief` logs planned-vs-actual and appends `no_back_to_back_hard` (rule: "never two hard days back-to-back; insert Z1/Z2 or rest"). Append-only (already present in fixture from an earlier debrief; from a clean profile it is added). |
+| 1 | Week 1: Analyst (`pace-agent-analyst`) sole writer; appends `learned_behavior` with a concrete `rule` | hard | ✅ | `pace-agent-analyst` logs planned-vs-actual and appends `no_back_to_back_hard` (rule: "never two hard days back-to-back; insert Z1/Z2 or rest"). Append-only (already present in fixture from an earlier debrief; from a clean profile it is added). |
 | 2 | Week 4: Planner honors it — no two hard sessions on consecutive days | hard/det | ✅ | Near horizon hard days = Jun 04, 09, 11 — none adjacent. Planner re-reads `profile.json` whenever it details a window, so the wk-4 window inherits the rule. |
 | 3 | Inserts Z1/Z2 or rest between any two hard sessions | hard | ✅ | Jun 10 `recovery_ride` (Z1) sits between Jun 09 (Z5) and Jun 11 (Z4); rest/Z2 elsewhere. |
 | 4 | `pace-validate` flags a violation if one slips through | hard | ✅ | plan-checklist hard check "respects vision/profile constraints (scenario 02)" -> a back-to-back hard pair returns INVALID with the offending pair cited. |
 | 5 | Learned behavior **not** silently dropped between wk1 and wk4 | anti | ✅ | Persisted in `profile.json.learned_behaviors`; honored downstream. |
-| 6 | No persona other than the Analyst writes `profile.json` | anti | ✅ | Coach/Planner/check-in/adjust all read-only on `profile.json`; only `pace-debrief` writes. |
+| 6 | No persona other than the Analyst writes `profile.json` | anti | ✅ | Coach/Planner/check-in/adjust all read-only on `profile.json`; only `pace-agent-analyst` writes. |
 | 7 | No two consecutive hard days in the wk4 window | anti | ✅ | Confirmed by the scan below. |
 | D | Scan wk4: every consecutive-day pair -> not both hard (Z4/Z5/threshold); any back-to-back => fail | det | ✅ | All consecutive pairs in the detailed window have ≤1 hard day. |
 
@@ -104,7 +104,7 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 | A | No vision/plan + "start training…" -> **Discovery** | hard/det | ✅ | Auto-route to `pace-agent-discovery` (no plan to run). |
 | B | Vision+plan + "only 45 min" -> **Run** (auto, no menu) | hard/det | ✅ | Auto-route to the Daily coach, silent hand-off. |
 | C | Vision+plan + "goal not realistic" -> **propose** partial Discovery *or* rolling | hard/det | ✅ | Goal-doubt (not an execution fact) -> propose 1–3, no Analyst detour. |
-| D | Vision+plan + "skipped 3 weeks" -> route to Analyst (`pace-debrief`), no self-diagnosis; proposal per `signals.csv: sessions_skipped` | hard/det | ✅ | **End-to-end now verified**: master routes prose -> `pace-debrief` emits `sessions_skipped` (threshold `3_weeks`) -> master maps `signals.csv` proposal -> proposes `partial_discovery_or_rolling`. Master never self-labels. |
+| D | Vision+plan + "skipped 3 weeks" -> route to Analyst (`pace-agent-analyst`), no self-diagnosis; proposal per `signals.csv: sessions_skipped` | hard/det | ✅ | **End-to-end now verified**: master routes prose -> `pace-agent-analyst` emits `sessions_skipped` (threshold `3_weeks`) -> master maps `signals.csv` proposal -> proposes `partial_discovery_or_rolling`. Master never self-labels. |
 | E | "/pace-plan" -> **force Build** (slash overrides detection) | hard/det | ✅ | Slash token forces Build regardless of state. |
 | F | Vision, no plan + "what should I do?" -> **Build** | hard/det | ✅ | Plan is the missing artefact; Run impossible without a plan. |
 | 7 | Obvious cases (B, E) auto-route without a menu | hard | ✅ | No menu on B/E. |

@@ -17,7 +17,7 @@
 
 ## Expected properties
 
-- [ ] **Week 1:** the Analyst (`pace-debrief`) is the **sole writer** of `profile.json` and appends a `learned_behavior` capturing "responds badly to two consecutive hard days" with a concrete `rule`.
+- [ ] **Week 1:** the Analyst (`pace-agent-analyst`) is the **sole writer** of `profile.json` and appends a `learned_behavior` capturing "responds badly to two consecutive hard days" with a concrete `rule`.
 - [ ] **Week 4:** the Planner reads `profile.json` and the near-horizon window **never schedules two hard sessions on consecutive days** (Z4/Z5 or threshold back-to-back).
 - [ ] The plan inserts Z1/Z2 or rest between any two hard sessions.
 - [ ] `pace-validate` (plan-checklist "respects vision/profile constraints") flags a violation if one slips through.

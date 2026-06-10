@@ -26,7 +26,7 @@ date,week,session_id,type,name,duration_min,primary_zone,structure,status
 
 ## hard_rules
 
-- Written by `pace-plan`, `pace-rolling`, `pace-adjust` — no other writers.
-- `status` updated by `pace-checkin` / `pace-debrief` (completed / skipped) and `pace-adjust` (adjusted).
+- Written by `pace-plan-write`, `pace-rolling`, `pace-adjust` — no other writers.
+- `status` updated by `pace-checkin` / `pace-agent-analyst` (completed / skipped) and `pace-adjust` (adjusted).
 - Never read as a training signal; never modifies `plan/plan.md`.
 - On plan amendment (`pace-rolling`): rows beyond the current window may be removed or updated; always **preserve completed rows**.
