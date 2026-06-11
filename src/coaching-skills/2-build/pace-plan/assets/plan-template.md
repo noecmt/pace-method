@@ -27,15 +27,22 @@ For the current and next block: per-week intent and load shape (load vs recovery
 | W{{n}} | build | Introduce threshold | load | 1.0 |
 | W{{n+1}} | build | Consolidate | recovery | 0.7 |
 
-## Near horizon — precise sessions (~2 weeks, the only modifiable window)
+## Near horizon — active week (precise sessions)
 
-Concrete sessions for the immediate window. Each must respect the block's `allowed_intensity` / `forbidden` from `periodization-rules.csv`.
+Precise sessions live in `plan/weeks/<week_id>.json`, routed by `plan/index.csv`.
 
-| Date | Session type | Duration (min) | Zones | Structure / intervals | Phase-legal? |
-| --- | --- | --- | --- | --- | --- |
-| {{date}} | endurance_long | 120 | Z2 | continuous | ✅ |
-| {{date}} | threshold_intervals | 75 | Z4 | 2x20min, 5min Z1 recovery | ✅ |
-| {{date}} | recovery_ride | 45 | Z1 | easy, no climbs | ✅ |
+To access today's session: read `plan/index.csv` -> find the row where `status = active` and `horizon = near` -> load `plan/weeks/<week_id>.json` -> find the session by `date`.
+
+`plan/index.csv` covers the full season (all three horizons). Far and mid rows are approximate and have no `file`; near rows carry a `file` path and a concrete status:
+
+```csv
+week_id,horizon,start,end,block,phase,load_type,volume_modifier,status,file
+{{far_week_id}},far,{{start}},{{end}},{{block}},{{phase}},,,scheduled,
+{{mid_week_id}},mid,{{start}},{{end}},{{block}},{{phase}},{{load_type}},{{volume_modifier}},scheduled,
+{{near_week_id}},near,{{start}},{{end}},{{block}},{{phase}},{{load_type}},{{volume_modifier}},active,weeks/{{near_week_id}}.json
+```
+
+Each `plan/weeks/<week_id>.json` carries the precise sessions for that week, including the concrete zone bounds copied from `athlete/zones.json`.
 
 ---
 
