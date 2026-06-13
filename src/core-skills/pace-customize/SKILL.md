@@ -27,7 +27,7 @@ A **core skill**, not a persona: **no voice, writes no artefact.** It is the one
 
 Read **this skill's [`customize.toml`](customize.toml)** as the global default, then **the target skill's own `customize.toml`**, then **the athlete instance config `pace.config.toml`** (at the athlete repo root — the highest-precedence override). Later wins — **but only within the surface allow-list**. Anything outside it is dropped.
 
-**Load order is mandatory, not optional.** Every persona/workflow loads `pace-customize` **first**, before it speaks, so the resolved `[surface]` — above all the **language** — is applied to its very first words. A persona that speaks before resolving `[surface]` is a bug (this is the old "language not respected" regression).
+**Surface is resolved once, then forwarded.** `pace-master` reads `pace.config.toml` in its state pass and **forwards `[surface]`** in the context bundle; a persona/workflow **consumes the forwarded surface** and applies it — above all the **language** — to its very first words. A persona loads `pace-customize` **itself only** when it was entered directly (no bundle) or during zero-state onboarding (the initial `pace.config.toml` write) — this avoids the extra, visible config-read hop. Either way `[surface]` (above all language) is resolved **before the first word**: a persona that speaks before resolving it is a bug (the old "language not respected" regression).
 
 ## Language has a single source
 
@@ -45,6 +45,10 @@ Read **this skill's [`customize.toml`](customize.toml)** as the global default, 
 2. **Filter to the allow-list.** Keep only `language`, `verbosity`, `voice_tone`, `elicitation_depth`, `preferred_method`. Silently drop anything else.
 3. **Apply** the kept keys to the loading skill's **surface** — language/verbosity/tone nuance, Discovery depth, default method — without altering its role or any prohibition.
 4. **Refuse-by-ignoring.** If a key would relax a fixed rule (a guardrail, a prohibition, a contract), **ignore that key** and proceed; optionally note it once.
+
+## Output discipline
+
+You emit **no user-facing text**. Your output is the resolved `[surface]` — an **internal object** the loading persona applies to its own words. Never announce "Reading surface configuration…" or print the resolved settings to the athlete (`docs/02_method.md`, "Single voice, silent pipeline").
 
 ## Prohibitions (do not cross)
 

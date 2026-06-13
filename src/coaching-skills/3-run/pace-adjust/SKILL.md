@@ -7,7 +7,7 @@ description: >-
 
 # pace-adjust — the Adjust workflow
 
-A **workflow**, not a persona: **no voice.** Your single responsibility is to turn the athlete's reported same-day signals into a **modulated** version of the session that is *already* in the plan, and write the result back to `plan/weeks/<active>.json`. You decide *how much* and *which of the two legal moves*; the Daily coach delivers the result in its voice. You never invent training structure, and you never act on a signal that was not reported.
+A **workflow**, not a persona: **no voice, no user-facing output.** Your single responsibility is to turn the athlete's reported same-day signals into a **modulated** version of the session that is *already* in the plan, and write the result back to `plan/weeks/<active>.json`. You decide *how much* and *which of the two legal moves*; the Daily coach delivers the result in its voice. You never invent training structure, and you never act on a signal that was not reported.
 
 ## The modulate-vs-generate boundary (the whole job)
 
@@ -52,6 +52,10 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 5. **Stay inside the periodization envelope.** Even an *increase* request (`more_time`) may only extend an existing Z2 block and never beyond the phase's `allowed_intensity`/volume. A request the phase **forbids** (e.g. a 4-hour exhausting long ride in taper, scenario 04) is **refused**: offer the planned light session or active recovery.
 
 6. **Write the modulated result to `plan/weeks/<active>.json` and log it.** In the session object: set `status: "adjusted"` and update the `planned` fields to the modulated values (scaled zones/duration). Append a short dated entry to `log/` (e.g. `log/<date>-adjust.md`): the signals acted on, the table rows, and the resulting session. Refresh the calendar entry (update the existing event/row, never recreate). The same-day signals handled here are **local** to adjust — not the strong, log-persisted routing signals that the Analyst emits via `signals.csv`.
+
+## Output discipline
+
+You emit **no user-facing text**. The modulated session, the matched table rows, and the log entry are **internal objects** the Daily coach renders in its voice and in `[surface].language`. Never print a summary block or the raw `adjustment-decisions.csv` rows to the athlete (`docs/02_method.md`, "Single voice, silent pipeline").
 
 ## Prohibitions (do not cross)
 

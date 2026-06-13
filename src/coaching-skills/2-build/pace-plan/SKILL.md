@@ -7,7 +7,7 @@ description: >-
 
 # pace-plan-write — the Plan workflow
 
-A **workflow**, not a persona: **no voice.** Your single responsibility is the plan artefacts (`plan/plan.md`, `plan/index.csv`, `plan/weeks/*.json`). The Planner decides the strategy; you render it into the template, emit the structured week files, enforce the deterministic rules, and gate it through validation. You never invent training structure that the Planner did not specify, and you never talk to the athlete.
+A **workflow**, not a persona: **no voice, no user-facing output.** Your single responsibility is the plan artefacts (`plan/plan.md`, `plan/index.csv`, `plan/weeks/*.json`). The Planner decides the strategy; you render it into the template, emit the structured week files, enforce the deterministic rules, and gate it through validation. You never invent training structure that the Planner did not specify, and you never talk to the athlete.
 
 ## Inputs
 
@@ -84,6 +84,21 @@ If the plan artefacts exist, **advance the window** — don't regenerate the sea
 - Update `plan/index.csv`: set the completed week to `status:done`; set the new week to `status:planned` or `status:active`.
 - Edit `plan/plan.md` far/mid narrative only if the strategy explicitly changed — then append a change-log row (date · change · diff-visible · reason).
 - After amending, **refresh the calendar view** for the changed window (preserve completed rows) via the calendar connector.
+
+## Migrating a legacy plan (pre-v0.5.0)
+
+A plan written before v0.5.0 keeps its precise near-window sessions as **inline Markdown tables** in `plan/plan.md`, with **no `plan/index.csv`** and **no `plan/weeks/*.json`**. When you detect that shape (inline near tables present **and** `plan/index.csv` absent), perform a **one-time migration** — in a **visible diff**, never a silent overwrite:
+
+1. **Emit one `plan/weeks/<week_id>.json` per detailed week.** Parse each inline week table into the week schema above: every session becomes `{date, type, planned{…}, status, actual:null}`, with `planned` carrying the **concrete bounds resolved from `athlete/zones.json`** (the table's zone labels -> real watts/bpm/pace). A session the legacy plan recorded as completed keeps `status:"done"`; the rest are `status:"planned"`.
+2. **Emit `plan/index.csv`** — one row per week across all three horizons (schema in step 4 above). Set **exactly one** near row to `status:active`, chosen by **today ∈ [`start`,`end`]**. The other near row is `planned`; far/mid rows keep `status:scheduled` with an empty `file`.
+3. **Reduce `plan/plan.md` to far + mid + a pointer.** Replace the inline near tables with the near-horizon pointer to `index.csv`/`weeks/`; leave the far/mid narrative intact. **Append a change-log row** (date · "migrated legacy near tables to `weeks/*.json` + `index.csv`" · diff-visible · reason).
+4. **Conform + validate.** Each migrated session must stay phase-legal against `periodization-rules.csv`; gate the whole result through `pace-validate`. If a legacy session is already illegal for its phase, **surface it** (return to the Planner) rather than silently "fix" it.
+
+**`week_id` & the start-day offset.** Use the **ISO week label** of the week's `start` date as `week_id` (e.g. `2026-W24`); keep the athlete's **real span** in `start`/`end` (a plan that starts on a Tuesday keeps Tue->Mon spans). The active week is whichever row satisfies **today ∈ [`start`,`end`]**, so the +1-day offset needs no recalibration. This migration runs **once**; thereafter the window advances via `pace-rolling` (accumulate, never overwrite).
+
+## Output discipline
+
+You emit **no user-facing text**. The written artefacts, the VALID/INVALID outcome, and the wrap-up content (plan built/amended, the near-window sessions impacted, the next step) are **internal objects** returned to the **Planner**, who voices the single result message in `[surface].language`. Never print the template, the `index.csv`/week JSON, or the validator report to the athlete (`docs/02_method.md`, "Single voice, silent pipeline").
 
 ## Prohibitions (do not cross)
 

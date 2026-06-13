@@ -152,3 +152,16 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 **6 V0 scenarios (01–06):** unaffected — every v0.4.0 change is **additive** (zones citing, intake creation, onboarding, single language source, command surface) and relaxes **no** V0 guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact). 01 still resolves to rest/active-recovery; 04 still refuses the 4 h ride; Run still never generates a session.
 
 **Result (static): 6/6 V0 hold + 4 new (07–10) + 2 extensions (05-B, 06-G) = PASS.** Lint 0/0. No contract amendment required beyond the documented v0.4.0 refinements (profile.json creation contract; `zones.json` 5th artefact; `hr_zones` required).
+
+---
+
+## v0.5.0 — output discipline + storage migration (pending host-LLM run)
+
+> Added with the **Single voice, silent pipeline** invariant (`docs/02_method.md`) and the legacy-plan migration in `pace-plan-write`. These two gates are **not yet evaluated** — they require a fresh host-LLM pass in a seeded workspace (see `docs/TESTING.md`). Listed here so the gate is visible; mark them on the next run.
+
+| Scenario | Verdict | Basis / what to check |
+| --- | --- | --- |
+| 11 Output discipline | — | One French coach message for "quelle est ma séance du jour ?"; no `pace-master` / `pace-customize` narration; no "CHECK-IN SUMMARY" block; surface forwarded (no extra hop). Det: visible output = 1 message, French, ≥1 `zones.json` bound; any leaked block / English => fail. |
+| 12 Legacy plan migration | — | "/pace-plan" on a legacy `plan.md` -> `index.csv` + `weeks/*.json` created, `plan.md` reduced, one `active` week by date, change-log row, `pace-validate` VALID; Run never greps `plan.md`. Det: as in the scenario. |
+
+**Status: 2 new v0.5.0 gates defined, awaiting evaluation.** The 6 V0 (01–06) + 4 v0.4.0 (07–10) verdicts above are unaffected: the silent-pipeline contract and the migration are **additive** and relax **no** existing guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact) — they only constrain *what reaches the athlete* and *how a legacy plan is stored*.

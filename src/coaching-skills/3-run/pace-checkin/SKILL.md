@@ -7,7 +7,7 @@ description: >-
 
 # pace-checkin — the check-in workflow
 
-A **workflow**, not a persona: **no voice.** Your single responsibility is to ground today's interaction in the **already-planned** session: locate it deterministically, explain *why it is what it is*, and log the check-in. The Daily coach owns the conversation and delivers your rationale in its voice; you read the plan artefacts, produce the explanation and the log entry, and never touch the session's structure.
+A **workflow**, not a persona: **no voice, no user-facing output.** Your single responsibility is to ground today's interaction in the **already-planned** session: locate it deterministically, explain *why it is what it is*, and log the check-in. The Daily coach owns the conversation and delivers your rationale in its voice; you read the plan artefacts, produce the explanation and the log entry, and never touch the session's structure.
 
 ## Inputs
 
@@ -31,7 +31,7 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 
 ## Procedure
 
-1. **Locate today's session (deterministic, no Markdown parsing).** Read `plan/index.csv` -> find the row where `horizon = near` and `status = active` -> load `plan/weeks/<week_id>.json` -> find the session whose `date` equals today. Three edge cases: a **rest day** -> state plainly that rest *is* the plan today; a date **outside the ~2-week near window** -> explain window discipline (no precise session is committed yet that far out) and do **not** invent one; today's session **missing from the week file** -> report the gap to the coach rather than fabricate a session.
+1. **Locate today's session (deterministic, no Markdown parsing).** Read `plan/index.csv` -> find the row where `horizon = near` and `status = active` -> load `plan/weeks/<week_id>.json` -> find the session whose `date` equals today. Edge cases: a **rest day** -> state plainly that rest *is* the plan today; a date **outside the ~2-week near window** -> explain window discipline (no precise session is committed yet that far out) and do **not** invent one; today's session **missing from the week file** -> report the gap to the coach rather than fabricate a session. **Legacy plan (no `index.csv`):** if `plan/index.csv` is absent but a legacy `plan/plan.md` with inline week tables exists, do **not** grep or improvise a session from the Markdown — report that the plan needs its one-time storage migration and hand back to the coach / `pace-master` to route to **Build** (`pace-plan-write` performs the migration to `index.csv` + `weeks/*.json`). This replaces the old "search the markdown" fallback.
 
 2. **Build the "why this session today" rationale.** Tie the session to (a) the **phase intent** of its block (from the week file's `phase` field), (b) its **place in the plan** (where it falls in the week's load shape), (c) the **`learned_behaviors` it honors**, and (d) the **concrete bounds from the session's `planned` field** — name at least one real number ("the Z4 efforts are 227–262 W"), degrading to qualitative cues if the marker was absent at plan-write time. This is an explanation of the *existing* session — never a redesign.
 
@@ -40,6 +40,10 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 4. **Handle degraded input honestly (anti-hallucination).** On a sensation-free check-in, **never fabricate** a fatigue level, sleep quality, or feeling. Either suggest targeted elicitation questions from `methods.csv` or proceed with the **planned session as-is**, stating the assumption explicitly. No adjustment is applied without a signal that maps to `adjustment-decisions.csv` (scenario 05).
 
 5. **Log the check-in and update session status.** Append a short dated entry to `log/` (e.g. `log/<date>-checkin.md`): the planned session, the rationale you gave, and any signal you flagged for adjust. Update the session's `status` in `plan/weeks/<active>.json` to `"done"` if confirmed completed, or leave as `"planned"` for adjust to handle.
+
+## Output discipline
+
+Your rationale + log entry are an **internal handoff to the Daily coach** — **never** rendered to the athlete. Do **not** print a "CHECK-IN SUMMARY", an ASCII table, or a "For Daily Coach:" section: that is exactly the leak this contract forbids. You return a structured object; the coach reads it silently and delivers **one** message in its voice, in `[surface].language` (`docs/02_method.md`, "Single voice, silent pipeline").
 
 ## Prohibitions (do not cross)
 

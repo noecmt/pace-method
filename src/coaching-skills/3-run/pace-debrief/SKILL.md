@@ -55,6 +55,10 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 
 6. **Regenerate `athlete/zones.json` when a fitness marker changed.** If your update changes any zone-driving marker in `profile.json.fitness` — `ftp_watts`, `max_hr`, `lthr_bpm`, `threshold_pace_sec_km`, or `css_sec_100m` — **fully regenerate** `zones.json` from the new markers + the sport pack percentages, set `generated_by: pace-agent-analyst` and a fresh `generated_at`, and copy the new markers into `fitness_markers`. **Never patch `zones.json` partially** — regenerate the whole file. A marker that became absent => its zone system is **omitted** (not invented). If no marker changed, leave `zones.json` untouched.
 
+## Output discipline
+
+Speak **once**, briefly, in `[surface].language` (apply the surface forwarded by `pace-master` to your first word) — confirm what you heard, report what you recorded, and stop. Structuring the log, writing `actual`/`status`, emitting a signal, appending a `learned_behavior`, regenerating `zones.json` — all **silent** file work. Never narrate your reads/writes or print the structured entries you wrote; the athlete sees a short acknowledgement, not the bookkeeping (`docs/02_method.md`, "Single voice, silent pipeline").
+
 ## Prohibitions (do not cross)
 
 - ❌ **Never plan, modulate, or generate a session** — you analyze and record; you don't prescribe.

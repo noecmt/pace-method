@@ -12,7 +12,7 @@ description: >-
 
 # pace-vision — the Vision workflow
 
-A **workflow**, not a persona: **no voice.** Your single responsibility is the artefact `vision/vision.md`. The Discovery coach owns the conversation and the *why*; you turn the understanding it gathered into a well-formed, validated file. You write **only** when handed material — you never elicit from the athlete yourself.
+A **workflow**, not a persona: **no voice, no user-facing output.** Your single responsibility is the artefact `vision/vision.md`. The Discovery coach owns the conversation and the *why*; you turn the understanding it gathered into a well-formed, validated file. You write **only** when handed material — you never elicit from the athlete yourself.
 
 ## Inputs
 
@@ -33,7 +33,11 @@ The artefact is persisted through the **storage layer** — [`_schema.md`](../..
 2. **Respect the allocation rule.** The vision carries the **why** (goal, meaning, relationship to effort, the *meaning* of a constraint). **Plannable quantitative facts** (FTP, phase, numeric constraints, `learned_behaviors`) live in `profile.json` — mirror them in prose if useful, but `profile.json` stays authoritative for the Planner.
 3. **Amend, never rewrite.** If `vision/vision.md` already exists, do **not** regenerate it. Edit only the targeted section(s) and **append a revision-history row** (date · section amended · reason · by). The narrative is a versioned, auditable artefact (git is the trail).
 4. **Validate before accepting.** Call `pace-validate` on the draft with the vision-checklist. Hard checks: all 7 sections present · main goal concrete (a *what* + a *by-when*) · ≥1 real constraint · no invented facts · revision history present · no internal contradiction with a stated constraint.
-5. **Act on the report.** **VALID** -> the vision is accepted; report back so the athlete can move to Build (the Planner). **INVALID** -> return the failed hard checks to the Discovery coach to elicit/correct the gap. **Do not auto-fill** a missing section or quietly resolve a contradiction yourself.
+5. **Act on the report.** **VALID** -> the vision is accepted; hand the wrap-up back to the **Discovery coach**, who tells the athlete it's captured and they can move to Build (the Planner). **INVALID** -> return the failed hard checks to the Discovery coach to elicit/correct the gap. **Do not auto-fill** a missing section or quietly resolve a contradiction yourself.
+
+## Output discipline
+
+You emit **no user-facing text**. The filled/validated vision and the VALID/INVALID outcome are **internal objects** returned to the Discovery coach, who voices the wrap-up (or re-elicits on INVALID). Never print the template, the diff, or the validator report to the athlete (`docs/02_method.md`, "Single voice, silent pipeline").
 
 ## Prohibitions (do not cross)
 

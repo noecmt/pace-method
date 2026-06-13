@@ -20,7 +20,7 @@ A short interaction that touches several personas, e.g.:
 ## Expected properties
 
 - [ ] **Every** persona reached (Discovery coach, Planner, Daily coach, Analyst) responds in **French**.
-- [ ] Each persona **loads `pace-customize` first** and applies `[surface].language` **before its first words** — no English preamble that then "switches" to French.
+- [ ] Each persona applies `[surface].language` **before its first words** — from the surface **forwarded by `pace-master`** (or loaded via `pace-customize` only if it was entered directly / zero-state onboarding) — with no English preamble that then "switches" to French.
 - [ ] The language source is **`pace.config.toml` only**; `profile.json.language` is **ignored** (adversarial sub-case: `en` in the profile does not override `fr`).
 
 ## Anti-properties (must NOT happen)

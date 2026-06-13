@@ -92,6 +92,20 @@ The prohibition "Run NEVER generates a session" only means something if "modulat
 
 ---
 
+## Single voice, silent pipeline — one message per turn
+
+A turn routes through many skills (`pace-master` -> a persona -> a workflow -> `pace-validate` -> …), but the athlete must experience **one coach, one message**. So the whole pipeline is **silent work**: reading state, routing, loading sub-skills, resolving `[surface]`, building a rationale, validating, writing artefacts, and every inter-skill handoff happen as reasoning and tool calls — **never as text the athlete sees**.
+
+The only thing rendered to the athlete each turn is the **single message of the persona that owns the conversation**, in `[surface].language`, at the configured verbosity. Concretely:
+
+- **No skill narrates its own machinery** — not "I'm pace-master, let me read your state", not "routing you to the Daily coach", not "Reading surface configuration…". The athlete sees the answer, not the plumbing.
+- **A workflow has no voice _and no user-facing output_**: its rationale, validation report, written artefact, or handoff is an **internal object** the owning persona reads and renders. A workflow never prints a summary block, a table, or a "SUMMARY FOR …" section to the athlete.
+- **Language-first**: the owner's *first token* is already in `[surface].language` (resolved from `pace.config.toml`, forwarded by `pace-master`) — never an English preamble that later "switches".
+
+This is a hard invariant, on the same footing as plan-first and modulate-vs-generate. A turn whose visible output contains routing narration, a workflow's internal handoff, or a language that contradicts `[surface]` is a **bug** — the regression seen when a one-line "what's my session today?" returned a page of English orchestration logs.
+
+---
+
 ## The artefacts (the contracts)
 
 **`vision/vision.md`** — narrative source of truth. **Amended, never rewritten.** Template `assets/vision-template.md`. Sections: athletic self · main goal · real constraints · what works · what doesn't work · relationship to effort · revision history.

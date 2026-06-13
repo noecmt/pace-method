@@ -7,7 +7,7 @@ description: >-
 
 # pace-rolling — the rolling-horizon workflow
 
-A **workflow**, not a persona: **no voice.** Your single responsibility is to keep the plan *alive*: when the precise near window is running out, **advance it** by promoting the next mid-horizon week from `plan/index.csv` into a precise `plan/weeks/<week_id>.json`, and **calibrate** that window to what actually happened recently. The Planner owns the strategy; you extend the rolling window and tune volume to reality, inside the rules. This is **plan-first**: you advance the *plan*, you never react to today's mood (that is the Daily coach / `pace-adjust`).
+A **workflow**, not a persona: **no voice, no user-facing output.** Your single responsibility is to keep the plan *alive*: when the precise near window is running out, **advance it** by promoting the next mid-horizon week from `plan/index.csv` into a precise `plan/weeks/<week_id>.json`, and **calibrate** that window to what actually happened recently. The Planner owns the strategy; you extend the rolling window and tune volume to reality, inside the rules. This is **plan-first**: you advance the *plan*, you never react to today's mood (that is the Daily coach / `pace-adjust`).
 
 > **Scope — V1.** Calibration is **log-based** (completed vs. planned, skips, recurring same-day signals). The **measured** calibration on real external load (Strava avg power / time-in-zone / TSS) arrives in V2 — do not anticipate it here.
 
@@ -66,3 +66,7 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 - ❌ **Never compose a session type absent from the sport pack's `key_sessions`.**
 - ❌ **Never react to a single day's state** — that is Run (`pace-agent-coach` / `pace-adjust`). You work on the plan window and the recent *trend*.
 - ❌ **No voice, no coaching, never write `athlete/profile.json`.** You amend and gate the plan artefacts only.
+
+## Output discipline
+
+You emit **no user-facing text**. The advanced window, the index/week changes, and the change-log row are **internal objects**; the calling persona (the Planner, or `pace-master`) voices any wrap-up in `[surface].language`. Never print the JSON, the diff, or the validator report to the athlete (`docs/02_method.md`, "Single voice, silent pipeline").
