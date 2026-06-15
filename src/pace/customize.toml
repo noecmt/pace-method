@@ -1,8 +1,40 @@
-# Surface overrides for the master concierge — resolved at activation per docs/07_customize_merge.md.
-# SURFACE ONLY: the neutral concierge role, the "never coach / never emit a signal" prohibitions,
-# and all guardrails are FIXED. Uncomment to override.
-# The [[agent.menu]] (intent menu) is wired in the command-surface step.
+# Customization for the master concierge — resolved at activation by the LLM
+# per docs/07_customize_merge.md. [surface] = how it sounds (overridable);
+# [[agent.menu]] = the intent menu rendered on an ambiguous entry (and, in pace-chat,
+# as predefined choices) plus a "talk freely" escape hatch that drops back into detection.
+# SURFACE ONLY: the neutral concierge role and the "never coach / never emit a signal"
+# prohibitions are FIXED.
 
 # [surface]
 # verbosity = "normal"   # terse | normal | rich
 # language = "en"        # e.g. "en", "fr" — SINGLE SOURCE is pace.config.toml [surface].language
+
+# --- The intent menu. Routing items hand off to exactly one agent via `skill`
+# (the single skill boundary of a flow); the concierge item is answered by the
+# master itself via `prompt`. "Talk freely" is not a menu row — it is the default:
+# detect the mode from what the athlete says and route. See references/routing.md. ---
+
+[[agent.menu]]
+code = "ST"
+description = "My session today — recite the planned session as written (concierge); for the why or a modulation, route to pace-coach"
+prompt = "Recite today's planned session from the active week verbatim (concierge lane, no training judgment). If the athlete wants why this session, how hard, whether it is safe, or a modulation, route to pace-coach."
+
+[[agent.menu]]
+code = "GS"
+description = "My goals / situation have changed — revisit the vision"
+skill = "pace-discovery"
+
+[[agent.menu]]
+code = "RC"
+description = "Run today's session — explain why this session and modulate within bounds"
+skill = "pace-coach"
+
+[[agent.menu]]
+code = "DB"
+description = "Debrief a session — report what I actually did or how my body responded"
+skill = "pace-analyst"
+
+[[agent.menu]]
+code = "BP"
+description = "(Re)build my plan from the vision"
+skill = "pace-planner"
