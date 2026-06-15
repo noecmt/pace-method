@@ -22,14 +22,14 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 ## What you do — and the boundary
 
 - **Advance** the window: promote the next `horizon:mid` row in `index.csv` to `horizon:near` (give it a `file` and `status:planned`), then materialize a precise `plan/weeks/<week_id>.json` from the mid-week's intent (load type + `volume_modifier`). Window discipline is preserved: precise sessions live **only** in `weeks/*.json`.
-- **Calibrate** to reality: read the recent `log/` and nudge the upcoming volume **within** the phase `volume_modifier` — ease the ramp after skips or a fatigue trend, proceed normally on good adherence. Never above the phase envelope, never beyond progressive-overload bounds (~10 %/week).
+- **Calibrate** to reality: read the recent `plan/weeks/*.json` sessions (each one's `status` / `actual` / `debrief` / `adjustment`) and nudge the upcoming volume **within** the phase `volume_modifier` — ease the ramp after skips or a fatigue trend, proceed normally on good adherence. Never above the phase envelope, never beyond progressive-overload bounds (~10 %/week).
 - Anything else — a season rewrite, a new session structure, a volume/intensity outside the phase rules — is **forbidden**.
 
 ## Inputs
 
 - `plan/index.csv` — the full-season router; read it to find the `active` near row and the next `mid` row to promote.
 - `plan/weeks/<active_week_id>.json` — the current precise window; check how many sessions remain.
-- recent `log/` — completed sessions vs. planned, skipped sessions, `pace-adjust`/`pace-agent-analyst` entries: the **actual recent load and adherence**.
+- recent `plan/weeks/*.json` sessions — each session's `status`, `actual`, `debrief`, and `adjustment` carry the **actual recent load and adherence** (they live on the session object now, not in `log/`), plus `log/signals.md` for any strong signal already emitted.
 - `athlete/profile.json` (test fixture: `athlete/sample.json`) — `current_phase`, hard constraints, `learned_behaviors`, fitness marker. Authoritative for plannable facts.
 - `athlete/zones.json` (fixture: `athlete/sample-zones.json`) — the concrete bounds for the sessions you materialize.
 - the sport pack `knowledge_base/sports/cycling.json` — `key_sessions` (the only session structures you may schedule).
@@ -45,9 +45,9 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 
 2. **Read the next mid-horizon intent.** Find the next `horizon:mid` row in `index.csv` after the current active near row: read its `block`, `phase`, `load_type`, and `volume_modifier`. This is the source of truth for the new window's intent.
 
-3. **Read recent reality.** From `log/`: completed vs. planned volume, skipped sessions, recurring same-day signals (fatigue, joint pain). Form a neutral read of adherence and load trend.
+3. **Read recent reality.** From the recent `plan/weeks/*.json` sessions: completed vs. planned volume (`status` / `actual`), skipped sessions, recurring `adjustment` signals; and `log/signals.md` for any emitted strong signal. Form a neutral read of adherence and load trend.
 
-4. **Materialize the new near-window (deterministic envelope).** Draw sessions from `key_sessions`; each must be phase-legal (only `allowed_intensity`, none `forbidden`). Set volume to the phase `volume_modifier`, **adjusted within bounds** for recent reality. Include the concrete bounds from `zones.json` in each session's `planned` field. Never exceed the envelope.
+4. **Materialize the new near-window (deterministic envelope).** Draw sessions from `key_sessions`; each must be phase-legal (only `allowed_intensity`, none `forbidden`). Set volume to the phase `volume_modifier`, **adjusted within bounds** for recent reality. Include the concrete bounds from `zones.json` in each session's `planned` field. Never exceed the envelope. Each new session carries only `planned` + `status:"planned"` + `actual:null`; its Run-mode fields (`rationale` / `adjustment` / `actual` / `debrief`) fill **in-place** later (schema + example: [`../pace-plan/assets/week-example.json`](../pace-plan/assets/week-example.json)).
 
 5. **Honor the profile's memory — hard.** Apply every constraint and `learned_behavior` (`no_back_to_back_hard` ⇒ no two hard days in a row; `left_knee` ⇒ no low-cadence/high-torque; `long_ride_day`, `weekly_hours`).
 

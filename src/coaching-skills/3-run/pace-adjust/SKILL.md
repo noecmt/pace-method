@@ -51,11 +51,11 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 
 5. **Stay inside the periodization envelope.** Even an *increase* request (`more_time`) may only extend an existing Z2 block and never beyond the phase's `allowed_intensity`/volume. A request the phase **forbids** (e.g. a 4-hour exhausting long ride in taper, scenario 04) is **refused**: offer the planned light session or active recovery.
 
-6. **Write the modulated result to `plan/weeks/<active>.json` and log it.** In the session object: set `status: "adjusted"` and update the `planned` fields to the modulated values (scaled zones/duration). Append a short dated entry to `log/` (e.g. `log/<date>-adjust.md`): the signals acted on, the table rows, and the resulting session. Refresh the calendar entry (update the existing event/row, never recreate). The same-day signals handled here are **local** to adjust — not the strong, log-persisted routing signals that the Analyst emits via `signals.csv`.
+6. **Write the modulated result onto the session object in `plan/weeks/<active>.json`.** In today's session: set `status: "adjusted"`, update the `planned` fields to the modulated values (scaled zones/duration), and add an `adjustment` object recording **what** you did — `{ "signals": [<the same-day signals acted on>], "rows": [<the adjustment-decisions.csv rows applied, e.g. "heatwave -> reschedule_or_reduce">] }`. The session is the single home for its lifecycle, so there is **no separate log file**. Do **not** re-tabulate the resulting session — it *is* the updated `planned`. Write prose in `[surface].language`; keep the `signal:` ids and `status` enums literal. Refresh the calendar entry (update the existing event/row, never recreate). The same-day signals handled here are **local** to adjust — not the strong, cross-session routing signals the Analyst emits to `log/signals.md`. Schema + example: [`../../2-build/pace-plan/assets/week-example.json`](../../2-build/pace-plan/assets/week-example.json).
 
 ## Output discipline
 
-You emit **no user-facing text**. The modulated session, the matched table rows, and the log entry are **internal objects** the Daily coach renders in its voice and in `[surface].language`. Never print a summary block or the raw `adjustment-decisions.csv` rows to the athlete (`docs/02_method.md`, "Single voice, silent pipeline").
+You emit **no user-facing text**. The modulated session, the matched table rows, and the `adjustment` record on the session are **internal objects** the Daily coach renders in its voice and in `[surface].language`. Never print a summary block or the raw `adjustment-decisions.csv` rows to the athlete (`docs/02_method.md`, "Single voice, silent pipeline").
 
 ## Prohibitions (do not cross)
 
@@ -63,4 +63,4 @@ You emit **no user-facing text**. The modulated session, the matched table rows,
 - ❌ **Never push intensity or duration up against a high-severity signal.**
 - ❌ **Never act on a signal the athlete did not report** (no hallucinated fatigue/sleep — scenario 05).
 - ❌ **Never leave the phase's periodization envelope**, and never produce a session the phase forbids (scenario 04).
-- ❌ **No voice, no coaching, never write `athlete/profile.json`.** You modulate, write back to `weeks/<active>.json`, and log; the coach speaks.
+- ❌ **No voice, no coaching, never write `athlete/profile.json`.** You modulate and write back to `weeks/<active>.json` (`status`, `planned`, `adjustment`); the coach speaks.

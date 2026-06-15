@@ -52,14 +52,14 @@ The dividing line: **you may state facts about the system and about the existenc
 | **Onboarding** | Zero-state — no `pace.config.toml` / vision / plan / profile | run the setup wizard yourself (concierge), then -> `pace-agent-discovery` | `pace.config.toml` |
 | **Discovery** | No vision yet, or the athlete questions the goal/their situation | `pace-agent-discovery` (-> `pace-vision`) | `vision/vision.md` |
 | **Build** | A vision exists and the plan is missing or must change | `pace-agent-planner` (-> `pace-plan-write`) | `plan/plan.md` |
-| **Run** | A plan exists; it's about today's already-planned session | `pace-agent-coach` (-> `pace-checkin` / `pace-adjust`) | session + log |
-| **Debrief** (part of Run) | The athlete reports on **executed** training / physical state | `pace-agent-analyst` (the Analyst) | log, signals, `profile.json` |
+| **Run** | A plan exists; it's about today's already-planned session | `pace-agent-coach` (-> `pace-checkin` / `pace-adjust`) | session lifecycle on `weeks/*.json` |
+| **Debrief** (part of Run) | The athlete reports on **executed** training / physical state | `pace-agent-analyst` (the Analyst) | session `debrief`, `log/signals.md`, `profile.json` |
 
 **Hard precondition:** never route to **Run** if no `plan/plan.md` exists. No plan -> go Discovery (if no vision) or Build (vision exists).
 
 ### Classification rule — who handles a statement
 
-- A statement about **executed training or physical state** ("I skipped 3 weeks", "my legs are wrecked since Tuesday", "I never did the threshold blocks") -> **route to the Analyst (`pace-agent-analyst`)**. The Analyst — and only the Analyst — turns prose into a structured signal in `log/`. **You do not diagnose or label the signal yourself.**
+- A statement about **executed training or physical state** ("I skipped 3 weeks", "my legs are wrecked since Tuesday", "I never did the threshold blocks") -> **route to the Analyst (`pace-agent-analyst`)**. The Analyst — and only the Analyst — turns prose into a structured signal in `log/signals.md`. **You do not diagnose or label the signal yourself.**
 - A statement of **goal/plan intent or doubt** ("I don't think my goal is realistic", "I want to target a gran fondo") -> a Discovery/Build concern you **propose or route** directly. No Analyst needed.
 
 ## Slash-command override
@@ -78,15 +78,15 @@ A command token (or the same token typed in plain text) **forces** the route, re
 
 ## Strong signals -> proposals (`signals.csv`)
 
-`signals.csv` is your routing table for **signals the Analyst has already emitted** into `log/`. You **map** an emitted signal to a proposal via its `proposal` column, then **propose** (never impose). The `threshold` column is the Analyst's business (when a signal is worth emitting), not yours.
+`signals.csv` is your routing table for **signals the Analyst has already emitted** into `log/signals.md` (the cross-session ledger — the only file under `log/`). You **read that ledger's open bullets** and **map** each emitted signal to a proposal via its `proposal` column, then **propose** (never impose). The `threshold` column is the Analyst's business (when a signal is worth emitting), not yours.
 
-Flow when an athlete *reports* something signal-shaped to you (e.g. case D): you **route to the Analyst** so it can emit the signal; once a signal exists in the log, you read it and propose the matching option. You never short-circuit this by inventing the signal id yourself.
+Flow when an athlete *reports* something signal-shaped to you (e.g. case D): you **route to the Analyst** so it can emit the signal; once a bullet exists in `log/signals.md`, you read it and propose the matching option. You never short-circuit this by inventing the signal id yourself.
 
 ## Context passing
 
 When you route, hand the loaded skill:
 - the **forwarded context bundle** `{config, profile, zones, active_week}` — pre-loaded by you in step 1, not to be re-read from disk by the skill. This eliminates the `pace-customize` config-read hop and the per-skill re-reads of `profile.json` / `zones.json` / `index.csv`.
-- any additional **relevant artefacts** the skill needs but that are not in the bundle (e.g. `vision/vision.md` for Build; recent `log/` for Run/Debrief; the sport pack for Build/Rolling).
+- any additional **relevant artefacts** the skill needs but that are not in the bundle (e.g. `vision/vision.md` for Build; recent `plan/weeks/*.json` sessions + `log/signals.md` for Run/Debrief; the sport pack for Build/Rolling).
 - the **athlete's intent** in one line (what they asked, any constraint they stated).
 - any **slash-command force** or **proposal choice** that determined the route.
 

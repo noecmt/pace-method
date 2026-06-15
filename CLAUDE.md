@@ -50,7 +50,7 @@ communicate only through four artefacts, written as versioned files in the athle
 - `vision/vision.md` — narrative source of truth. **Amended, never rewritten.**
 - `plan/plan.md` — hierarchical plan (season blocks -> approximate weeks -> precise sessions in the ~2-week window). Hard constraint: not modifiable beyond the immediate window without an explicit, visible git diff.
 - `athlete/profile.json` — structured long-term state, including `learned_behaviors`. **Created once by the Discovery intake** (markers, current level, equipment — seeded only from what the athlete actually gave). Thereafter the Analyst (`pace-agent-analyst`) is the **sole writer of updates** (and of `learned_behaviors`). Two writers, two moments — intake creates, the Analyst updates; no other persona writes it. On a plannable fact, `profile.json` is authoritative for the Planner; the Vision carries the *why*.
-- `log/` — completed sessions, check-ins, debriefs, signals.
+- `log/` — reduced to **`log/signals.md`, the cross-session signals ledger**: append-only bullets the Analyst emits when a `signals.csv` threshold fires, and the only thing `pace-master` reads to propose re-Discovery/rolling. Per-session debriefs are **not** here — they live on the session object in `plan/weeks/<week>.json` (which is the single home for a session's whole lifecycle: `planned`, `rationale`, `actual`, `debrief`, `adjustment` — filled in place; past weeks are immutable history).
 
 Anything pluggable (a sport, a domain, a method) attaches to an *artefact*, never to a
 persona's internals.

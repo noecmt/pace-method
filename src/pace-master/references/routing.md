@@ -64,7 +64,7 @@ Athlete reports an execution/state fact (prose)
 [pace-master]  classify -> "this is executed-training/state" -> ROUTE to pace-agent-analyst
         │                                   (master does NOT label the signal)
         ▼
-[pace-agent-analyst / Analyst]  structure the feedback -> emit a structured signal into log/
+[pace-agent-analyst / Analyst]  structure the feedback -> write actual+debrief on the session, emit a signal into log/signals.md
         │                 (sole writer of signals & profile.json)
         ▼
 [pace-master]  read the emitted signal -> map via signals.csv (proposal column) -> PROPOSE
@@ -88,8 +88,8 @@ When routing, hand the loaded skill a compact context bundle:
 | --- | --- | --- |
 | Discovery | `vision/vision.md` (if any), `athlete/profile.json` | intent; whether it's a full or partial re-Discovery |
 | Build | `vision/vision.md`, `athlete/profile.json`, sport pack | intent; what changed |
-| Run | `plan/plan.md` + today's session, recent `log/`, `athlete/profile.json` | intent; any stated constraint (time, feeling) |
-| Debrief | `plan/plan.md` (planned vs actual), recent `log/`, `athlete/profile.json` | the raw feedback verbatim |
+| Run | `plan/plan.md` + today's session, recent `plan/weeks/*.json` + `log/signals.md`, `athlete/profile.json` | intent; any stated constraint (time, feeling) |
+| Debrief | today's session (planned vs actual), recent `plan/weeks/*.json` + `log/signals.md`, `athlete/profile.json` | the raw feedback verbatim |
 
 Always include: the athlete's intent in one line, and any slash-force or proposal choice that selected the route.
 

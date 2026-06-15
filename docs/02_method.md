@@ -28,7 +28,7 @@ Dual routing: **auto by default + slash commands** (`/pace-discovery`, `/pace-pl
 |---|---|---|---|
 | **Discovery** | First launch, request, or strong signal | Understand before planning | `vision/vision.md` |
 | **Build** | After a validated Discovery, or replanning | Build / refine the plan | `plan/plan.md` |
-| **Run** | The everyday (a plan exists) | Execute, explain, adjust | Session + log |
+| **Run** | The everyday (a plan exists) | Execute, explain, adjust | Session lifecycle on `weeks/*.json` (+ `log/signals.md`) |
 
 ### Triggering an unsolicited Discovery
 
@@ -64,7 +64,7 @@ Voice <-> skill mapping (see `05_skill_map.md`):
 
 **Daily coach** *(voice: motivating, concrete)* — The everyday interface. Takes the temperature, **explains why this session today in this block**, decides whether an adjustment is needed. **NEVER generates a session** — it already exists in the plan. This is the most important prohibition in the whole method (boundary defined in "Modulate vs generate" below).
 
-**Analyst / debrief** *(voice: factual, measured)* — Takes the post-session feedback, structures the log, compares planned vs actual, computes drift, emits signals (on track / drift / strong signal). It is **the sole writer of *updates* to `athlete/profile.json`** (the file is first created by the Discovery intake): on a clear signal, it persists a `learned_behavior` there. In V0: minimal declarative (appends a `learned_behavior` from manually entered feedback). In V2: wired to Strava data, **without changing its role**.
+**Analyst / debrief** *(voice: factual, measured)* — Takes the post-session feedback, writes the `debrief` on the session object, compares planned vs actual, computes drift, emits strong signals to `log/signals.md` (on track / drift / strong signal). It is **the sole writer of *updates* to `athlete/profile.json`** (the file is first created by the Discovery intake): on a clear signal, it persists a `learned_behavior` there. In V0: minimal declarative (appends a `learned_behavior` from manually entered feedback). In V2: wired to Strava data, **without changing its role**.
 
 ### Main workflows
 
@@ -124,7 +124,9 @@ Hard constraint: not modifiable beyond the immediate window without an explicit,
 
 **`athlete/zones.json`** — the **5th artefact, derived**: the athlete's intensity zones precompiled into **concrete bounds** (watts / bpm / pace) from the `profile.json` fitness markers + the sport pack's zone percentages. **Never hand-edited.** Written by `pace-plan-write` (first creation, at Build) and **fully regenerated** by `pace-agent-analyst` when a marker changes — never patched partially, so each change is a visible diff. Its `fitness_markers` must always equal `profile.json.fitness` (`pace-validate` rejects a plan whose zones are stale). A marker that is **absent** ⇒ its zone system is omitted (no invented value). This is what lets the Run coach hold the athlete to real numbers instead of vague zone labels.
 
-**`log/`** — completed sessions, check-ins, debriefs, signals.
+**The session is the single home for its whole lifecycle.** The executed-training record is **not** a separate `log/` of Markdown debriefs — it lives **on the session object** in `plan/weeks/<week>.json`, which accumulates as immutable history (`pace-rolling` never overwrites a past week). One object carries everything about a session: its `planned` description, its `rationale` (the brief — `pace-checkin`), its `actual` (the Analyst), its `debrief` (`{read, verbatim, notes}` — the Analyst), and its `adjustment` (`pace-adjust`, only if modulated). These Run-mode fields are **absent until they apply** (lean & conditional — no empty placeholders), filled **in place**; the numbers stay in `planned`/`actual` (never re-tabulated). The canonical schema + a worked example covering every state lives in `src/coaching-skills/2-build/pace-plan/assets/week-example.json`.
+
+**`log/`** — reduced to a single role: **`log/signals.md`, the cross-session signals ledger.** It is append-only, written **only by the Analyst** and **only when** a `signals.csv` threshold fires (one dated bullet: `- signal: <id> · evidence · date · open|addressed`). The four signals are inherently cross-session (a 3-week skip, 4-week stagnation, a `life_change`, a `goal_reached_or_cancelled`) — they belong to no single session, so they live in the ledger, not on a session object. This ledger is what `pace-master` reads to map an emitted signal to a *proposal*. Prose in `[surface].language`; contract tokens (`signal:` ids, `status` words) literal.
 
 ### Vision <-> profile.json: allocation and precedence
 
@@ -140,12 +142,11 @@ Both may speak of "constraints" or "what works." To avoid ambiguity:
 ## Typical Run-mode sequence (day D)
 
 ```
-1. pace-master: loads profile + plan + today's session + recent log
-2. Daily coach (pace-checkin): takes the temperature, explains the session
-3. If an adjustment is needed -> pace-adjust: reads adjustment-decisions.csv -> modulates
-4. Log update
-5. (post-session) Analyst (pace-agent-analyst): collects, measures, emits signals
-6. If a strong signal -> pace-master proposes partial Discovery or rolling
+1. pace-master: loads profile + plan + today's session (+ recent weeks/*.json, log/signals.md)
+2. Daily coach (pace-checkin): takes the temperature, explains the session, writes the session's `rationale`
+3. If an adjustment is needed -> pace-adjust: reads adjustment-decisions.csv -> modulates, writes the session's `adjustment`
+4. (post-session) Analyst (pace-agent-analyst): writes the session's `actual` + `debrief`; on a threshold, emits to log/signals.md
+5. If a strong signal -> pace-master reads log/signals.md and proposes partial Discovery or rolling
 ```
 
 ---

@@ -2,12 +2,12 @@
 name: pace-checkin
 user-invocable: false
 description: >-
-  The check-in workflow — reads plan/index.csv to find the active week, loads today's session from plan/weeks/<active>.json, and explains why THIS session today. Invoked BY the Daily coach (pace-agent-coach), not a user-facing entry point. It finds the session for today by date in the active week file (no Markdown parsing), builds the rationale (phase intent + place in the plan + the learned_behaviors it honors), records a short check-in entry to log/, and flags any same-day signal the athlete reported so the coach can hand off to pace-adjust. It NEVER generates, modulates, or invents a session, never fabricates a sensation the athlete did not give, and has no voice of its own.
+  The check-in workflow — reads plan/index.csv to find the active week, loads today's session from plan/weeks/<active>.json, and explains why THIS session today. Invoked BY the Daily coach (pace-agent-coach), not a user-facing entry point. It finds the session for today by date in the active week file (no Markdown parsing), builds the rationale (phase intent + place in the plan + the learned_behaviors it honors), writes it as the session's `rationale` field in plan/weeks/<active>.json, and flags any same-day signal the athlete reported so the coach can hand off to pace-adjust. It NEVER generates, modulates, or invents a session, never fabricates a sensation the athlete did not give, and has no voice of its own.
 ---
 
 # pace-checkin — the check-in workflow
 
-A **workflow**, not a persona: **no voice, no user-facing output.** Your single responsibility is to ground today's interaction in the **already-planned** session: locate it deterministically, explain *why it is what it is*, and log the check-in. The Daily coach owns the conversation and delivers your rationale in its voice; you read the plan artefacts, produce the explanation and the log entry, and never touch the session's structure.
+A **workflow**, not a persona: **no voice, no user-facing output.** Your single responsibility is to ground today's interaction in the **already-planned** session: locate it deterministically, explain *why it is what it is*, and record that rationale on the session. The Daily coach owns the conversation and delivers your rationale in its voice; you read the plan artefacts, produce the explanation and write it as the session's `rationale` field, and never touch the session's structure.
 
 ## Inputs
 
@@ -15,7 +15,7 @@ A **workflow**, not a persona: **no voice, no user-facing output.** Your single 
 - `plan/weeks/<active_week_id>.json` — the active week's precise sessions; you find today's session by `date` here.
 - `athlete/profile.json` (test fixture: `athlete/sample.json`) — hard constraints, `learned_behaviors`, `rpe_calibration`.
 - `athlete/zones.json` (fixture: `athlete/sample-zones.json`) — the concrete bounds; the active week's `planned` field already carries these (copied at plan-write time), but you may cross-check here.
-- recent `log/` — the last few entries, for continuity (what happened yesterday, any open thread).
+- recent `plan/weeks/*.json` sessions — the last few sessions' `status` / `actual` / `debrief`, for continuity (what happened yesterday, any open thread); plus `log/signals.md` for any emitted strong signal.
 - [`pace-elicitation`](../../../core-skills/pace-elicitation/) + its `methods.csv` — for the targeted questions you suggest on a sensation-free check-in.
 - The **training principles** (load on demand, for the *why this session today* rationale): `knowledge_base/principles/periodization.md`, `intensity_zones.md`, `polarized_training.md`.
 
@@ -25,7 +25,7 @@ A **workflow**, not a persona: **no voice, no user-facing output.** Your single 
 
 Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if present, **degrade cleanly** if absent — never block, never invent or lose data.
 
-- **Read (Strava, optional).** If a Strava read connector is available, you MAY read **summaries** of the last few activities for **qualitative context only** (Phase 1). This enriches the briefing; it is **not** a signal source. Absent -> the athlete's words and `log/`; never invent a metric (scenario 05). See [`strava.md`](../../../../extensions/connectors/strava.md).
+- **Read (Strava, optional).** If a Strava read connector is available, you MAY read **summaries** of the last few activities for **qualitative context only** (Phase 1). This enriches the briefing; it is **not** a signal source. Absent -> the athlete's words and recent `plan/weeks/*.json` sessions; never invent a metric (scenario 05). See [`strava.md`](../../../../extensions/connectors/strava.md).
 - **Storage (write).** Write the check-in `log/` entry and update `plan/weeks/<active>.json` session status at their **logical paths** via the storage backend. Backend unavailable -> **degrade to `local`**, never drop the entry. See [`storage.md`](../../../../extensions/connectors/storage.md).
 - **Calendar (status).** When the session is confirmed done or skipped, set its calendar **status** -> `completed` / `skipped` (status only — you never create or move events). Absent -> update the `status` column in `plan/calendar.csv`. See [`calendar.md`](../../../../extensions/connectors/calendar.md).
 
@@ -39,16 +39,27 @@ Per [`_schema.md`](../../../../extensions/connectors/_schema.md): probe, use if 
 
 4. **Handle degraded input honestly (anti-hallucination).** On a sensation-free check-in, **never fabricate** a fatigue level, sleep quality, or feeling. Either suggest targeted elicitation questions from `methods.csv` or proceed with the **planned session as-is**, stating the assumption explicitly. No adjustment is applied without a signal that maps to `adjustment-decisions.csv` (scenario 05).
 
-5. **Log the check-in and update session status.** Append a short dated entry to `log/` (e.g. `log/<date>-checkin.md`): the planned session, the rationale you gave, and any signal you flagged for adjust. Update the session's `status` in `plan/weeks/<active>.json` to `"done"` if confirmed completed, or leave as `"planned"` for adjust to handle.
+5. **Write the brief onto the session and update status.** Add a `rationale` field — the *why-this-session* brief, one or two sentences — to **today's session object** in `plan/weeks/<active>.json`. The session is the single home for its whole lifecycle, so there is **no separate log file**: you write the brief in place. Update that session's `status` to `"done"` if confirmed completed, else leave `"planned"` for adjust. A same-day signal you spotted is **not** written here — you flag it (step 3) for the coach to hand to `pace-adjust`. **Do not** re-tabulate zone/data tables — the numbers are already in `planned`. Write `rationale` in `[surface].language`; keep tokens (`status` enums, `zones` labels) literal. Schema + example: [`../../2-build/pace-plan/assets/week-example.json`](../../2-build/pace-plan/assets/week-example.json).
+
+   The session object after your write (you add `rationale`; the rest is the plan-time shape):
+
+   ```json
+   {
+     "date": "2026-06-13", "type": "recovery_ride",
+     "planned": { "duration_min": 45, "zones": ["Z1", "Z2"], "power": "0–240 W", "structure": "activation, 2–3 acc. 20s" },
+     "rationale": "J-1 avant course 135 km — ouvrir les jambes, garder la fraîcheur, zéro fatigue.",
+     "status": "planned", "actual": null
+   }
+   ```
 
 ## Output discipline
 
-Your rationale + log entry are an **internal handoff to the Daily coach** — **never** rendered to the athlete. Do **not** print a "CHECK-IN SUMMARY", an ASCII table, or a "For Daily Coach:" section: that is exactly the leak this contract forbids. You return a structured object; the coach reads it silently and delivers **one** message in its voice, in `[surface].language` (`docs/02_method.md`, "Single voice, silent pipeline").
+Your rationale (the session's `rationale` field) is an **internal handoff to the Daily coach** — **never** rendered to the athlete. Do **not** print a "CHECK-IN SUMMARY", an ASCII table, or a "For Daily Coach:" section: that is exactly the leak this contract forbids. You return a structured object; the coach reads it silently and delivers **one** message in its voice, in `[surface].language` (`docs/02_method.md`, "Single voice, silent pipeline").
 
 ## Prohibitions (do not cross)
 
 - ❌ **Never generate, compose, or modulate a session** — you read and explain the planned one; modulation is `pace-adjust`'s job.
 - ❌ **Never invent a sensation, signal, or state** the athlete did not provide (scenario 05).
 - ❌ **Never apply an adjustment** with no corresponding `adjustment-decisions.csv` signal in the input.
-- ❌ **No voice, no coaching** — the Daily coach speaks; you produce the rationale and the log entry.
+- ❌ **No voice, no coaching** — the Daily coach speaks; you produce the rationale and write it onto the session.
 - ❌ **Never write `athlete/profile.json`** — the Analyst (`pace-agent-analyst`) is its sole writer. You may read it.

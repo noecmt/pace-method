@@ -1,0 +1,108 @@
+{
+  "week_id": "2026-W24",
+  "block": "Construction",
+  "phase": "build",
+  "load_type": "charge",
+  "volume_modifier": 1.0,
+  "sessions": [
+    {
+      "date": "2026-06-09",
+      "type": "endurance_long",
+      "planned": {
+        "duration_min": 120,
+        "zones": ["Z2"],
+        "power": "176–240 W",
+        "structure": "endurance continue, terrain roulant"
+      },
+      "rationale": "Reprise après plusieurs jours d'arrêt — réancrer le volume aérobie sans charge.",
+      "status": "done",
+      "actual": {
+        "duration_min_actual": 130,
+        "rpe": 4,
+        "notes": "61 km, 171 W moy (53% FTP), FC 143 — sortie simple"
+      },
+      "debrief": {
+        "read": "Séance de re-démarrage réussie, bien calibrée en Z2. FC un peu haute, normale après l'inactivité.",
+        "verbatim": ["Faire moins que Z2 n'est pas utile, je n'ai pas un niveau si mauvais"],
+        "notes": ["Préfère compenser en allongeant la sortie du lendemain"]
+      }
+    },
+    {
+      "date": "2026-06-10",
+      "type": "tempo",
+      "planned": {
+        "duration_min": 120,
+        "zones": ["Z3"],
+        "power": "243–278 W",
+        "structure": "2×20min Z3, 5min Z1 récup"
+      },
+      "rationale": "Ancre mid-week structurée — tempo Z3 pour la puissance soutenable du gran fondo.",
+      "status": "done",
+      "actual": {
+        "duration_min_actual": 120,
+        "rpe": 6,
+        "notes": "2×20 @ 249/254 W, récup allongée à 10min (circuit urbain)"
+      },
+      "debrief": {
+        "read": "Puissance dans la cible Z3. FC haute (174) cohérente avec J+1 de reprise, pas de la fatigue. Récup allongée = logistique."
+      }
+    },
+    {
+      "date": "2026-06-11",
+      "type": "threshold_intervals",
+      "planned": {
+        "duration_min": 75,
+        "zones": ["Z4"],
+        "power": "288–330 W",
+        "structure": "3×10min Z4, 5min Z1 récup"
+      },
+      "rationale": "Stimulus seuil avant la décharge de fin de semaine.",
+      "status": "skipped",
+      "actual": {
+        "duration_min_actual": null,
+        "rpe": null,
+        "notes": "Indisponible (jeudi/vendredi sans vélo)"
+      },
+      "debrief": {
+        "read": "Séance sautée pour contrainte de vie connue d'avance — pas un signe de charge. Un seul skip, sous le seuil signals.csv.",
+        "notes": ["Jeudi/vendredi indisponibles — récurrent, à surveiller"]
+      }
+    },
+    {
+      "date": "2026-06-13",
+      "type": "recovery_ride",
+      "planned": {
+        "duration_min": 45,
+        "zones": ["Z1", "Z2"],
+        "power": "0–240 W",
+        "structure": "activation, 2–3 accélérations 20s allure course"
+      },
+      "rationale": "Ouvrir les jambes et garder la fraîcheur en fin de semaine de charge.",
+      "status": "adjusted",
+      "adjustment": {
+        "signals": ["heatwave"],
+        "rows": ["heatwave -> reschedule_or_reduce"]
+      },
+      "actual": {
+        "duration_min_actual": 35,
+        "rpe": 2,
+        "notes": "Sortie avancée tôt le matin pour éviter la chaleur"
+      },
+      "debrief": {
+        "read": "Activation raccourcie pour la canicule, intent préservé (fraîcheur). Aucune charge ajoutée."
+      }
+    },
+    {
+      "date": "2026-06-14",
+      "type": "endurance_long",
+      "planned": {
+        "duration_min": 180,
+        "zones": ["Z2"],
+        "power": "176–240 W",
+        "structure": "sortie longue Z2, gestion de l'allure sur les bosses"
+      },
+      "status": "planned",
+      "actual": null
+    }
+  ]
+}

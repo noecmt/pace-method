@@ -48,7 +48,7 @@ Persist and deliver through the connector layer — [`_schema.md`](../../../../e
    - Mid rows: `horizon:mid`, approximate dates, intent-level fields, empty `file`, `status:scheduled`.
    - Near rows: `horizon:near`, precise dates, `file: weeks/<week_id>.json`, `status: active` (current window) or `planned` (next window). **Exactly one near row may be `active` at any time.**
 
-5. **Write `plan/weeks/<week_id>.json` for each near-horizon week.** Schema:
+5. **Write `plan/weeks/<week_id>.json` for each near-horizon week.** The session object is the **single home for the whole session lifecycle**: you write only the *plan* fields (`planned`, `status:"planned"`, `actual:null`); the **Run-mode fields are filled later in-place, in this same file** — never a separate `log/` file. Schema (plan-time shape):
    ```json
    {
      "week_id": "2026-W24",
@@ -67,7 +67,9 @@ Persist and deliver through the connector layer — [`_schema.md`](../../../../e
      ]
    }
    ```
-   The `planned.power` (or `bpm`/`pace`) field carries the **concrete bounds copied from `zones.json`** — auditable and robust to future FTP changes. `status ∈ planned | done | adjusted | skipped`. `actual` = null until `pace-debrief` fills it.
+   The `planned.power` (or `bpm`/`pace`) field carries the **concrete bounds copied from `zones.json`** — auditable and robust to future FTP changes. `status ∈ planned | done | adjusted | skipped`. `actual` = null until the Analyst fills it.
+
+   **Run-mode fields (you do NOT write them — documented here so the schema is one contract):** the Daily-coach pipeline adds, *on the same session object*, `rationale` (the brief — `pace-checkin`), `adjustment` (`pace-adjust`, only if modulated), and `actual` + `debrief` (the Analyst, after execution). They are **absent until they apply** — never emit empty placeholders at plan time. A fully-worked week covering every state (`planned` / `done`+debrief / `adjusted` / `skipped`) is in [`assets/week-example.json`](assets/week-example.json) — the canonical example for any agent creating or reading a week.
 
 6. **Enforce window discipline.** Precise sessions exist **only** in `plan/weeks/*.json` (near horizon). Nothing beyond the ~2-week window may carry zones/intervals. Any change beyond the window must be an explicit, logged entry in the plan's change log (a visible git diff) — never a silent edit.
 
