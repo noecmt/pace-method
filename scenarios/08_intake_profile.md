@@ -5,7 +5,7 @@
 ## Setup
 
 - **No** `athlete/profile.json` and **no** `vision/vision.md` (clean athlete workspace).
-- The athlete starts a Discovery conversation (e.g. via `/pace-discovery`, or routed there by `pace-master`).
+- The athlete starts a Discovery conversation (e.g. via `/pace-discovery`, or routed there by the `pace` master).
 
 ## Input
 
@@ -25,7 +25,7 @@ A new cyclist describes themselves over the conversation, e.g.:
 
 ## Anti-properties (must NOT happen)
 
-- [ ] ❌ The **Analyst (`pace-agent-analyst`) creates** `profile.json` — creation belongs to the intake; the Analyst only *updates* it afterwards.
+- [ ] ❌ The **Analyst (`pace-analyst`) creates** `profile.json` — creation belongs to the intake; the Analyst only *updates* it afterwards.
 - [ ] ❌ The coach **invents** a marker the athlete didn't give (e.g. fills `max_hr` with a guessed number).
 - [ ] ❌ The intake is dumped as a long questionnaire.
 - [ ] ❌ The intake data is written into `vision/vision.md` (markers/level/equipment are plannable -> `profile.json`, not the narrative Vision).

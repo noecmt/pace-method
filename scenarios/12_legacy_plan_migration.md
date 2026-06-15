@@ -1,6 +1,6 @@
 # Scenario 12 — Legacy plan.md migrates to index.csv + weeks/*.json
 
-**Tests:** the **one-time legacy migration** of `pace-plan-write` (`docs/internal/wip/V0.5.0_STORAGE_REFACTOR.md` §6). A pre-v0.5.0 athlete repo whose `plan/plan.md` holds inline near-horizon week tables (no `index.csv`, no `weeks/*.json`) must, on the next Build, be converted to the structured format in a **visible diff** — never grepped/improvised at read time, never silently overwritten.
+**Tests:** the **one-time legacy migration** in the planner's `plan-write` capability. A pre-v0.5.0 athlete repo whose `plan/plan.md` holds inline near-horizon week tables (no `index.csv`, no `weeks/*.json`) must, on the next Build, be converted to the structured format in a **visible diff** — never grepped/improvised at read time, never silently overwritten.
 
 ## Setup
 
@@ -11,9 +11,9 @@
 
 ## Input
 
-> "/pace-plan"   (forces Build; the Planner -> `pace-plan-write` detects the legacy shape)
+> "/pace-plan"   (forces Build; the Planner's `plan-write` capability detects the legacy shape)
 
-(Adversarial sub-case: while the legacy plan still exists, "quelle est ma séance du jour ?" must **not** grep `plan.md` — `pace-checkin` reports the missing `index.csv` and routes to Build.)
+(Adversarial sub-case: while the legacy plan still exists, "quelle est ma séance du jour ?" must **not** grep `plan.md` — the coach's `checkin` capability reports the missing `index.csv` and routes to Build.)
 
 ## Expected properties
 
@@ -22,11 +22,11 @@
 - [ ] `plan/plan.md` is **reduced** to far + mid + the near-horizon pointer; a **change-log row** records the migration (date · reason · diff-visible).
 - [ ] `week_id` = ISO week label of the week's `start` date; `start`/`end` keep the athlete's real (e.g. Tue->Mon) span.
 - [ ] Every migrated session is **phase-legal** against `periodization-rules.csv`; the result passes `pace-validate`.
-- [ ] The Build wrap-up is delivered by the **Planner** in **French** (one message) — the workflow prints nothing itself.
+- [ ] The Build wrap-up is delivered by the **Planner** in **French** (one message) — the `plan-write` capability prints nothing itself.
 
 ## Anti-properties (must NOT happen)
 
-- [ ] ❌ `pace-checkin` greps / parses `plan.md` to answer a Run question while `index.csv` is absent (the old "Searched for 2 patterns" fallback).
+- [ ] ❌ The coach's `checkin` capability greps / parses `plan.md` to answer a Run question while `index.csv` is absent (the old "Searched for 2 patterns" fallback).
 - [ ] ❌ A past/completed week is silently overwritten or lost (history must be preserved; migration is a visible diff).
 - [ ] ❌ A legacy session illegal for its phase is silently "fixed" rather than surfaced to the Planner.
 - [ ] ❌ An invented fitness marker / zone is used to fill `planned` (absent marker => coarser system or qualitative, never fabricated).

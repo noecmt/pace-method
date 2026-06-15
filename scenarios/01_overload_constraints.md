@@ -16,8 +16,8 @@ Check-in (Run mode):
 
 ## Expected properties
 
-- [ ] The Daily coach (`pace-checkin`) reads the **planned** session and explains why it is what it is for this phase — it does **not** ask "what session do you want to do?"
-- [ ] `pace-adjust` maps the signals via `adjustment-decisions.csv`:
+- [ ] The Daily coach (following its `checkin` capability) reads the **planned** session and explains why it is what it is for this phase — it does **not** ask "what session do you want to do?"
+- [ ] The coach's `adjust` capability maps the signals via `adjustment-decisions.csv`:
   - `high_fatigue -> reduce_intensity_or_rest (high)`
   - `joint_pain -> active_recovery_or_rest (high)`
   - `heatwave -> reschedule_or_reduce (medium)`

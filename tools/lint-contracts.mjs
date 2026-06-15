@@ -89,16 +89,16 @@ const CANONICAL_PHASES = ['base', 'build', 'taper', 'race', 'recovery'];
 // === 1. CSV decision tables ===================================================
 head('CSV decision tables');
 const periodization = checkCsv(
-  'src/coaching-skills/2-build/pace-plan/assets/periodization-rules.csv',
+  'src/pace-planner/assets/periodization-rules.csv',
   'phase,allowed_intensity,forbidden,volume_modifier');
 const adjustments = checkCsv(
-  'src/coaching-skills/3-run/pace-adjust/assets/adjustment-decisions.csv',
+  'src/pace-coach/assets/adjustment-decisions.csv',
   'signal,recommended_action,severity');
 const signals = checkCsv(
-  'src/pace-master/signals.csv',
+  'src/pace/signals.csv',
   'signal,threshold,proposal');
 checkCsv(
-  'src/core-skills/pace-elicitation/methods.csv',
+  'src/pace-elicitation/methods.csv',
   'num,category,name,description,when_to_use');
 
 // === 2. periodization phases == canonical set =================================

@@ -16,7 +16,7 @@
 
 - [ ] The check-in / coach states today's session with **at least one concrete bound from `zones.json`** — e.g. "the Z4 efforts are **227–262 W**" — not just "do some threshold".
 - [ ] Every numeric bound the coach states **matches `zones.json`** exactly (e.g. Z4 is 227–262 W, not a made-up range).
-- [ ] If the athlete reports a signal and `pace-adjust` runs, the **scaled target is expressed in real numbers** too (e.g. "drop to Z2 = 140–187 W"), not a bare label.
+- [ ] If the athlete reports a signal and the coach's `adjust` capability runs, the **scaled target is expressed in real numbers** too (e.g. "drop to Z2 = 140–187 W"), not a bare label.
 - [ ] Degraded case (cross-ref `scenarios/05` variant B): if `power_zones` is **absent** (no FTP), the coach uses **HR bounds** from `hr_zones`, or qualitative cues if no marker at all — and says which system it's using.
 
 ## Anti-properties (must NOT happen)
