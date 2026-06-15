@@ -1,0 +1,8 @@
+# Surface overrides for the master concierge — resolved at activation per docs/07_customize_merge.md.
+# SURFACE ONLY: the neutral concierge role, the "never coach / never emit a signal" prohibitions,
+# and all guardrails are FIXED. Uncomment to override.
+# The [[agent.menu]] (intent menu) is wired in the command-surface step.
+
+# [surface]
+# verbosity = "normal"   # terse | normal | rich
+# language = "en"        # e.g. "en", "fr" — SINGLE SOURCE is pace.config.toml [surface].language

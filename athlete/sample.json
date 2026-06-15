@@ -1,5 +1,5 @@
 {
-  "_comment": "Sample athlete profile for scenario testing. Structured long-term state. Sole writer in the method: the Analyst (pace-agent-analyst). The Vision carries the why; this file carries the plannable data. On a plannable fact, this file is authoritative for the Planner.",
+  "_comment": "Sample athlete profile for scenario testing. Structured long-term state. Sole writer in the method: the Analyst (pace-analyst). The Vision carries the why; this file carries the plannable data. On a plannable fact, this file is authoritative for the Planner.",
   "athlete_id": "sample",
   "sport": "cycling",
   "level": "intermediate",

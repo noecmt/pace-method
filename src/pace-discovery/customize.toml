@@ -1,0 +1,11 @@
+# Surface overrides for the Discovery coach — resolved at activation per docs/07_customize_merge.md.
+# SURFACE ONLY: the role ("curious, attentive") and all prohibitions are FIXED.
+# Uncomment a key to override the global defaults for this skill.
+
+[surface]
+voice_tone = "warmer, encouraging"   # nuance to the FIXED voice ("curious, attentive") — a warmer welcome (BMAD-style first impression). Surface only: never a new role, never relaxes a prohibition.
+# verbosity = "normal"               # terse | normal | rich
+# language is NOT set here — single source is pace.config.toml [surface].language
+
+# [discovery]
+# elicitation_depth = "normal"       # light | normal | deep

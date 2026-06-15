@@ -1,14 +1,14 @@
 # Connector — schema (capability contract)
 
-A **connector** lets PACE **read from** or **write to** an external system via an **MCP** (or any host capability) — **with no runtime**: detection and use are **instructions the host agent follows**, not code. A connector is a **capability attached to an artefact**. It is **NOT a fourth extension axis** (the three axes stay **sport / domain / method**, which shape *what the method knows and does*); a connector only changes **where data is read from / written to**. It is **never a persona**, **never called from `pace-master` to make a decision**, and **never generates a session** (the Run prohibition is absolute).
+A **connector** lets PACE **read from** or **write to** an external system via an **MCP** (or any host capability) — **with no runtime**: detection and use are **instructions the host agent follows**, not code. A connector is a **capability attached to an artefact**. It is **NOT a fourth extension axis** (the three axes stay **sport / domain / method**, which shape *what the method knows and does*); a connector only changes **where data is read from / written to**. It is **never a persona**, **never called from the `pace` master to make a decision**, and **never generates a session** (the Run prohibition is absolute).
 
 ## Three classes
 
 | Class | Role | Consumed by | Degraded fallback (capability absent) |
 |---|---|---|---|
-| `read` | external **signal/data provider** (read-only) | `pace-checkin`, `pace-agent-analyst`, `pace-rolling` | **manual entry** (ask the athlete / use `log/`) |
-| `storage` | **backend for the athlete artefacts** | every workflow that persists an artefact | **local filesystem** (Claude Code) |
-| `calendar` | **session delivery** — push upcoming sessions to athlete's scheduling tool | `pace-plan-write`, `pace-rolling`, `pace-adjust` | **`plan/calendar.csv`** (local filesystem) |
+| `read` | external **signal/data provider** (read-only) | the coach's `checkin`, the Analyst, the planner's `rolling` | **manual entry** (ask the athlete / use `log/`) |
+| `storage` | **backend for the athlete artefacts** | every capability that persists an artefact | **local filesystem** (Claude Code) |
+| `calendar` | **session delivery** — push upcoming sessions to athlete's scheduling tool | the planner's `plan-write`/`rolling`, the coach's `adjust` | **`plan/calendar.csv`** (local filesystem) |
 
 ## Multi-class connectors
 
@@ -38,7 +38,7 @@ All of the above is **text the agent follows** — there is no detection code, n
 ## Hard rules (every connector)
 
 - A connector **attaches to an artefact**, never to a persona's internals; adding one modifies **no persona**.
-- **Never from `pace-master`** — the orchestrator routes; connectors are used *inside* the consuming skills (read) or by the storage layer (write).
+- **Never from the `pace` master** — the orchestrator routes; connectors are used *inside* the consuming agents' capabilities (read) or by the storage layer (write).
 - **Never generates a session** — read data may *inform* context/modulation within the existing rules, never *create* a plan or session.
 - **PACE works without it** — graceful degradation is mandatory, not optional.
 
@@ -50,4 +50,4 @@ All of the above is **text the agent follows** — there is no detection code, n
 
 ## Athlete preferences
 
-User-specific integration config (backend URLs, calendar IDs) lives in **`pace.config.toml`** at the root of the athlete's artefact repo. Template: `src/core-skills/pace-customize/pace.config.template.toml`. This file overrides the pack defaults in `customize.toml` and is **never** written by any persona.
+User-specific integration config (backend URLs, calendar IDs) lives in **`pace.config.toml`** at the root of the athlete's artefact repo. Template: `pace.config.template.toml` (repo root). This file overrides the pack defaults in each agent's `customize.toml` and is **never** written by a coaching agent — only the `pace` master's onboarding wizard writes it (see `docs/07_customize_merge.md`).

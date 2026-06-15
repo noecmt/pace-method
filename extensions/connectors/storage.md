@@ -15,7 +15,7 @@ Where the athlete artefacts physically live. Skills always refer to **logical ar
 
 ## Resolution rule (no runtime)
 
-1. Read the configured backend from `pace-customize` (`[connectors].storage`, default `local`).
+1. Read the configured backend from `pace.config.toml` (`[connectors].storage`, default `local`).
 2. **Probe** its capability. **Present** -> read/write artefacts there. **Absent** -> **degrade to `local`** (and say so); if there is no filesystem either (web with nothing configured), **tell the athlete to connect a backend** rather than silently losing data.
 3. Map every **logical artefact path** to the backend (a file in the repo via GitHub MCP; a page in Notion; a local file). The **content and contracts are identical** across backends.
 

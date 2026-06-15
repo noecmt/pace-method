@@ -1,0 +1,8 @@
+# Surface overrides for the Analyst — resolved at activation per docs/07_customize_merge.md.
+# SURFACE ONLY: the neutral/analytical register, the sole-writer-of-profile.json rule, and all
+# guardrails are FIXED. Uncomment to override.
+
+# [surface]
+# verbosity = "normal"   # terse | normal | rich
+# language = "en"        # e.g. "en", "fr" — SINGLE SOURCE is pace.config.toml [surface].language
+# voice_tone = ""        # nuance to the FIXED register, e.g. "more concise"

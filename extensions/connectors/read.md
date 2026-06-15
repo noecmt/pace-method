@@ -2,13 +2,13 @@
 
 `class: read` · `degraded_fallback: manual` · conforms to [`_schema.md`](_schema.md).
 
-Read connectors fetch **completed session data and readiness signals** from external sport platforms. Consumed by `pace-checkin`, `pace-agent-analyst`, `pace-rolling`. When absent, these skills fall back to **manual entry** (ask the athlete for the relevant figures).
+Read connectors fetch **completed session data and readiness signals** from external sport platforms. Consumed by the coach's `checkin` capability, the Analyst (`pace-analyst`), and the planner's `rolling` capability. When absent, these fall back to **manual entry** (ask the athlete for the relevant figures).
 
 ## Resolution rule (no runtime)
 
 The consuming skill:
 1. Checks whether the athlete has enabled a read connector in `pace.config.toml` (e.g. `strava = true`).
-2. Probes the capability (MCP or API tool available?). Both true -> reads it. Either absent -> manual.
+2. Probes the capability (MCP or API tool available?). Both true -> reads it. Either absent -> manual. ("Skill" here means the consuming agent's capability — `checkin` / `rolling` — or the Analyst.)
 3. Never blocks on missing data; always degrades cleanly.
 
 ## Active instances

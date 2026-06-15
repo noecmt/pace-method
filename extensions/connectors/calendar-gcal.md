@@ -29,7 +29,7 @@ gcal_calendar_id = "primary"   # or a specific calendar ID from the athlete's ac
 ## Write / update rule
 
 - **New session** -> create event.
-- **Session adjusted** (`pace-adjust`) -> update the existing event (description + duration); do **not** delete and recreate.
+- **Session adjusted** (the coach's `adjust` capability) -> update the existing event (description + duration); do **not** delete and recreate.
 - **Session skipped** -> update title to `[PACE — skipped] {session_name}`; keep the event for the audit trail.
 
 ## hard_rules

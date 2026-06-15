@@ -1,8 +1,8 @@
 {
-  "_comment": "Derived artefact fixture for scenario testing — the precompiled intensity zones for athlete/sample.json (cycling, FTP 250W, max_hr 185). NEVER hand-edited: regenerated from profile.json + the sport pack by pace-plan-write (first time) or pace-agent-analyst (on a marker change). zones.fitness_markers must always match profile.json.fitness (pace-validate enforces this).",
+  "_comment": "Derived artefact fixture for scenario testing — the precompiled intensity zones for athlete/sample.json (cycling, FTP 250W, max_hr 185). NEVER hand-edited: regenerated from profile.json + the sport pack by the planner's plan-write capability (first time) or the Analyst / pace-analyst (on a marker change). zones.fitness_markers must always match profile.json.fitness (pace-validate enforces this).",
   "sport": "cycling",
   "version": "1.0",
-  "generated_by": "pace-plan-write",
+  "generated_by": "pace-planner",
   "generated_at": "2026-04-15",
   "fitness_markers": {
     "ftp_watts": 250,
