@@ -49,8 +49,8 @@ communicate only through four artefacts, written as versioned files in the athle
 
 - `vision/vision.md` — narrative source of truth. **Amended, never rewritten.**
 - `plan/plan.md` — hierarchical plan (season blocks -> approximate weeks -> precise sessions in the ~2-week window). Hard constraint: not modifiable beyond the immediate window without an explicit, visible git diff.
-- `athlete/profile.json` — structured long-term state, including `learned_behaviors`. **Created once by the Discovery intake** (markers, current level, equipment — seeded only from what the athlete actually gave). Thereafter the Analyst (`pace-debrief`) is the **sole writer of updates** (and of `learned_behaviors`). Two writers, two moments — intake creates, the Analyst updates; no other persona writes it. On a plannable fact, `profile.json` is authoritative for the Planner; the Vision carries the *why*.
-- `log/` — completed sessions, check-ins, debriefs, signals.
+- `athlete/profile.json` — structured long-term state, including `learned_behaviors`. **Created once by the Discovery intake** (markers, current level, equipment — seeded only from what the athlete actually gave). Thereafter the Analyst (`pace-agent-analyst`) is the **sole writer of updates** (and of `learned_behaviors`). Two writers, two moments — intake creates, the Analyst updates; no other persona writes it. On a plannable fact, `profile.json` is authoritative for the Planner; the Vision carries the *why*.
+- `log/` — reduced to **`log/signals.md`, the cross-session signals ledger**: append-only bullets the Analyst emits when a `signals.csv` threshold fires, and the only thing `pace-master` reads to propose re-Discovery/rolling. Per-session debriefs are **not** here — they live on the session object in `plan/weeks/<week>.json` (which is the single home for a session's whole lifecycle: `planned`, `rationale`, `actual`, `debrief`, `adjustment` — filled in place; past weeks are immutable history).
 
 Anything pluggable (a sport, a domain, a method) attaches to an *artefact*, never to a
 persona's internals.
@@ -72,6 +72,7 @@ Run (execute/explain/adjust the already-planned session).
 - **Plan-first.** The plan precedes the session. The day's state *modulates* how a session is executed; it never dictates what the session is.
 - **The Run coach NEVER generates a session.** The session already exists in the plan. This is the single most important prohibition in the method. The Run mode reads, explains why *this* session today, and modulates it — it never invents one. *Modulate* is exactly two operations: scale the planned session down within bounds (keeping its intent), or substitute a session from the fixed fallback catalog (active recovery/rest); never compose a new structured session.
 - **Strict persona separation.** Each persona has one role and one voice; none produces what another owns.
+- **Single voice, silent pipeline.** Exactly one message reaches the athlete per turn — the owning persona's, in `[surface].language`. All routing, sub-skill loading, surface resolution, validation, and inter-skill handoffs are silent work (reasoning + tool calls), never narrated. A workflow has no voice *and emits no user-facing text*: its output is an internal object the persona renders — never a printed "SUMMARY FOR …" block. See `docs/02_method.md` ("Single voice, silent pipeline").
 - **The three extension axes are distinct — never conflate them:**
   - **Sport** = *knowledge* only -> a pack under `knowledge_base/sports/`. **Never a new agent.** Personas/workflows are identical across sports.
   - **Domain** (nutrition, recovery…) = a *parallel advisor* persona/workflow that reads Plan/Session and writes **its own** artefact. **Never touches the training Plan.**

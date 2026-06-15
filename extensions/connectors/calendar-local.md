@@ -2,7 +2,7 @@
 
 `connector_id: local-csv` · `class: calendar` · always available · this IS the universal fallback · conforms to [`_schema.md`](_schema.md).
 
-Artefact: **`plan/calendar.csv`** — a structured projection of the upcoming sessions from `plan/plan.md`. No external dependency; no MCP required.
+Artefact: **`plan/calendar.csv`** — a structured projection generated from `plan/weeks/*.json` (the source of truth for sessions). No external dependency; no MCP required. **Never edited by hand; never the source** — `weeks/*.json` is the source and `calendar.csv` is the generated view.
 
 ## Format
 
@@ -16,7 +16,7 @@ date,week,session_id,type,name,duration_min,primary_zone,structure,status
 |---|---|
 | `date` | ISO 8601 (`YYYY-MM-DD`), planned session date |
 | `week` | Training week label (matches `plan.md` heading) |
-| `session_id` | Reference to the session in `plan/plan.md` |
+| `session_id` | Reference to the session: `<week_id>/<date>` (maps into `plan/weeks/<week_id>.json`) |
 | `type` | `endurance \| threshold \| vo2 \| sprint \| recovery \| rest` |
 | `name` | Human-readable session name |
 | `duration_min` | Planned duration in minutes |
@@ -26,7 +26,8 @@ date,week,session_id,type,name,duration_min,primary_zone,structure,status
 
 ## hard_rules
 
-- Written by `pace-plan`, `pace-rolling`, `pace-adjust` — no other writers.
-- `status` updated by `pace-checkin` / `pace-debrief` (completed / skipped) and `pace-adjust` (adjusted).
-- Never read as a training signal; never modifies `plan/plan.md`.
+- **Generated** by `pace-plan-write` (initial push) and `pace-rolling` (on window advance) from `plan/weeks/*.json` — no other writers.
+- `status` updated by `pace-checkin` / `pace-agent-analyst` (completed / skipped) and `pace-adjust` (adjusted).
+- Never read as a training signal; never modifies `plan/plan.md` or `plan/weeks/*.json`.
 - On plan amendment (`pace-rolling`): rows beyond the current window may be removed or updated; always **preserve completed rows**.
+- When a real calendar backend (gcal / notion) is connected, `calendar.csv` is **skipped** — the projection is pushed directly to the backend; `weeks/*.json` remains the source regardless.

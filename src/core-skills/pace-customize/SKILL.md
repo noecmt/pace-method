@@ -27,7 +27,7 @@ A **core skill**, not a persona: **no voice, writes no artefact.** It is the one
 
 Read **this skill's [`customize.toml`](customize.toml)** as the global default, then **the target skill's own `customize.toml`**, then **the athlete instance config `pace.config.toml`** (at the athlete repo root — the highest-precedence override). Later wins — **but only within the surface allow-list**. Anything outside it is dropped.
 
-**Load order is mandatory, not optional.** Every persona/workflow loads `pace-customize` **first**, before it speaks, so the resolved `[surface]` — above all the **language** — is applied to its very first words. A persona that speaks before resolving `[surface]` is a bug (this is the old "language not respected" regression).
+**Surface is resolved once, then forwarded.** `pace-master` reads `pace.config.toml` in its state pass and **forwards `[surface]`** in the context bundle; a persona/workflow **consumes the forwarded surface** and applies it — above all the **language** — to its very first words. A persona loads `pace-customize` **itself only** when it was entered directly (no bundle) or during zero-state onboarding (the initial `pace.config.toml` write) — this avoids the extra, visible config-read hop. Either way `[surface]` (above all language) is resolved **before the first word**: a persona that speaks before resolving it is a bug (the old "language not respected" regression).
 
 ## Language has a single source
 
@@ -46,6 +46,10 @@ Read **this skill's [`customize.toml`](customize.toml)** as the global default, 
 3. **Apply** the kept keys to the loading skill's **surface** — language/verbosity/tone nuance, Discovery depth, default method — without altering its role or any prohibition.
 4. **Refuse-by-ignoring.** If a key would relax a fixed rule (a guardrail, a prohibition, a contract), **ignore that key** and proceed; optionally note it once.
 
+## Output discipline
+
+You emit **no user-facing text**. Your output is the resolved `[surface]` — an **internal object** the loading persona applies to its own words. Never announce "Reading surface configuration…" or print the resolved settings to the athlete (`docs/02_method.md`, "Single voice, silent pipeline").
+
 ## Prohibitions (do not cross)
 
 - ❌ **Never relax** a prohibition, a periodization guardrail, an artefact contract, plan-first, or the modulate-vs-generate boundary.
@@ -60,4 +64,4 @@ This skill is also the **single place that records the connector configuration**
 - `calendar` — `local` (default) | `gcal` | `notion`. Where upcoming sessions are delivered; `local` writes `plan/calendar.csv` (see [`../../../extensions/connectors/calendar.md`](../../../extensions/connectors/calendar.md)).
 - `strava` — `true|false`. Use the Strava MCP read connector **when available** (see [`../../../extensions/connectors/strava.md`](../../../extensions/connectors/strava.md)).
 
-**You only record/expose this config — you do not read Strava, deliver to a calendar, or write GitHub yourself.** The consuming skills (read in `pace-checkin` / `pace-debrief` / `pace-rolling`; calendar in `pace-plan` / `pace-rolling` / `pace-adjust`) and the storage layer apply it, each running the **capability-detection + graceful-degradation** protocol of [`../../../extensions/connectors/_schema.md`](../../../extensions/connectors/_schema.md): if the MCP is absent, degrade (manual entry / local filesystem / `plan/calendar.csv`). **No runtime** — this stays text the host follows. A connector is a capability attached to an artefact: it **never** becomes a persona, is **never** called from `pace-master`, and **never** generates a session.
+**You only record/expose this config — you do not read Strava, deliver to a calendar, or write GitHub yourself.** The consuming skills (read in `pace-checkin` / `pace-agent-analyst` / `pace-rolling`; calendar in `pace-plan-write` / `pace-rolling` / `pace-adjust`) and the storage layer apply it, each running the **capability-detection + graceful-degradation** protocol of [`../../../extensions/connectors/_schema.md`](../../../extensions/connectors/_schema.md): if the MCP is absent, degrade (manual entry / local filesystem / `plan/calendar.csv`). **No runtime** — this stays text the host follows. A connector is a capability attached to an artefact: it **never** becomes a persona, is **never** called from `pace-master`, and **never** generates a session.

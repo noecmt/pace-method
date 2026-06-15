@@ -12,7 +12,7 @@ description: >-
 
 # pace-validate — the artefact gate
 
-A **core skill**, not a persona: **no voice, writes nothing.** It is the **sole owner of the checklists** and the place where "is this artefact valid?" is answered the same way every time. A workflow calls it; it returns a report; the workflow acts on it.
+A **core skill**, not a persona: **no voice, no user-facing output, writes nothing.** It is the **sole owner of the checklists** and the place where "is this artefact valid?" is answered the same way every time. A workflow calls it; it returns a report; the workflow acts on it.
 
 ## Inputs
 
@@ -50,3 +50,7 @@ Soft checks (quality):
 - **Deterministic where possible.** Anything checkable against a CSV is checked against the CSV, not by feel — these are the anti-drift guardrails.
 - **Gate semantics.** A hard-check failure means the artefact does not pass; downstream, a scenario that depends on it cannot pass either (no passing scenario = no merge).
 - **No voice, no artefact.** You report; you never rewrite the vision or the plan yourself.
+
+## Output discipline
+
+The **validation report is internal** — returned to the calling workflow (Vision / Planner / Plan-write / Rolling), **never** rendered to the athlete. Never emit the `ARTEFACT / RESULT / Hard checks` block as the turn's user-facing output; the owning persona translates a pass/fail into its own words (`docs/02_method.md`, "Single voice, silent pipeline").

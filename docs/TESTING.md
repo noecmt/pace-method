@@ -12,7 +12,7 @@ V0 is "plan-first" coaching split across personas that never talk to each other 
 
 - **The Run coach NEVER generates a session** — it reads the planned one, explains *why this session today*, and at most *modulates* it (scale down within bounds, or substitute active-recovery/rest). No new intervals/zones/format, ever.
 - **`pace-master` routes, it does not coach** — and never emits or self-labels a signal.
-- **Only the Analyst (`pace-debrief`) writes `profile.json`.**
+- **Only the Analyst (`pace-agent-analyst`) writes `profile.json`.**
 - **No hallucinated facts** — the host never invents fatigue, sleep, or a sensation you did not give.
 - **The plan is a constraint, not a suggestion** — a request that breaks periodization is refused with an explanation.
 
@@ -33,7 +33,7 @@ You are the PACE host for this repository. Act strictly per the repo's skills �
 1. Load and follow src/pace-master/SKILL.md as your entry point. When routing needs detail, read src/pace-master/references/routing.md and src/pace-master/signals.csv.
 2. Treat athlete/sample.json as the athlete's profile. Treat vision/vision.md, plan/plan.md, and log/ in the workspace as the athlete's artefacts — they may not exist yet; check before assuming.
 3. When pace-master routes to a persona/workflow, open that skill's SKILL.md (e.g. src/coaching-skills/3-run/pace-agent-coach/SKILL.md) and follow it, loading the CSV tables and assets it references.
-4. Obey every prohibition in the skills. Above all: the Run coach NEVER generates a session; only pace-debrief writes profile.json; pace-master never coaches and never emits/labels a signal.
+4. Obey every prohibition in the skills. Above all: the Run coach NEVER generates a session; only pace-agent-analyst writes profile.json; pace-master never coaches and never emits/labels a signal.
 5. Before each reply, state in ONE line which mode/skill you are in and which artefacts you read. Then answer in that skill's voice, citing the CSV rows you used for any deterministic decision.
 
 Acknowledge by reporting which of vision/plan/profile currently exist and which mode that puts us in. Then wait for my message.
@@ -97,7 +97,7 @@ For each: the **exact input to paste**, the **expected behaviour**, and the **pa
 ### 02 — Memory persistence -> [`scenarios/02_memory_persistence.md`](../scenarios/02_memory_persistence.md)
 
 - **Paste:** `Second hard day in a row was awful — flat legs, couldn't hold the intervals, felt cooked.`
-- **Expect:** `pace-master` routes this **executed-training report to the Analyst** (`pace-debrief`) — it does not self-diagnose. The Analyst logs it and appends a `learned_behavior` like `no_back_to_back_hard` to `profile.json` (and is the **only** writer of that file).
+- **Expect:** `pace-master` routes this **executed-training report to the Analyst** (`pace-agent-analyst`) — it does not self-diagnose. The Analyst logs it and appends a `learned_behavior` like `no_back_to_back_hard` to `profile.json` (and is the **only** writer of that file).
 - **PASS if:** the behaviour is captured with a concrete `rule`; then ask the host to **build/advance the plan** and confirm the near-horizon **never schedules two hard days back-to-back** (Z1/Z2 or rest between any two hard sessions). Any back-to-back hard pair is a **fail**.
 
 ### 06 — Routing -> [`scenarios/06_routing.md`](../scenarios/06_routing.md)

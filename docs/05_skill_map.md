@@ -33,13 +33,13 @@ src/
     │   └── pace-vision/{SKILL.md, assets/vision-template.md}   <- validation via pace-validate
     ├── 2-build/
     │   ├── pace-agent-planner/{SKILL.md, customize.toml}
-    │   ├── pace-plan/{SKILL.md, assets/plan-template.md, assets/periodization-rules.csv}
+    │   ├── pace-plan/{SKILL.md, assets/plan-template.md, assets/periodization-rules.csv, assets/week-example.json}
     │   └── pace-rolling/{SKILL.md}
     └── 3-run/
         ├── pace-agent-coach/{SKILL.md, customize.toml}
         ├── pace-checkin/{SKILL.md}
         ├── pace-adjust/{SKILL.md, assets/adjustment-decisions.csv}
-        └── pace-debrief/{SKILL.md}   <- writes log + learned_behaviors (profile.json)
+        └── pace-debrief/{SKILL.md}   <- writes session actual+debrief to weeks/*.json, signals to log/signals.md, learned_behaviors to profile.json
 
 knowledge_base/
 ├── principles/*.md
@@ -67,17 +67,19 @@ extensions/
 | `pace-customize` | core | — | overrides | `customize.toml` | V1 |
 | `pace-agent-discovery` | persona | profile, answers | (via pace-vision) | `customize.toml` | V0 |
 | `pace-vision` | workflow | profile, answers | `vision/vision.md` | `vision-template.md` | V0 |
-| `pace-agent-planner` | persona | vision, profile, KB | (via pace-plan) | `customize.toml` | V0 |
-| `pace-plan` | workflow | vision, profile, KB | `plan/plan.md` | `plan-template.md`, `periodization-rules.csv` | V0 |
-| `pace-rolling` | workflow | plan, recent log | `plan/plan.md` (amended) | — | V1 |
+| `pace-agent-planner` | persona | vision, profile, KB | (via pace-plan-write) | `customize.toml` | V0 |
+| `pace-plan-write` | workflow | vision, profile, KB | `plan/plan.md` | `plan-template.md`, `periodization-rules.csv` | V0 |
+| `pace-rolling` | workflow | plan, recent `weeks/*.json` | `plan/plan.md` (amended), `weeks/*.json` | — | V1 |
 | `pace-agent-coach` | persona | plan, session, state | (via checkin/adjust) | `customize.toml` | V0 |
-| `pace-checkin` | workflow | plan, session, state | short-term log | — | V0 |
-| `pace-adjust` | workflow | session, signals | modulated session | `adjustment-decisions.csv` | V0 |
-| `pace-debrief` | workflow | log, plan | log, signals, `profile.json` (learned_behaviors) | — | V0 (minimal) |
+| `pace-checkin` | workflow | plan, session, state | session `rationale` (`weeks/*.json`) | — | V0 |
+| `pace-adjust` | workflow | session, signals | modulated session + `adjustment` (`weeks/*.json`) | `adjustment-decisions.csv` | V0 |
+| `pace-agent-analyst` | workflow | `weeks/*.json`, `log/signals.md`, plan | session `actual`+`debrief` (`weeks/*.json`), `log/signals.md`, `profile.json` (learned_behaviors) | — | V0 (minimal) |
 
-> **Minimal V0 scope** (plan-first validation): `pace-master`, `pace-elicitation`, `pace-validate`, `pace-agent-discovery` + `pace-vision`, `pace-agent-planner` + `pace-plan`, `pace-agent-coach` + `pace-checkin` + `pace-adjust`, and `pace-debrief` **in a minimal declarative version** (just appending a `learned_behavior` to `profile.json` — needed for scenario 02). The rest (`pace-rolling`, `pace-customize`, and the measured/Strava debrief) comes later.
+> **Minimal V0 scope** (plan-first validation): `pace-master`, `pace-elicitation`, `pace-validate`, `pace-agent-discovery` + `pace-vision`, `pace-agent-planner` + `pace-plan-write`, `pace-agent-coach` + `pace-checkin` + `pace-adjust`, and `pace-agent-analyst` **in a minimal declarative version** (just appending a `learned_behavior` to `profile.json` — needed for scenario 02). The rest (`pace-rolling`, `pace-customize`, and the measured/Strava debrief) comes later.
 
-> **Connector layer** (`extensions/connectors/`, V1): a capability attached to the artefacts — `read` (Strava), `storage` (local / GitHub / Notion / Drive), `calendar` (`plan/calendar.csv` / Google / Notion). Consumed *inside* the workflows (read: `pace-checkin` / `pace-debrief` / `pace-rolling`; storage: every persisting workflow + `pace-master` session setup; calendar: `pace-plan` / `pace-rolling` / `pace-adjust`), configured in `pace-customize`, and **degrading gracefully to local** so no data is ever lost. Never a 4th extension axis, never a persona, never called from `pace-master` to decide.
+> **Skill `name:` vs. folder.** Two skills carry a `name:` that deliberately differs from their directory, so that no skill shares a name with a slash command (a command and a skill with the same name make `pace-master`'s routing loop): the folder `…/2-build/pace-plan/` defines the skill **`pace-plan-write`**, and `…/3-run/pace-debrief/` defines **`pace-agent-analyst`** (the Analyst). The `/pace-plan` and `/pace-debrief` commands reach them through `pace-master`. The other personas already avoid the clash by construction (`/pace-discovery` -> `pace-agent-discovery`, `/pace-today` -> `pace-agent-coach`).
+
+> **Connector layer** (`extensions/connectors/`, V1): a capability attached to the artefacts — `read` (Strava), `storage` (local / GitHub / Notion / Drive), `calendar` (`plan/calendar.csv` / Google / Notion). Consumed *inside* the workflows (read: `pace-checkin` / `pace-agent-analyst` / `pace-rolling`; storage: every persisting workflow + `pace-master` session setup; calendar: `pace-plan-write` / `pace-rolling` / `pace-adjust`), configured in `pace-customize`, and **degrading gracefully to local** so no data is ever lost. Never a 4th extension axis, never a persona, never called from `pace-master` to decide.
 
 ---
 
@@ -112,7 +114,7 @@ heatwave,reschedule_or_reduce,medium
 
 ### `signals.csv`
 
-Lives under `pace-master/` (not `pace-debrief`): it's the routing that proposes a re-Discovery/rolling on a strong signal, from V0 (scenario 06). The Analyst *emits* signals into the log; `pace-master` *maps* them to a proposal via this table.
+Lives under `pace-master/` (not `pace-agent-analyst`): it's the routing that proposes a re-Discovery/rolling on a strong signal, from V0 (scenario 06). The Analyst *emits* signals into `log/signals.md`; `pace-master` *maps* them to a proposal via this table.
 
 ```
 signal,threshold,proposal

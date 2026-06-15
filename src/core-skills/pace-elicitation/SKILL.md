@@ -46,3 +46,7 @@ A **core skill**, not a persona: it has **no voice and writes no artefact**. A p
 - **Overwhelmed -> `one_thing`.** When the athlete is over-broad or stressed, narrow rather than widen.
 - **Match, don't improvise.** Pick a technique that fits the `when_to_use` situation; don't invent a new questioning style outside the catalogue.
 - **No artefact, no voice.** You never write `vision.md`/`plan.md` and never adopt a persona — you hand the technique back to the calling persona.
+
+## Output discipline
+
+You produce **no user-facing text**: you hand a *technique shape* back to the calling persona, which asks the question in its own voice and in `[surface].language`. Never address the athlete directly or narrate your choice of technique (`docs/02_method.md`, "Single voice, silent pipeline").

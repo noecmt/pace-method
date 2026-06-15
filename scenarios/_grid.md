@@ -42,12 +42,12 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 
 | # | Property | Type | Result | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | Week 1: Analyst (`pace-debrief`) sole writer; appends `learned_behavior` with a concrete `rule` | hard | ✅ | `pace-debrief` logs planned-vs-actual and appends `no_back_to_back_hard` (rule: "never two hard days back-to-back; insert Z1/Z2 or rest"). Append-only (already present in fixture from an earlier debrief; from a clean profile it is added). |
+| 1 | Week 1: Analyst (`pace-agent-analyst`) sole writer; appends `learned_behavior` with a concrete `rule` | hard | ✅ | `pace-agent-analyst` logs planned-vs-actual and appends `no_back_to_back_hard` (rule: "never two hard days back-to-back; insert Z1/Z2 or rest"). Append-only (already present in fixture from an earlier debrief; from a clean profile it is added). |
 | 2 | Week 4: Planner honors it — no two hard sessions on consecutive days | hard/det | ✅ | Near horizon hard days = Jun 04, 09, 11 — none adjacent. Planner re-reads `profile.json` whenever it details a window, so the wk-4 window inherits the rule. |
 | 3 | Inserts Z1/Z2 or rest between any two hard sessions | hard | ✅ | Jun 10 `recovery_ride` (Z1) sits between Jun 09 (Z5) and Jun 11 (Z4); rest/Z2 elsewhere. |
 | 4 | `pace-validate` flags a violation if one slips through | hard | ✅ | plan-checklist hard check "respects vision/profile constraints (scenario 02)" -> a back-to-back hard pair returns INVALID with the offending pair cited. |
 | 5 | Learned behavior **not** silently dropped between wk1 and wk4 | anti | ✅ | Persisted in `profile.json.learned_behaviors`; honored downstream. |
-| 6 | No persona other than the Analyst writes `profile.json` | anti | ✅ | Coach/Planner/check-in/adjust all read-only on `profile.json`; only `pace-debrief` writes. |
+| 6 | No persona other than the Analyst writes `profile.json` | anti | ✅ | Coach/Planner/check-in/adjust all read-only on `profile.json`; only `pace-agent-analyst` writes. |
 | 7 | No two consecutive hard days in the wk4 window | anti | ✅ | Confirmed by the scan below. |
 | D | Scan wk4: every consecutive-day pair -> not both hard (Z4/Z5/threshold); any back-to-back => fail | det | ✅ | All consecutive pairs in the detailed window have ≤1 hard day. |
 
@@ -104,7 +104,7 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 | A | No vision/plan + "start training…" -> **Discovery** | hard/det | ✅ | Auto-route to `pace-agent-discovery` (no plan to run). |
 | B | Vision+plan + "only 45 min" -> **Run** (auto, no menu) | hard/det | ✅ | Auto-route to the Daily coach, silent hand-off. |
 | C | Vision+plan + "goal not realistic" -> **propose** partial Discovery *or* rolling | hard/det | ✅ | Goal-doubt (not an execution fact) -> propose 1–3, no Analyst detour. |
-| D | Vision+plan + "skipped 3 weeks" -> route to Analyst (`pace-debrief`), no self-diagnosis; proposal per `signals.csv: sessions_skipped` | hard/det | ✅ | **End-to-end now verified**: master routes prose -> `pace-debrief` emits `sessions_skipped` (threshold `3_weeks`) -> master maps `signals.csv` proposal -> proposes `partial_discovery_or_rolling`. Master never self-labels. |
+| D | Vision+plan + "skipped 3 weeks" -> route to Analyst (`pace-agent-analyst`), no self-diagnosis; proposal per `signals.csv: sessions_skipped` | hard/det | ✅ | **End-to-end now verified**: master routes prose -> `pace-agent-analyst` emits `sessions_skipped` (threshold `3_weeks`) -> master maps `signals.csv` proposal -> proposes `partial_discovery_or_rolling`. Master never self-labels. |
 | E | "/pace-plan" -> **force Build** (slash overrides detection) | hard/det | ✅ | Slash token forces Build regardless of state. |
 | F | Vision, no plan + "what should I do?" -> **Build** | hard/det | ✅ | Plan is the missing artefact; Run impossible without a plan. |
 | 7 | Obvious cases (B, E) auto-route without a menu | hard | ✅ | No menu on B/E. |
@@ -152,3 +152,16 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 **6 V0 scenarios (01–06):** unaffected — every v0.4.0 change is **additive** (zones citing, intake creation, onboarding, single language source, command surface) and relaxes **no** V0 guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact). 01 still resolves to rest/active-recovery; 04 still refuses the 4 h ride; Run still never generates a session.
 
 **Result (static): 6/6 V0 hold + 4 new (07–10) + 2 extensions (05-B, 06-G) = PASS.** Lint 0/0. No contract amendment required beyond the documented v0.4.0 refinements (profile.json creation contract; `zones.json` 5th artefact; `hr_zones` required).
+
+---
+
+## v0.5.0 — output discipline + storage migration (pending host-LLM run)
+
+> Added with the **Single voice, silent pipeline** invariant (`docs/02_method.md`) and the legacy-plan migration in `pace-plan-write`. These two gates are **not yet evaluated** — they require a fresh host-LLM pass in a seeded workspace (see `docs/TESTING.md`). Listed here so the gate is visible; mark them on the next run.
+
+| Scenario | Verdict | Basis / what to check |
+| --- | --- | --- |
+| 11 Output discipline | — | One French coach message for "quelle est ma séance du jour ?"; no `pace-master` / `pace-customize` narration; no "CHECK-IN SUMMARY" block; surface forwarded (no extra hop). Det: visible output = 1 message, French, ≥1 `zones.json` bound; any leaked block / English => fail. |
+| 12 Legacy plan migration | — | "/pace-plan" on a legacy `plan.md` -> `index.csv` + `weeks/*.json` created, `plan.md` reduced, one `active` week by date, change-log row, `pace-validate` VALID; Run never greps `plan.md`. Det: as in the scenario. |
+
+**Status: 2 new v0.5.0 gates defined, awaiting evaluation.** The 6 V0 (01–06) + 4 v0.4.0 (07–10) verdicts above are unaffected: the silent-pipeline contract and the migration are **additive** and relax **no** existing guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact) — they only constrain *what reaches the athlete* and *how a legacy plan is stored*.
