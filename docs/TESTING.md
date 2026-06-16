@@ -1,6 +1,6 @@
 # Testing PACE-method V0 by hand
 
-PACE-method has **no runtime** and is **not yet a plugin** (plugin packaging is Sprint 7). You test it the way it is meant to be used: you talk to an LLM host that has the repository's **skills** in front of it, and you check that it behaves as the method requires. This guide walks you through exercising V0 end-to-end and reaching a verdict on the six validation scenarios.
+PACE-method has **no runtime**. You test it the way it is meant to be used: you talk to an LLM host that has the repository's **skills** in front of it (the installed plugin, or an agent pointed at the repo's `src/`), and you check that it behaves as the method requires. This guide walks you through exercising V0 end-to-end and reaching a verdict on the six validation scenarios.
 
 The scenarios and their pass/fail rules live in [`scenarios/`](../scenarios/); the blank scoring grid is [`scenarios/_grid.md`](../scenarios/_grid.md). The decision tables the host must obey are the CSV files under `src/` (periodization, adjustments, signals, elicitation).
 
@@ -11,8 +11,8 @@ The scenarios and their pass/fail rules live in [`scenarios/`](../scenarios/); t
 V0 is "plan-first" coaching split across personas that never talk to each other directly — they communicate through artefacts (`vision/vision.md`, `plan/plan.md`, `athlete/profile.json`, `log/`). The non-negotiable behaviours you are verifying:
 
 - **The Run coach NEVER generates a session** — it reads the planned one, explains *why this session today*, and at most *modulates* it (scale down within bounds, or substitute active-recovery/rest). No new intervals/zones/format, ever.
-- **`pace-master` routes, it does not coach** — and never emits or self-labels a signal.
-- **Only the Analyst (`pace-agent-analyst`) writes `profile.json`.**
+- **The `pace` master routes, it does not coach** — and never emits or self-labels a signal (reciting the planned session verbatim is the concierge lane, allowed).
+- **Only the Analyst (`pace-analyst`) writes `profile.json`.**
 - **No hallucinated facts** — the host never invents fatigue, sleep, or a sensation you did not give.
 - **The plan is a constraint, not a suggestion** — a request that breaks periodization is refused with an explanation.
 
@@ -30,10 +30,10 @@ Open Claude Code **in the repository root**, then paste this bootstrap prompt as
 ```text
 You are the PACE host for this repository. Act strictly per the repo's skills — never improvise coaching outside them.
 
-1. Load and follow src/pace-master/SKILL.md as your entry point. When routing needs detail, read src/pace-master/references/routing.md and src/pace-master/signals.csv.
+1. Load and follow src/pace/SKILL.md as your entry point. When routing needs detail, read src/pace/references/routing.md and src/pace/signals.csv.
 2. Treat athlete/sample.json as the athlete's profile. Treat vision/vision.md, plan/plan.md, and log/ in the workspace as the athlete's artefacts — they may not exist yet; check before assuming.
-3. When pace-master routes to a persona/workflow, open that skill's SKILL.md (e.g. src/coaching-skills/3-run/pace-agent-coach/SKILL.md) and follow it, loading the CSV tables and assets it references.
-4. Obey every prohibition in the skills. Above all: the Run coach NEVER generates a session; only pace-agent-analyst writes profile.json; pace-master never coaches and never emits/labels a signal.
+3. When the master routes to an agent, open that agent's SKILL.md (e.g. src/pace-coach/SKILL.md) and follow it, loading its capability files (references/*.md) and the CSV tables / assets they reference. The agent stays the single voice — it reads those local files, it does not invoke another skill mid-flow.
+4. Obey every prohibition in the skills. Above all: the Run coach NEVER generates a session; only pace-analyst writes profile.json; the master never coaches and never emits/labels a signal.
 5. Before each reply, state in ONE line which mode/skill you are in and which artefacts you read. Then answer in that skill's voice, citing the CSV rows you used for any deterministic decision.
 
 Acknowledge by reporting which of vision/plan/profile currently exist and which mode that puts us in. Then wait for my message.
@@ -45,8 +45,8 @@ The "state your mode + cite the CSV rows" instruction is what makes the run **ch
 
 Desktop has no repo working directory, so give it the skills another way:
 
-- **Project instructions:** create a Project, paste the bootstrap prompt above into the custom instructions, and **attach** (or paste) the key files: `src/pace-master/SKILL.md`, `src/pace-master/references/routing.md`, the four CSVs, `athlete/sample.json`, and — as you reach Run scenarios — the `src/coaching-skills/3-run/*` skills. Then converse as below.
-- Or use the **Skills** feature: copy the `src/**` skill folders into the location Desktop loads skills from, and invoke `pace-master`.
+- **Project instructions:** create a Project, paste the bootstrap prompt above into the custom instructions, and **attach** (or paste) the key files: `src/pace/SKILL.md`, `src/pace/references/routing.md`, the four CSVs, `athlete/sample.json`, and — as you reach Run scenarios — `src/pace-coach/` (its SKILL.md + `references/checkin.md` + `references/adjust.md`). Then converse as below.
+- Or use the **Skills** feature: copy the `src/**` skill folders into the location Desktop loads skills from, and invoke `pace`.
 
 Everything from §4 on is host-agnostic.
 
@@ -97,7 +97,7 @@ For each: the **exact input to paste**, the **expected behaviour**, and the **pa
 ### 02 — Memory persistence -> [`scenarios/02_memory_persistence.md`](../scenarios/02_memory_persistence.md)
 
 - **Paste:** `Second hard day in a row was awful — flat legs, couldn't hold the intervals, felt cooked.`
-- **Expect:** `pace-master` routes this **executed-training report to the Analyst** (`pace-agent-analyst`) — it does not self-diagnose. The Analyst logs it and appends a `learned_behavior` like `no_back_to_back_hard` to `profile.json` (and is the **only** writer of that file).
+- **Expect:** the master routes this **executed-training report to the Analyst** (`pace-analyst`) — it does not self-diagnose. The Analyst logs it and appends a `learned_behavior` like `no_back_to_back_hard` to `profile.json` (and is the **only** writer of that file).
 - **PASS if:** the behaviour is captured with a concrete `rule`; then ask the host to **build/advance the plan** and confirm the near-horizon **never schedules two hard days back-to-back** (Z1/Z2 or rest between any two hard sessions). Any back-to-back hard pair is a **fail**.
 
 ### 06 — Routing -> [`scenarios/06_routing.md`](../scenarios/06_routing.md)

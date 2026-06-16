@@ -2,9 +2,9 @@
 
 > *Commit and pray is not a strategy. It's a symptom.*
 
-An LLM's outputs are non-deterministic, all the more so because **the host (`pace-master` + the agent) orchestrates**. Without structured evaluation, there's no way to know whether a change to the method improves or degrades the result.
+An LLM's outputs are non-deterministic, all the more so because **the host (the `pace` master + the agent) orchestrates**. Without structured evaluation, there's no way to know whether a change to the method improves or degrades the result.
 
-We no longer evaluate a coded orchestrator. **We evaluate the artefacts** (vision, plan, session), the **adherence to the method**, and `pace-master`'s **routing decisions**.
+We no longer evaluate a coded orchestrator. **We evaluate the artefacts** (vision, plan, session), the **adherence to the method**, and the **master's routing decisions**.
 
 ---
 
@@ -12,7 +12,7 @@ We no longer evaluate a coded orchestrator. **We evaluate the artefacts** (visio
 
 | Level | Question | Example check |
 |---|---|---|
-| **Routing** | Did `pace-master` propose the right persona/workflow? | "injury" -> proposes partial Discovery / rolling |
+| **Routing** | Did the `pace` master propose the right agent? | "injury" -> proposes partial Discovery / rolling |
 | **Artefact form** | Does the vision have the right sections? | the 7 template sections (checklist) |
 | **Plan coherence** | Does the plan respect periodization? | conforms to `periodization-rules.csv` |
 | **Method adherence** | Did Run mode regenerate a session? | ❌ forbidden — it must read the plan |
@@ -52,7 +52,7 @@ scenarios/
 ├── 03_profile_contradiction.md  <- "vegetarian" constraint -> no inconsistent recommendation
 ├── 04_taper_override.md         <- taper D-5, athlete wants 4h -> refuse/advise against, explaining
 ├── 05_degraded_input.md         <- no sensation provided -> asks the right questions, does not hallucinate
-└── 06_routing.md                <- varied messages -> does pace-master propose the right mode?
+└── 06_routing.md                <- varied messages -> does the master propose the right mode?
 ```
 
 ---

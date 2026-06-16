@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-PACE is an **open-source method for AI-driven endurance coaching**, distributed as a set of *skills* (then a *plugin*) for agentic hosts. It enforces a **plan-first** logic: understand the athlete, build a coherent plan, then adjust execution day by day. An orchestrator (`pace-master`) routes to specialized personas. It rides the Claude / MCP ecosystem rather than reimplementing a proprietary engine.
+PACE is an **open-source method for AI-driven endurance coaching**, distributed as a set of *skills* (then a *plugin*) for agentic hosts. It enforces a **plan-first** logic: understand the athlete, build a coherent plan, then adjust execution day by day. A master concierge (`pace`) routes to a small menu of specialized voiced agents. It rides the Claude / MCP ecosystem rather than reimplementing a proprietary engine.
 
 ---
 
