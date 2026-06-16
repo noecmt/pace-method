@@ -19,7 +19,7 @@ verbosity = "normal"   # terse | normal | rich
 [connectors]
 storage = "local"    # local | github | notion | gdrive
 calendar = "local"   # local | gcal | notion
-strava = false       # true = use Strava MCP read connector when available
+strava = true        # use the Strava MCP read connector when it is present (Phase-1 qualitative, on by default); set false to opt out
 
 # To add more read connectors when available:
 # intervals = false

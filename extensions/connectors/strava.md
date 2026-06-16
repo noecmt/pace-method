@@ -6,12 +6,12 @@ A **read-only signal/data provider** via Strava's **official MCP** (remote, OAut
 
 ## capability_probe (plain language)
 
-A Strava MCP tool is available in this session (a tool whose name/description indicates Strava activities / streams / fitness trends / readiness). **Absent** (non-subscriber, not connected) -> **manual entry**: ask the athlete for the few figures needed, or rely on the `log/`. PACE works without Strava.
+A Strava MCP tool is available in this session (a tool whose name/description indicates Strava activities / streams / fitness trends / readiness). **Present -> use it by default** for the **Phase-1 qualitative** read (below): the athlete connected Strava, so the consumer reads the executed activity summary on its own, without waiting for an explicit ask. The `strava` flag in `pace.config.toml` is an **explicit opt-out** (`strava = false` suppresses the probe), not a pre-requisite. **Absent** (non-subscriber, not connected, or opted out) -> **manual entry**: ask the athlete for the few figures needed, or rely on the `log/`; never fabricate a metric (scenario 05). PACE works without Strava.
 
 ## Phased scope
 
 - **Phase 0 — spike (gate).** Before any *structured* use, enumerate the real MCP: tool list, response shapes, what *readiness* actually is, whether *time-in-zone* is exposed, field-name stability. **Freeze no CSV/JSON threshold before this spike.**
-- **Phase 1 — qualitative enrichment (active, safe pre-spike).** Read **summaries** of recent activities for **context only** ("your last 3 rides look like…"). **No** structured signal, **no** schema change, **no** plan calibration. Cycling only.
+- **Phase 1 — qualitative enrichment (active, safe pre-spike, on by default when the tool is present).** Read **summaries** of recent / the just-reported activity for **context only** ("your last 3 rides look like…"; grounding a debrief in the actual ride). **No** structured signal, **no** schema change, **no** plan calibration, **no** write to `profile.json`. Cycling only.
 - **Phase 2 — measured loop (spike-gated).** `strava_baseline` in `profile.json` (**sole writer = the Analyst / `pace-analyst`**); planned-vs-actual at **summary** level (avg power vs target zone, duration, time-in-zone — **never** per-second); signals routed to the **right table** (today -> `adjustment-decisions.csv`; multi-week -> `signals.csv`; post-execution -> `learned_behavior` / `log/`). CSV rows added **only after** the spike.
 
 ## hard_rules
