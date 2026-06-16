@@ -160,6 +160,7 @@ summary: {
   sessions: { total, done, adjusted, skipped, pending },  # counts by status
   adherence,                                              # (done+adjusted)/(done+adjusted+skipped); pending excluded
   duration_min: { planned, actual },                      # actual sums done|adjusted
+  distance_km: { actual },                                # actual only — plan prescribes time/zones, not distance
   intensity_split_min: { "Z1-Z2", "Z3", "Z4-Z5" },        # actual minutes by dominant planned zone (session-level)
   read,                                                   # neutral synthesis, <=2 sentences, [surface].language
   generated_by: "pace-analyst", generated_at
