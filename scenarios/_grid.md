@@ -183,3 +183,16 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 | 12 Legacy migration | — (pending host-LLM) | Migration logic unchanged, now in the planner's `plan-write` capability. |
 
 **Result (static): 6/6 V0 hold + 07–10 hold + 11 strengthened; lint 0/0.** No contract amendment required by the pivot. Host-LLM re-run (11, 12 above all) recommended before the public push.
+
+---
+
+## v1.1.0 — week summary + proactive rolling (pending host-LLM run)
+
+> Two **additive** capabilities on the master+menu tree: (13) a week-level `summary` block on `plan/weeks/<week>.json`, written by the **Analyst** (sole-writer discipline extended from the per-session `debrief`) and recited by the master in the concierge lane; (14) a master **horizon check** that proactively **proposes** rolling (`/pace-plan`) when `index.csv` shows no near week after the active one. Neither relaxes a V0 guardrail: the summary is a derived aggregate (no fabrication, no coaching), the rolling nudge is a plan-state read that **propose-never-imposes** and never touches the Analyst/`signals.csv`. The week-JSON schema change is invisible to `node tools/lint-contracts.mjs` (it does not validate week files) — re-run still **0/0**.
+
+| Scenario | Verdict | Basis / what to check |
+| --- | --- | --- |
+| 13 Week summary | — | Analyst writes/refreshes the `summary` (idempotent, `status: in_progress`->`complete`); fields = lean + `intensity_split_min`; deterministic aggregation against `week-example.json` (`{total:5,done:2,adjusted:1,skipped:1,pending:1}`, `actual:285`, split `165/120/0`, adherence `0.75`); master recites verbatim (concierge), defers to `/pace-debrief` when absent; no fabrication, no other writer. |
+| 14 Proactive rolling | — | Master reads `index.csv`, finds no `status:planned` near row after the active one, **proposes** `/pace-plan` (concierge lane); silent on an obvious auto-route; never self-rolls, never routes the depletion through the Analyst/`signals.csv`; Planner `rolling` runs on acceptance. |
+
+**Status: 2 new v1.1.0 gates defined, awaiting evaluation.** The 6 V0 (01–06) + v0.4.0 (07–10) + v0.5.0/v1.0.0 (11–12) verdicts are unaffected — both additions are new surfaces that relax **no** existing guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact).

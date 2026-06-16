@@ -104,5 +104,15 @@
       "status": "planned",
       "actual": null
     }
-  ]
+  ],
+  "summary": {
+    "status": "in_progress",
+    "sessions": { "total": 5, "done": 2, "adjusted": 1, "skipped": 1, "pending": 1 },
+    "adherence": 0.75,
+    "duration_min": { "planned": 540, "actual": 285 },
+    "intensity_split_min": { "Z1-Z2": 165, "Z3": 120, "Z4-Z5": 0 },
+    "read": "Semaine de charge bien tenue : 3 des 4 séances décidées réalisées (1 sautée pour contrainte de vie connue d'avance, 1 raccourcie pour la canicule, intent préservé). Volume Z2 et tempo Z3 dans la cible ; le seuil sauté reste sous le seuil signals.csv. La sortie longue de dimanche reste à venir.",
+    "generated_by": "pace-analyst",
+    "generated_at": "2026-06-14"
+  }
 }

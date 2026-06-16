@@ -59,6 +59,7 @@ Per [`_schema.md`](../../../extensions/connectors/_schema.md): probe, use if pre
 - ❌ **Never compose a session type absent from the sport pack's `key_sessions`.**
 - ❌ **Never react to a single day's state** — that is Run (`pace-coach`). You work on the plan window and the recent *trend*.
 - ❌ **Never write `athlete/profile.json`.** You amend and gate the plan artefacts only.
+- ❌ **Never write a past week's `summary` block.** The week-level `summary` is the Analyst's derived artefact; rolling reads a week's `status`/`actual` to calibrate, but never authors or edits its `summary`.
 
 ## Output discipline
 

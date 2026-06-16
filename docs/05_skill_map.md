@@ -85,11 +85,11 @@ The athlete-instance config (connectors + integration IDs, formerly `pace-custom
 
 | Skill | Type | Reads | Writes | Structured / local files | Version |
 |---|---|---|---|---|---|
-| `pace` | master | state (vision/plan), message, signals | (recites in concierge lane; routes in route lane) | `references/routing.md`, `signals.csv`, `customize.toml` | V0 |
+| `pace` | master | state (vision/plan), message, signals, `index.csv` horizon | (recites session/week `summary` in concierge lane; routes in route lane; proposes rolling on horizon depletion) | `references/routing.md`, `signals.csv`, `customize.toml` | V0 (horizon nudge: V1) |
 | `pace-discovery` | agent | profile, answers | `vision/vision.md` (via `vision-write`) | `references/vision-write.md`, `assets/vision-template.md`, `customize.toml` | V0 |
 | `pace-planner` | agent | vision, profile, KB, recent `weeks/*.json` | `plan/plan.md`, `weeks/*.json`, `zones.json` (first creation) | `references/{plan-write.md, rolling.md}`, `assets/{plan-template.md, periodization-rules.csv, week-example.json}`, `customize.toml` | V0 (rolling: V1) |
 | `pace-coach` | agent | plan, session, day state, `adjustment-decisions.csv` | session `rationale` + `adjustment` (`weeks/*.json`) | `references/{checkin.md, adjust.md}`, `assets/adjustment-decisions.csv`, `customize.toml` | V0 |
-| `pace-analyst` | agent | `weeks/*.json`, `log/signals.md`, plan | session `actual`+`debrief` (`weeks/*.json`), `log/signals.md`, `profile.json` (learned_behaviors), `zones.json` (regenerated) | `customize.toml` | V0 (minimal) |
+| `pace-analyst` | agent | `weeks/*.json`, `log/signals.md`, plan | session `actual`+`debrief` **+ week-level `summary`** (`weeks/*.json`), `log/signals.md`, `profile.json` (learned_behaviors), `zones.json` (regenerated) | `customize.toml` | V0 (minimal; `summary`: V1) |
 | `pace-elicitation` | tool | — | — | `methods.csv` | V0 |
 | `pace-validate` | tool | target artefact | validation report (internal) | `vision-checklist.md`, `plan-checklist.md` | V0 |
 
@@ -147,6 +147,26 @@ sessions_skipped,3_weeks,partial_discovery_or_rolling
 metric_stagnation,4_weeks,rolling_or_discovery
 life_change,declared,discovery
 ```
+
+> **A second proposal source — plan-horizon depletion.** Beyond the signals table, the master also proposes **rolling** when it reads `plan/index.csv` and finds **no `horizon:near` row `status:planned` after the active one** (the precise window is depleted). This is a **plan-state read** the master does itself — *not* a signal, never via the Analyst or `log/signals.md` — surfaced in the concierge lane as a one-line `/pace-plan` proposal (propose, never impose; never stapled onto an auto-route). The roll is the Planner's `rolling` capability. Scenario 14.
+
+### week-level `summary` (on `plan/weeks/<week>.json`, written by `pace-analyst`)
+
+The session object is the home of a *session's* lifecycle; the **week** is the home of the *week* aggregate. The Analyst maintains a derived `summary` block (sibling of `sessions`), refreshed idempotently on each debrief — **derived data only, never fabricated**, and recited verbatim by the master in the concierge lane ("summarize my week"). Schema + worked example: `src/pace-planner/assets/week-example.json`. Fields:
+
+```
+summary: {
+  status: in_progress | complete,                         # complete once no session is pending/planned
+  sessions: { total, done, adjusted, skipped, pending },  # counts by status
+  adherence,                                              # (done+adjusted)/(done+adjusted+skipped); pending excluded
+  duration_min: { planned, actual },                      # actual sums done|adjusted
+  intensity_split_min: { "Z1-Z2", "Z3", "Z4-Z5" },        # actual minutes by dominant planned zone (session-level)
+  read,                                                   # neutral synthesis, <=2 sentences, [surface].language
+  generated_by: "pace-analyst", generated_at
+}
+```
+
+Scenario 13. The Planner (`plan-write`/`rolling`) never writes `summary`; the master never recomputes it.
 
 ### `methods.csv` (elicitation, under `pace-elicitation/`)
 

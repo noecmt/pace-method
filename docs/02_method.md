@@ -16,14 +16,14 @@ Behavior:
 2. Detect the mode (Discovery / Build / Run).
 3. When the intent is ambiguous, render a **ChatGPT-style intent menu** + a "talk freely" escape hatch:
    1. My session today · 2. My goals / situation have changed · 3. Debrief a session · 4. (Re)build my plan · 5. Talk freely.
-4. **Concierge lane** — answer directly, launch no agent: recite today's planned session, say where the plan/profile lives, report the current mode.
+4. **Concierge lane** — answer directly, launch no agent: recite today's planned session, recite the week `summary` ("summarize my week"), say where the plan/profile lives, report the current mode.
 5. **Route lane** — sure -> launch the agent directly; unsure -> propose 1–3 and let the athlete choose. Forward the context bundle and cross the one skill boundary (master -> agent).
 
 > "What's my session today?" -> the master **recites** the planned session itself (concierge lane, 0 agents). If the athlete then asks *why* this session, or wants it *modulated* -> the master escalates to `pace-coach`.
 > "I have an unexpected change, only 45 min today" -> route directly to `pace-coach` (Run, obvious).
 > "I think my goal is no longer realistic" -> propose *partial Discovery* (revisit the goal) or *rolling* -> the athlete chooses.
 
-Reciting the planned session is a **factual read, not a training judgment** — that is what keeps it inside the master's neutral remit. The first whiff of *why / how hard / is it safe / modulate* is the boundary at which it escalates to `pace-coach`.
+Reciting the planned session — or the stored week `summary` — is a **factual read, not a training judgment** — that is what keeps it inside the master's neutral remit (the master recites the `summary`; it never *computes* it — that is the Analyst's). The first whiff of *why / how hard / is it safe / modulate* is the boundary at which it escalates to `pace-coach`.
 
 Dual routing: **auto/menu by default + slash commands** (`/pace-discovery`, `/pace-plan`, `/pace-today`, `/pace-debrief`) to force. A deliberate CLI mode, naturally plugin-compatible.
 
@@ -35,13 +35,19 @@ Dual routing: **auto/menu by default + slash commands** (`/pace-discovery`, `/pa
 |---|---|---|---|
 | **Discovery** | First launch, request, or strong signal | Understand before planning | `vision/vision.md` |
 | **Build** | After a validated Discovery, or replanning | Build / refine the plan | `plan/plan.md` |
-| **Run** | The everyday (a plan exists) | Execute, explain, adjust | Session lifecycle on `weeks/*.json` (+ `log/signals.md`) |
+| **Run** | The everyday (a plan exists) | Execute, explain, adjust | Session lifecycle + week `summary` on `weeks/*.json` (+ `log/signals.md`) |
 
 ### Triggering an unsolicited Discovery
 
 The master (reading the signals the Analyst emitted) **proposes** (never imposes) a Discovery when a strong signal is on the ledger: goal reached/cancelled, ≥3 weeks of skipped or heavily modified sessions, stagnation/regression, declared life change. The `signals.csv` table defines signal -> proposal.
 
 > "You've systematically modified your threshold sessions for 3 weeks — shall we revisit this block together?"
+
+### Proactively proposing rolling (plan-horizon depletion)
+
+A **second proposal source**, read from plan state rather than from a signal: when the master reads `plan/index.csv` and finds **no near week planned after the active one** (the precise window is depleted), it **proposes** advancing the plan — a one-line `/pace-plan` (rolling) nudge in the concierge lane. This is **not** a signal (it never goes through the Analyst or `log/signals.md`); it is a plan-state fact the master reads itself. Propose, never impose; surfaced at a concierge moment, never stapled onto an auto-route to a voiced agent.
+
+> "I see next week isn't planned yet — run `/pace-plan` and I'll extend your plan (rolling)."
 
 ---
 
@@ -82,7 +88,7 @@ Voice <-> skill mapping (see `05_skill_map.md`):
 | rolling | `pace-planner` | Move the near window forward | plan, recent `weeks/*.json` | `plan/plan.md` (amended), `weeks/*.json` |
 | checkin | `pace-coach` | Explain today's session | plan, session, day's state | session `rationale` (`weeks/*.json`) |
 | adjust | `pace-coach` | Modulate the planned session | session, `adjustment-decisions.csv` | session `adjustment` (`weeks/*.json`) |
-| (analyst core) | `pace-analyst` | Collect feedback, measure | `weeks/*.json`, plan | session `actual`+`debrief`, `log/signals.md`, `profile.json` (learned_behaviors), `zones.json` |
+| (analyst core) | `pace-analyst` | Collect feedback, measure | `weeks/*.json`, plan | session `actual`+`debrief` + week `summary`, `log/signals.md`, `profile.json` (learned_behaviors), `zones.json` |
 
 None of these is a skill boundary: the owning agent *reads the file and follows it* without changing voice.
 
@@ -157,9 +163,12 @@ Both may speak of "constraints" or "what works." To avoid ambiguity:
    writes the session's `rationale`.
 3. If a modulation is needed -> same coach follows its adjust capability: reads
    adjustment-decisions.csv -> modulates, writes the session's `adjustment`.
-4. (post-session) pace-analyst: writes the session's `actual` + `debrief`; on a threshold,
-   emits to log/signals.md; on a marker change, regenerates zones.json.
+4. (post-session) pace-analyst: writes the session's `actual` + `debrief`, refreshes the
+   week-level `summary`; on a threshold, emits to log/signals.md; on a marker change,
+   regenerates zones.json.
 5. If a strong signal -> the master reads log/signals.md and proposes partial Discovery or rolling.
+   If index.csv shows no near week planned after the active one -> the master proposes /pace-plan
+   (rolling) from plan state (concierge lane, not a signal).
 ```
 
 Each step after the master is the **same agent reading a local file** — no skill hop, no voice change.
