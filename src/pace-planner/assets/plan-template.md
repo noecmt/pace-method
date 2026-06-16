@@ -31,7 +31,7 @@ For the current and next block: per-week intent and load shape (load vs recovery
 
 Precise sessions live in `plan/weeks/<week_id>.json`, routed by `plan/index.csv`.
 
-To access today's session: read `plan/index.csv` -> find the row where `status = active` and `horizon = near` -> load `plan/weeks/<week_id>.json` -> find the session by `date`.
+To access today's session(s): read `plan/index.csv` -> find the row where `status = active` and `horizon = near` -> load `plan/weeks/<week_id>.json` -> find the session(s) whose `date` is today (a day may hold more than one, distinguished by `slot`; each is keyed by `id = <date>-<slot>`).
 
 `plan/index.csv` covers the full season (all three horizons). Far and mid rows are approximate and have no `file`; near rows carry a `file` path and a concrete status:
 

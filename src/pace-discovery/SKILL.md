@@ -28,13 +28,14 @@ You don't interrogate section by section — you converse, and you track which o
 
 The six sections above are **narrative** (the *why*) and become the Vision. Alongside them, on a brand-new athlete you also capture the **plannable, quantitative** facts and write them to `athlete/profile.json` — without these, the Planner cannot build precise sessions and the Run coach has no concrete numbers to hold the athlete to. The intake is **not** a Vision section; it is the structured seed.
 
-Capture three things, conversationally (woven into the talk, never as a form):
+Capture four things, conversationally (woven into the talk, never as a form):
 
-1. **Fitness markers** (per the sport pack's `fitness_marker` — primary, plus a secondary if the equipment allows). Cycling: `ftp_watts` (+ `max_hr` or `lthr_bpm`). Running: `threshold_pace_sec_km` (+ HR). Swimming: `css_sec_100m`. Use `marker_elicitation`: ask for the value; **if the athlete doesn't know it, propose a simple test or estimate from a recent performance — never invent a number.** Leave a marker **absent** if there's nothing real to put (the Planner/Coach then degrade to a coarser zone system or qualitative cues — `scenarios/05`). These land in `profile.json.fitness`.
-2. **Current level** — this corrects the "starts from very low" failure. Best recent performances, **current weekly load** (volume, number of sessions), recent training history. Lands in `profile.json` (`level`, `training_volume`, `fitness`).
+0. **Which sport(s)** the athlete practices — this fixes `profile.json.sports` (a list: one discipline for a mono-sport athlete, e.g. `["cycling"]`; the three legs for a triathlete, `["cycling","running","swimming"]`). It decides which sport pack(s) apply and how many marker sets you gather below. Also note the programme-level `current_phase` (sport-agnostic — base/build/…), which sits at the **top** of `profile.json`, not inside a discipline.
+1. **Fitness markers — per declared discipline** (each per its sport pack's `fitness_marker` — primary, plus a secondary if the equipment allows). Cycling: `ftp_watts` (+ `max_hr` or `lthr_bpm`). Running: `threshold_pace_sec_km` (+ HR). Swimming: `css_sec_100m`. Use `marker_elicitation`: ask for the value; **if the athlete doesn't know it, propose a simple test or estimate from a recent performance — never invent a number.** Leave a marker **absent** if there's nothing real to put (the Planner/Coach then degrade to a coarser zone system or qualitative cues — `scenarios/05`). These land in **`profile.json.fitness.<discipline>`** — one block per sport the athlete declared.
+2. **Current level** — this corrects the "starts from very low" failure. Best recent performances, **current weekly load** (volume, number of sessions), recent training history. Lands in `profile.json` (`level`, `training_volume`, and the per-discipline `fitness`).
 3. **Equipment** — sweep it explicitly with `equipment_check`, including **whether an indoor trainer is available** (it matters on bad-weather days — the Run coach can offer it as a *place* to execute the planned session). Also note a power meter / HR monitor / anything else. Lands in `profile.json.equipment`.
 
-`profile.json` is **created once** by this intake. From then on it is the Analyst's file: the Vision still carries the *why*, the Planner derives `athlete/zones.json` from the markers you captured, and any later change to a marker goes through `pace-analyst`.
+`profile.json` is **created once** by this intake. From then on it is the Analyst's file: the Vision still carries the *why*, the Planner derives `athlete/zones.json` (keyed `by_discipline`) from the markers you captured, and any later change to a marker goes through `pace-analyst`.
 
 ## Procedure (every Discovery)
 

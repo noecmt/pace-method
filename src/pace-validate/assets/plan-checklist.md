@@ -14,7 +14,9 @@ Used by `pace-validate` to check the plan artefacts. Several checks are **determ
 - [ ] **Mid horizon has no precise sessions** — `mid` rows in `index.csv` carry no `file`; only `near` rows have a `weeks/` file.
 - [ ] **Respects vision constraints**: no session conflicts with a "what doesn't work" / hard constraint from the vision or a `learned_behavior` in the profile (scenario 02).
 - [ ] **Derived from a validated vision** (a vision reference / commit is recorded in `plan/plan.md`).
-- [ ] **Zones coherence (deterministic)**: `athlete/zones.json` **exists** and is **not stale** — every marker in `zones.fitness_markers` equals the current value in `athlete/profile.json.fitness`. A missing `zones.json`, or any divergence (a marker changed in the profile but not regenerated in the zones), => **not valid**. (A marker absent from the profile must be absent from the zones too — omitted, not invented.)
+- [ ] **Zones coherence (deterministic, per discipline)**: `athlete/zones.json` **exists** and is **not stale** — for **every declared discipline** in `profile.sports`, `zones.by_discipline.<d>.fitness_markers` equals the current `profile.json.fitness.<d>` markers. A missing `zones.json`, a missing `by_discipline` entry for a declared discipline that has markers, or any divergence (a marker changed in the profile but not regenerated in the zones), => **not valid**. (A marker absent from a discipline's profile block must be absent from that discipline's zones too — omitted, not invented.)
+- [ ] **Session discipline resolves (deterministic)**: every session's `sport` in `weeks/*.json` is a discipline declared in `profile.sports`, and its `planned.target.range` is drawn from that discipline's zones block (`zones.by_discipline.<sport>`), with `target.metric` matching the sport pack's `primary_metric` family (`power`/`hr`/`pace`).
+- [ ] **Schema version present**: each `weeks/*.json`, `profile.json`, and `zones.json` carries `schema_version` (frozen contract: `extensions/_artefact_schema.md`).
 
 ## Soft checks (quality)
 

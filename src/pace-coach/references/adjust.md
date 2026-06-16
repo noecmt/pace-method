@@ -7,7 +7,7 @@ A **capability of the Daily coach** (`pace-coach`), not a separate skill: a loca
 A modulation is **exactly one of two operations** (see `docs/02_method.md` and `adjustment-decisions.csv`):
 
 - **(a) Bounded scaling** of the planned session, **keeping its intent** — reduce intensity, shorten the duration, or extend an existing easy block. The session stays the same *kind* of session, just smaller/easier/longer within the phase envelope.
-- **(b) Substitution** with a **fallback-catalog id** — `active_recovery` (= the sport pack's `recovery_ride`, strict Z1) or `rest`. Drawn from the fixed catalog, never improvised.
+- **(b) Substitution** with a **fallback-catalog id** — `active_recovery` (= the **session's discipline** sport pack's active-recovery `key_session`, e.g. cycling `recovery_ride`, strict Z1) or `rest`. Drawn from the fixed catalog of the session's `sport`, never improvised.
 
 Anything else — new intervals, new zones, a new format, a longer *harder* effort — is **generating a session**, which is forbidden.
 
@@ -17,8 +17,8 @@ Anything else — new intervals, new zones, a new format, a longer *harder* effo
 - The athlete's **reported signals**, verbatim — you map only what they actually said.
 - [`../assets/adjustment-decisions.csv`](../assets/adjustment-decisions.csv) — `signal,recommended_action,severity`.
 - [`../../pace-planner/assets/periodization-rules.csv`](../../pace-planner/assets/periodization-rules.csv) — the phase envelope still governs; a modulation may never leave it.
-- the sport pack `knowledge_base/sports/cycling.json` — the fallback catalog (`recovery_ride`, `rest`).
-- `athlete/zones.json` (fixture: `athlete/sample-zones.json`) — the concrete bounds; express every scaled target in **real watts / bpm / pace** from here, not just a zone label.
+- the sport pack `knowledge_base/sports/<session.sport>.json` — the fallback catalog for the session's discipline (its active-recovery `key_session`, `rest`).
+- `athlete/zones.json` (fixture: `athlete/sample-zones.json`) — the concrete bounds, **keyed by discipline** under `by_discipline.<session.sport>`; express every scaled target in **real watts / bpm / pace** from the session's discipline block, not just a zone label.
 - `athlete/profile.json` (forwarded; test fixture `athlete/sample.json`) — hard constraints and `learned_behaviors` (e.g. `heat_sensitive`, `left_knee`).
 - The **training principle** behind the rules (load on demand): `knowledge_base/principles/recovery_basics.md`.
 
@@ -44,7 +44,7 @@ Per [`_schema.md`](../../../extensions/connectors/_schema.md): probe, use if pre
 
 5. **Stay inside the periodization envelope.** Even an *increase* request (`more_time`) may only extend an existing Z2 block and never beyond the phase's `allowed_intensity`/volume. A request the phase **forbids** (e.g. a 4-hour exhausting long ride in taper, scenario 04) is **refused**: offer the planned light session or active recovery.
 
-6. **Write the modulated result onto the session object in `plan/weeks/<active>.json`.** In today's session: set `status: "adjusted"`, update the `planned` fields to the modulated values (scaled zones/duration), and add an `adjustment` object recording **what** you did — `{ "signals": [<the same-day signals acted on>], "rows": [<the adjustment-decisions.csv rows applied, e.g. "heatwave -> reschedule_or_reduce">] }`. The session is the single home for its lifecycle, so there is **no separate log file**. Do **not** re-tabulate the resulting session — it *is* the updated `planned`. Write prose in `[surface].language`; keep the `signal:` ids and `status` enums literal. Refresh the calendar entry (update the existing event/row, never recreate). The same-day signals handled here are **local** to adjust — not the strong, cross-session routing signals the Analyst emits to `log/signals.md`. Schema + example: [`../../pace-planner/assets/week-example.json`](../../pace-planner/assets/week-example.json).
+6. **Write the modulated result onto the session object in `plan/weeks/<active>.json`.** In today's session: set `status: "adjusted"`, update the `planned` fields to the modulated values (scaled `zones` + `target.range` + `duration_min`, keeping `target.metric`), and add an `adjustment` object recording **what** you did — `{ "signals": [<the same-day signals acted on>], "rows": [<the adjustment-decisions.csv rows applied, e.g. "heatwave -> reschedule_or_reduce">] }`. The session is the single home for its lifecycle, so there is **no separate log file**. Do **not** re-tabulate the resulting session — it *is* the updated `planned`. Write prose in `[surface].language`; keep the `signal:` ids and `status` enums literal. Refresh the calendar entry (update the existing event/row, never recreate). The same-day signals handled here are **local** to adjust — not the strong, cross-session routing signals the Analyst emits to `log/signals.md`. Schema + example: [`../../pace-planner/assets/week-example.json`](../../pace-planner/assets/week-example.json).
 
 ## Output discipline
 

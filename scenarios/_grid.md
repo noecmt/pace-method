@@ -142,7 +142,7 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 
 | Scenario | Verdict (static) | Basis |
 | --- | --- | --- |
-| 07 Concrete zones at briefing | ✅ PASS | check-in/coach cite a concrete bound from `zones.json` (e.g. Z4 = 227–262 W); the coach's `adjust` capability scales in real W/bpm; `sample-zones.json` coherent with `sample.json.fitness` (lint det check); marker absent -> coarser system, never invented. |
+| 07 Concrete zones at briefing | ✅ PASS | check-in/coach cite a concrete bound from `zones.json` (e.g. Z4 = 227–262 W); the coach's `adjust` capability scales in real W/bpm; `sample-zones.json` `by_discipline.cycling` coherent with `sample.json.fitness.cycling` (lint det check); marker absent -> coarser system, never invented. |
 | 08 Intake seeds the profile | ✅ PASS | Discovery intake captures markers/level/equipment (1–2 q/turn via `marker_elicitation`/`equipment_check`), writes the **initial** `profile.json`; unknown marker left **absent**; creation = intake, not the Analyst (contract refined in 4 files). |
 | 09 Onboarding zero-state | ✅ PASS | the master detects zero-state, runs the wizard (language->storage->connectors), writes `pace.config.toml`, **then** routes to Discovery; idempotent; degrades to `local`; concierge lane (no training judgment). Routing walkthrough case **G**. |
 | 10 Language persistence | ✅ PASS | `pace.config.toml [surface].language` = single source; surface resolved **first (mandatory)** per `docs/07_customize_merge.md` by every agent at activation; `profile.json.language` deprecated/ignored. |

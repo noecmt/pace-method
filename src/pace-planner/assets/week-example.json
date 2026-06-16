@@ -1,4 +1,5 @@
 {
+  "schema_version": "1.0",
   "week_id": "2026-W24",
   "block": "Construction",
   "phase": "build",
@@ -6,12 +7,15 @@
   "volume_modifier": 1.0,
   "sessions": [
     {
+      "id": "2026-06-09-am",
       "date": "2026-06-09",
+      "slot": "am",
+      "sport": "cycling",
       "type": "endurance_long",
       "planned": {
         "duration_min": 120,
         "zones": ["Z2"],
-        "power": "176–240 W",
+        "target": { "metric": "power", "zone_ref": "Z2", "range": "176–240 W" },
         "structure": "endurance continue, terrain roulant"
       },
       "rationale": "Reprise après plusieurs jours d'arrêt — réancrer le volume aérobie sans charge.",
@@ -29,12 +33,15 @@
       }
     },
     {
+      "id": "2026-06-10-am",
       "date": "2026-06-10",
+      "slot": "am",
+      "sport": "cycling",
       "type": "tempo",
       "planned": {
         "duration_min": 120,
         "zones": ["Z3"],
-        "power": "243–278 W",
+        "target": { "metric": "power", "zone_ref": "Z3", "range": "243–278 W" },
         "structure": "2×20min Z3, 5min Z1 récup"
       },
       "rationale": "Ancre mid-week structurée — tempo Z3 pour la puissance soutenable du gran fondo.",
@@ -50,12 +57,15 @@
       }
     },
     {
+      "id": "2026-06-11-am",
       "date": "2026-06-11",
+      "slot": "am",
+      "sport": "cycling",
       "type": "threshold_intervals",
       "planned": {
         "duration_min": 75,
         "zones": ["Z4"],
-        "power": "288–330 W",
+        "target": { "metric": "power", "zone_ref": "Z4", "range": "288–330 W" },
         "structure": "3×10min Z4, 5min Z1 récup"
       },
       "rationale": "Stimulus seuil avant la décharge de fin de semaine.",
@@ -72,12 +82,39 @@
       }
     },
     {
+      "id": "2026-06-13-am",
       "date": "2026-06-13",
+      "slot": "am",
+      "sport": "swimming",
+      "type": "technique",
+      "planned": {
+        "duration_min": 40,
+        "zones": ["Z2"],
+        "target": { "metric": "pace", "zone_ref": "Z2", "range": "1:55–2:05 /100m" },
+        "structure": "éducatifs + 8×50m souple, focus technique"
+      },
+      "rationale": "Séance technique à faible charge — réveil aérobie matinal avant l'activation vélo du soir, sans empiéter sur la fraîcheur.",
+      "status": "done",
+      "actual": {
+        "duration_min_actual": 40,
+        "distance_km": 1.8,
+        "rpe": 2,
+        "notes": "Nage souple, sensation glisse correcte"
+      },
+      "debrief": {
+        "read": "Technique tenue, charge négligeable. N'interfère pas avec l'activation vélo du même jour."
+      }
+    },
+    {
+      "id": "2026-06-13-pm",
+      "date": "2026-06-13",
+      "slot": "pm",
+      "sport": "cycling",
       "type": "recovery_ride",
       "planned": {
         "duration_min": 45,
         "zones": ["Z1", "Z2"],
-        "power": "0–240 W",
+        "target": { "metric": "power", "zone_ref": "Z2", "range": "0–240 W" },
         "structure": "activation, 2–3 accélérations 20s allure course"
       },
       "rationale": "Ouvrir les jambes et garder la fraîcheur en fin de semaine de charge.",
@@ -97,12 +134,15 @@
       }
     },
     {
+      "id": "2026-06-14-am",
       "date": "2026-06-14",
+      "slot": "am",
+      "sport": "cycling",
       "type": "endurance_long",
       "planned": {
         "duration_min": 180,
         "zones": ["Z2"],
-        "power": "176–240 W",
+        "target": { "metric": "power", "zone_ref": "Z2", "range": "176–240 W" },
         "structure": "sortie longue Z2, gestion de l'allure sur les bosses"
       },
       "status": "planned",
@@ -111,12 +151,16 @@
   ],
   "summary": {
     "status": "in_progress",
-    "sessions": { "total": 5, "done": 2, "adjusted": 1, "skipped": 1, "pending": 1 },
-    "adherence": 0.75,
-    "duration_min": { "planned": 540, "actual": 285 },
-    "distance_km": { "actual": 137 },
-    "intensity_split_min": { "Z1-Z2": 165, "Z3": 120, "Z4-Z5": 0 },
-    "read": "Semaine de charge bien tenue : 3 des 4 séances décidées réalisées (1 sautée pour contrainte de vie connue d'avance, 1 raccourcie pour la canicule, intent préservé). Volume Z2 et tempo Z3 dans la cible ; le seuil sauté reste sous le seuil signals.csv. La sortie longue de dimanche reste à venir.",
+    "sessions": { "total": 6, "done": 3, "adjusted": 1, "skipped": 1, "pending": 1 },
+    "adherence": 0.8,
+    "duration_min": { "planned": 580, "actual": 325 },
+    "distance_km": { "cycling": 137, "swimming": 1.8 },
+    "intensity_split_min": { "Z1-Z2": 205, "Z3": 120, "Z4-Z5": 0 },
+    "by_sport": {
+      "cycling": { "sessions": 5, "duration_min": 285, "distance_km": 137 },
+      "swimming": { "sessions": 1, "duration_min": 40, "distance_km": 1.8 }
+    },
+    "read": "Semaine de charge bien tenue : 4 des 5 séances décidées réalisées (1 sautée pour contrainte de vie connue d'avance, 1 raccourcie pour la canicule, intent préservé). Volume Z2 et tempo Z3 dans la cible ; le seuil sauté reste sous le seuil signals.csv. La sortie longue de dimanche reste à venir.",
     "generated_by": "pace-analyst",
     "generated_at": "2026-06-14"
   }

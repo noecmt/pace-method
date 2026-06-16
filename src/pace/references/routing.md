@@ -35,7 +35,7 @@ When **none** of `pace.config.toml` / vision / plan / profile exists, the master
 
 ## 3. Lane selection
 
-Decide *how* to act, in this order. The governing line: **state facts about the system and the existence/location/summary of artefacts directly — including reciting today's planned session verbatim; the moment a reply needs a training judgment (why, how hard, is it safe, modulate), route.**
+Decide *how* to act, in this order. The governing line: **state facts about the system and the existence/location/summary of artefacts directly — including reciting today's planned session(s) verbatim (all of them, in `slot` order, when a day holds several — a two-a-day or a brick); the moment a reply needs a training judgment (why, how hard, is it safe, modulate), route.**
 
 1. **Concierge (answer directly).** The request is meta / navigation / read-only state, or asks for a **stored artefact as written** (today's session, the week `summary`), and needs no training judgment. Examples: capabilities, where an artefact is, which mode is active, a plain summary of `profile.json`, "what's my session today?", "summarize my week". -> Answer; launch no agent. Recite the week `summary` block **as stored** (never recompute it; if absent, offer `/pace-debrief`). (For the *why* or a modulation of that session, escalate to `pace-coach`.)
 2. **Auto-route (one boundary).** The coaching intent is unambiguous and a single route clearly applies. -> Launch that agent, pass context, let it own the conversation. No menu, no ceremony.

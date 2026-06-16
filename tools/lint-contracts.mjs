@@ -122,23 +122,30 @@ if (adjustments) {
   else ok(`all severities ∈ {low, medium, high}`);
 }
 
-// === 4. sample.json ===========================================================
+// === 4. sample.json (frozen schema v1.0: multi-discipline) ====================
 head('Sample athlete profile');
 const sample = readJson('athlete/sample.json', true);
 let samplePhase = null;
 if (sample) {
-  const need = ['athlete_id', 'sport', 'fitness', 'constraints', 'learned_behaviors'];
+  const need = ['schema_version', 'athlete_id', 'sports', 'current_phase', 'fitness', 'constraints', 'learned_behaviors'];
   const miss = need.filter((k) => !(k in sample));
   if (miss.length) err(`sample.json: missing key(s): ${miss.join(', ')}`);
-  if (sample.fitness && !sample.fitness.current_phase) err(`sample.json: fitness.current_phase missing`);
+  if (!Array.isArray(sample.sports) || sample.sports.length === 0) err(`sample.json: sports must be a non-empty array`);
+  // fitness is keyed by discipline; every declared sport needs a fitness block
+  if (sample.sports && Array.isArray(sample.sports) && sample.fitness) {
+    const missingDisc = sample.sports.filter((s) => !(s in sample.fitness));
+    if (missingDisc.length) err(`sample.json: fitness missing block(s) for declared sport(s): ${missingDisc.join(', ')}`);
+  }
+  if (sample.fitness && typeof sample.fitness === 'object' && 'fitness_marker' in sample.fitness)
+    err(`sample.json: fitness must be keyed by discipline (fitness.<sport>), not a flat marker block`);
   if (!Array.isArray(sample.constraints)) err(`sample.json: constraints must be an array`);
   if (!Array.isArray(sample.learned_behaviors)) err(`sample.json: learned_behaviors must be an array`);
   else {
     const noId = sample.learned_behaviors.filter((b) => !b || !b.id);
     if (noId.length) err(`sample.json: ${noId.length} learned_behavior(s) without an id`);
   }
-  if (!miss.length) ok(`sample.json: required keys present, ${sample.learned_behaviors?.length ?? 0} learned_behaviors`);
-  samplePhase = sample.fitness?.current_phase ?? null;
+  if (!miss.length) ok(`sample.json: required keys present, ${sample.sports?.length ?? 0} sport(s), ${sample.learned_behaviors?.length ?? 0} learned_behaviors`);
+  samplePhase = sample.current_phase ?? null;
 }
 
 // === 5. cycling.json vs sport schema (optional / deferred) ====================
@@ -226,33 +233,85 @@ if (adjustments && signals) {
   else ok(`scenario signal references resolve to a CSV signal`);
 }
 
-// === 7. derived zones fixture (sample-zones.json) ============================
+// === 7. derived zones fixture (sample-zones.json — frozen schema v1.0) ========
 head('Derived zones (sample-zones.json)');
 const zonesFx = readJson('athlete/sample-zones.json', false);
 if (zonesFx) {
-  const need = ['sport', 'version', 'generated_by', 'generated_at', 'fitness_markers'];
+  const need = ['schema_version', 'generated_by', 'generated_at', 'by_discipline'];
   const miss = need.filter((k) => !(k in zonesFx));
   if (miss.length) err(`sample-zones.json: missing field(s): ${miss.join(', ')}`);
   else ok(`sample-zones.json: required fields present (generated_by ${zonesFx.generated_by})`);
-  // each zone system, if present, ordered by id 1..n
-  for (const key of ['power_zones', 'hr_zones', 'pace_zones']) {
-    const arr = zonesFx[key];
-    if (!Array.isArray(arr)) continue;
-    let ordered = true;
-    for (let i = 0; i < arr.length; i++) if (arr[i].id !== i + 1) ordered = false;
-    if (!ordered) err(`sample-zones.json: ${key} not ordered by id (1..n)`);
-    else ok(`sample-zones.json: ${key} present, ${arr.length} zones, ordered`);
-  }
-  // coherence gate (the check pace-validate enforces): zones.fitness_markers === profile.fitness
-  if (sample && sample.fitness && zonesFx.fitness_markers) {
-    let coherent = true;
-    for (const [k, v] of Object.entries(zonesFx.fitness_markers)) {
-      if (sample.fitness[k] !== v) {
-        coherent = false;
-        err(`sample-zones.json: fitness_markers.${k}=${JSON.stringify(v)} != sample.json.fitness.${k}=${JSON.stringify(sample.fitness[k])} (stale zones — pace-validate would reject)`);
+  const byDisc = zonesFx.by_discipline;
+  if (byDisc && typeof byDisc === 'object') {
+    for (const [disc, block] of Object.entries(byDisc)) {
+      // each zone system, if present, ordered by id 1..n
+      for (const key of ['power_zones', 'hr_zones', 'pace_zones']) {
+        const arr = block?.[key];
+        if (!Array.isArray(arr)) continue;
+        let ordered = true;
+        for (let i = 0; i < arr.length; i++) if (arr[i].id !== i + 1) ordered = false;
+        if (!ordered) err(`sample-zones.json: by_discipline.${disc}.${key} not ordered by id (1..n)`);
+        else ok(`sample-zones.json: ${disc}.${key} present, ${arr.length} zones, ordered`);
+      }
+      // coherence gate (per discipline): zones.by_discipline.<d>.fitness_markers === profile.fitness.<d>
+      const profMarkers = sample?.fitness?.[disc];
+      if (profMarkers && block?.fitness_markers) {
+        let coherent = true;
+        for (const [k, v] of Object.entries(block.fitness_markers)) {
+          if (profMarkers[k] !== v) {
+            coherent = false;
+            err(`sample-zones.json: by_discipline.${disc}.fitness_markers.${k}=${JSON.stringify(v)} != sample.json.fitness.${disc}.${k}=${JSON.stringify(profMarkers[k])} (stale zones — pace-validate would reject)`);
+          }
+        }
+        if (coherent) ok(`sample-zones.json: ${disc} fitness_markers coherent with sample.json.fitness.${disc} (pace-validate gate)`);
+      } else if (!profMarkers) {
+        warn(`sample-zones.json: by_discipline.${disc} has no matching profile.fitness.${disc} block`);
       }
     }
-    if (coherent) ok(`sample-zones.json: fitness_markers coherent with sample.json.fitness (pace-validate gate)`);
+  }
+}
+
+// === 8. week-example.json (frozen week schema v1.0 + summary recompute) =======
+head('Week fixture (week-example.json)');
+const week = readJson('src/pace-planner/assets/week-example.json', false);
+if (week) {
+  if (week.schema_version !== '1.0') err(`week-example.json: schema_version must be "1.0"`);
+  const sessions = Array.isArray(week.sessions) ? week.sessions : [];
+  const ids = new Set();
+  let shapeOk = true;
+  for (const s of sessions) {
+    if (!s.id || !s.date || !s.slot || !s.sport || !s.type) { shapeOk = false; err(`week-example.json: session missing id/date/slot/sport/type (${s.id || s.date})`); }
+    if (s.id && s.id !== `${s.date}-${s.slot}`) { shapeOk = false; err(`week-example.json: session id '${s.id}' != '<date>-<slot>' (${s.date}-${s.slot})`); }
+    if (s.id) { if (ids.has(s.id)) err(`week-example.json: duplicate session id '${s.id}'`); ids.add(s.id); }
+    const t = s.planned?.target;
+    if (!t || !['power', 'hr', 'pace'].includes(t.metric) || !t.range) { shapeOk = false; err(`week-example.json: session '${s.id}' planned.target must be {metric∈power|hr|pace, zone_ref, range}`); }
+  }
+  if (shapeOk && sessions.length) ok(`week-example.json: ${sessions.length} sessions, ids unique & well-formed, targets metric-tagged`);
+
+  // recompute the summary and compare to the stored block (the scenario-13 gate)
+  const sm = week.summary;
+  if (sm) {
+    const exec = sessions.filter((s) => s.status === 'done' || s.status === 'adjusted');
+    const by = (st) => sessions.filter((s) => s.status === st).length;
+    const counts = { total: sessions.length, done: by('done'), adjusted: by('adjusted'), skipped: by('skipped'), pending: by('planned') };
+    const durActual = exec.reduce((a, s) => a + (s.actual?.duration_min_actual || 0), 0);
+    const durPlanned = sessions.reduce((a, s) => a + (s.planned?.duration_min || 0), 0);
+    const distBySport = {};
+    for (const s of exec) if (typeof s.actual?.distance_km === 'number') distBySport[s.sport] = +( (distBySport[s.sport] || 0) + s.actual.distance_km ).toFixed(2);
+    const term = counts.done + counts.adjusted + counts.skipped;
+    const adherence = term ? +((counts.done + counts.adjusted) / term).toFixed(4) : null;
+    const sports = new Set(sessions.map((s) => s.sport));
+
+    const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+    let smOk = true;
+    if (!eq(sm.sessions, counts)) { smOk = false; err(`week-example.json: summary.sessions ${JSON.stringify(sm.sessions)} != recomputed ${JSON.stringify(counts)}`); }
+    if (sm.duration_min?.actual !== durActual || sm.duration_min?.planned !== durPlanned) { smOk = false; err(`week-example.json: summary.duration_min != {planned:${durPlanned}, actual:${durActual}}`); }
+    if (!eq(sm.distance_km, distBySport)) { smOk = false; err(`week-example.json: summary.distance_km ${JSON.stringify(sm.distance_km)} != recomputed-by-sport ${JSON.stringify(distBySport)}`); }
+    if (Math.abs((sm.adherence ?? -1) - (adherence ?? -1)) > 1e-9) { smOk = false; err(`week-example.json: summary.adherence ${sm.adherence} != recomputed ${adherence}`); }
+    // by_sport present iff >1 sport
+    if (sports.size > 1 && !sm.by_sport) { smOk = false; err(`week-example.json: week spans ${sports.size} sports but summary.by_sport is absent`); }
+    if (sports.size <= 1 && sm.by_sport) { smOk = false; err(`week-example.json: mono-sport week must omit summary.by_sport`); }
+    if (smOk) ok(`week-example.json: summary recompute matches (counts, durations, distance-by-sport, adherence, by_sport rule)`);
   }
 }
 

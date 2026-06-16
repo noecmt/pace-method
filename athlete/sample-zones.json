@@ -1,29 +1,32 @@
 {
-  "_comment": "Derived artefact fixture for scenario testing — the precompiled intensity zones for athlete/sample.json (cycling, FTP 250W, max_hr 185). NEVER hand-edited: regenerated from profile.json + the sport pack by the planner's plan-write capability (first time) or the Analyst / pace-analyst (on a marker change). zones.fitness_markers must always match profile.json.fitness (pace-validate enforces this).",
-  "sport": "cycling",
-  "version": "1.0",
+  "_comment": "Derived artefact fixture for scenario testing — the precompiled intensity zones for athlete/sample.json (cycling, FTP 250W, max_hr 185). NEVER hand-edited: regenerated from profile.json + the sport pack by the planner's plan-write capability (first time) or the Analyst / pace-analyst (on a marker change). Keyed by discipline under `by_discipline` (one entry for a mono-sport athlete, three for a triathlete). Each discipline's `fitness_markers` must always match profile.json.fitness.<discipline> (pace-validate enforces this).",
+  "schema_version": "1.0",
   "generated_by": "pace-planner",
   "generated_at": "2026-04-15",
-  "fitness_markers": {
-    "ftp_watts": 250,
-    "max_hr": 185,
-    "lthr_bpm": null
-  },
-  "hr_reference": "max_hr",
-  "power_zones": [
-    { "id": 1, "name": "Active recovery", "min_watts": 0,   "max_watts": 137,  "ftp_pct": [0.00, 0.55] },
-    { "id": 2, "name": "Endurance",       "min_watts": 140, "max_watts": 187,  "ftp_pct": [0.56, 0.75] },
-    { "id": 3, "name": "Tempo",           "min_watts": 190, "max_watts": 225,  "ftp_pct": [0.76, 0.90] },
-    { "id": 4, "name": "Threshold",       "min_watts": 227, "max_watts": 262,  "ftp_pct": [0.91, 1.05] },
-    { "id": 5, "name": "VO2max",          "min_watts": 265, "max_watts": 300,  "ftp_pct": [1.06, 1.20] },
-    { "id": 6, "name": "Anaerobic",       "min_watts": 302, "max_watts": 375,  "ftp_pct": [1.21, 1.50] },
-    { "id": 7, "name": "Sprint",          "min_watts": 377, "max_watts": null, "ftp_pct": [1.51, null] }
-  ],
-  "hr_zones": [
-    { "id": 1, "name": "Recovery",          "min_bpm": 0,   "max_bpm": 125, "ref_pct": [0.00, 0.68] },
-    { "id": 2, "name": "Aerobic endurance", "min_bpm": 126, "max_bpm": 153, "ref_pct": [0.68, 0.83] },
-    { "id": 3, "name": "Tempo",             "min_bpm": 154, "max_bpm": 164, "ref_pct": [0.83, 0.89] },
-    { "id": 4, "name": "Threshold",         "min_bpm": 165, "max_bpm": 173, "ref_pct": [0.89, 0.94] },
-    { "id": 5, "name": "VO2max / max",      "min_bpm": 174, "max_bpm": 185, "ref_pct": [0.94, 1.00] }
-  ]
+  "by_discipline": {
+    "cycling": {
+      "fitness_markers": {
+        "ftp_watts": 250,
+        "max_hr": 185,
+        "lthr_bpm": null
+      },
+      "hr_reference": "max_hr",
+      "power_zones": [
+        { "id": 1, "name": "Active recovery", "min_watts": 0,   "max_watts": 137,  "ftp_pct": [0.00, 0.55] },
+        { "id": 2, "name": "Endurance",       "min_watts": 140, "max_watts": 187,  "ftp_pct": [0.56, 0.75] },
+        { "id": 3, "name": "Tempo",           "min_watts": 190, "max_watts": 225,  "ftp_pct": [0.76, 0.90] },
+        { "id": 4, "name": "Threshold",       "min_watts": 227, "max_watts": 262,  "ftp_pct": [0.91, 1.05] },
+        { "id": 5, "name": "VO2max",          "min_watts": 265, "max_watts": 300,  "ftp_pct": [1.06, 1.20] },
+        { "id": 6, "name": "Anaerobic",       "min_watts": 302, "max_watts": 375,  "ftp_pct": [1.21, 1.50] },
+        { "id": 7, "name": "Sprint",          "min_watts": 377, "max_watts": null, "ftp_pct": [1.51, null] }
+      ],
+      "hr_zones": [
+        { "id": 1, "name": "Recovery",          "min_bpm": 0,   "max_bpm": 125, "ref_pct": [0.00, 0.68] },
+        { "id": 2, "name": "Aerobic endurance", "min_bpm": 126, "max_bpm": 153, "ref_pct": [0.68, 0.83] },
+        { "id": 3, "name": "Tempo",             "min_bpm": 154, "max_bpm": 164, "ref_pct": [0.83, 0.89] },
+        { "id": 4, "name": "Threshold",         "min_bpm": 165, "max_bpm": 173, "ref_pct": [0.89, 0.94] },
+        { "id": 5, "name": "VO2max / max",      "min_bpm": 174, "max_bpm": 185, "ref_pct": [0.94, 1.00] }
+      ]
+    }
+  }
 }

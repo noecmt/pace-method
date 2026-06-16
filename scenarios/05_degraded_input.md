@@ -42,7 +42,7 @@ corresponding `adjustment-decisions.csv` signal present in the input => **fail**
 
 ### Setup
 
-- Athlete with **no power meter and no recorded FTP**: `profile.json.fitness.ftp_watts` is absent, but `max_hr` is present (e.g. 185). Per `ZONES_SCHEMA`, `athlete/zones.json` then **omits** `power_zones` and carries `hr_zones` as the primary system.
+- Athlete with **no power meter and no recorded FTP**: `profile.json.fitness.cycling.ftp_watts` is absent, but `max_hr` is present (e.g. 185). Per `ZONES_SCHEMA`, `athlete/zones.json` `by_discipline.cycling` then **omits** `power_zones` and carries `hr_zones` as the primary system.
 - (Stronger sub-case: neither power nor HR marker present -> `zones.json` carries no numeric zones at all.)
 
 ### Input

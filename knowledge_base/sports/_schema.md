@@ -8,7 +8,7 @@ A sport pack is a single JSON file `knowledge_base/sports/<sport_id>.json`. It c
 | --- | --- | --- |
 | `sport_id` | string | Unique id, matches the filename (e.g. `cycling`, `running`). |
 | `version` | string | Pack version (semver-ish, e.g. `"1.0"`). |
-| `primary_metric` | string | The metric the sport is driven by (e.g. `power_watts`, `pace_min_per_km`). |
+| `primary_metric` | string | The metric the sport is driven by (e.g. `power_watts`, `pace_min_per_km`). Maps to a session's `planned.target.metric` token: `power_watts`→`power`, any `pace_*`→`pace`, HR-driven→`hr` (see `extensions/_artefact_schema.md`). |
 | `fitness_marker` | string | The single benchmark used for zones (e.g. `ftp`, `threshold_pace`). |
 | `intensity_zones` | object | `{ system, zones, hr_system, hr_zones }`. Primary `zones`: each `{ id, name, <marker>_pct: [lo, hi] }`, contiguous and ordered. **`hr_zones` is required** — the transversal 5-zone HR system, each `{ id, name, max_hr_pct: [lo, hi], lthr_pct: [lo, hi] }` (ordered; the upper bound of zone 5 may be `null`). |
 | `key_sessions` | object | Map of `session_id -> { purpose, typical_duration_min: [lo, hi], intensity }`. **Must include at least one active-recovery session** (the modulate fallback catalog draws from here — see `02_method.md`). |

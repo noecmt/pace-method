@@ -28,7 +28,7 @@ A **shared tool**, not an agent: **no voice, no user-facing output, writes nothi
 ## Procedure
 
 1. Load the checklist for the artefact type.
-2. Run every **hard check** in order. For a plan, the intensity-legality and volume-coherence checks are **deterministic**: compare each near-horizon session's zones against the `allowed_intensity` / `forbidden` of its phase row in  `periodization-rules.csv`, and its volume against `volume_modifier`. The **zones-coherence** check is also deterministic: `athlete/zones.json` must exist and its `fitness_markers` must equal the current `athlete/profile.json.fitness` markers (stale or missing zones => INVALID).
+2. Run every **hard check** in order. For a plan, the intensity-legality and volume-coherence checks are **deterministic**: compare each near-horizon session's zones against the `allowed_intensity` / `forbidden` of its phase row in  `periodization-rules.csv`, and its volume against `volume_modifier`. The **zones-coherence** check is also deterministic and **per discipline**: `athlete/zones.json` must exist and, for every declared discipline in `profile.sports`, its `by_discipline.<d>.fitness_markers` must equal the current `athlete/profile.json.fitness.<d>` markers (stale or missing zones => INVALID).
 3. Run the **soft checks** as quality signals (not blockers).
 4. Emit a **validation report** (below).
 

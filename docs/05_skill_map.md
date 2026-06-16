@@ -152,7 +152,7 @@ life_change,declared,discovery
 
 ### week-level `summary` (on `plan/weeks/<week>.json`, written by `pace-analyst`)
 
-The session object is the home of a *session's* lifecycle; the **week** is the home of the *week* aggregate. The Analyst maintains a derived `summary` block (sibling of `sessions`), refreshed idempotently on each debrief — **derived data only, never fabricated**, and recited verbatim by the master in the concierge lane ("summarize my week"). Schema + worked example: `src/pace-planner/assets/week-example.json`. Fields:
+The session object is the home of a *session's* lifecycle; the **week** is the home of the *week* aggregate. The Analyst maintains a derived `summary` block (sibling of `sessions`), refreshed idempotently on each debrief — **derived data only, never fabricated**, and recited verbatim by the master in the concierge lane ("summarize my week"). Full frozen schema: `extensions/_artefact_schema.md`; worked example: `src/pace-planner/assets/week-example.json`. Fields:
 
 ```
 summary: {
@@ -160,14 +160,15 @@ summary: {
   sessions: { total, done, adjusted, skipped, pending },  # counts by status
   adherence,                                              # (done+adjusted)/(done+adjusted+skipped); pending excluded
   duration_min: { planned, actual },                      # actual sums done|adjusted
-  distance_km: { actual },                                # actual only — plan prescribes time/zones, not distance
-  intensity_split_min: { "Z1-Z2", "Z3", "Z4-Z5" },        # actual minutes by dominant planned zone (session-level)
+  distance_km: { <sport>: actual },                       # keyed by sport, actual only (cross-sport sum is meaningless); mono-sport = one key
+  intensity_split_min: { "Z1-Z2", "Z3", "Z4-Z5" },        # actual minutes by dominant planned zone (session-level); zone numbers exist in every pack
+  by_sport: { <sport>: { sessions, duration_min, distance_km } },  # ONLY when the week has >1 sport; per-sport split (sessions=count, duration/distance=actual)
   read,                                                   # neutral synthesis, <=2 sentences, [surface].language
   generated_by: "pace-analyst", generated_at
 }
 ```
 
-Scenario 13. The Planner (`plan-write`/`rolling`) never writes `summary`; the master never recomputes it.
+The other `summary` fields are **sport-agnostic totals** (they sum cleanly across disciplines). Scenario 13. The Planner (`plan-write`/`rolling`) never writes `summary`; the master never recomputes it.
 
 ### `methods.csv` (elicitation, under `pace-elicitation/`)
 
@@ -186,6 +187,10 @@ Contract of a sport pack (to add running, tri, swimming without touching the tru
 ### `extensions/domains/_schema.md` and `extensions/methods/_schema.md`
 
 Contracts of axes 2 and 3. Present from now on (even if not implemented) to freeze the extension interface: a domain pack declares what it reads (plan/session) and its output artefact; a method pack declares its planning strategy + its session structures.
+
+### `extensions/_artefact_schema.md`
+
+The **frozen contract of the core artefacts** (`weeks/*.json`, `profile.json`, `zones.json`): their `schema_version`, the session object (`id`/`slot`/`sport` + the metric-agnostic `target`), the week `summary` (incl. per-sport `distance_km`/`by_sport`), and the **discipline (session) vs programme (athlete)** split — `profile.sports[]` + `fitness`/`zones` keyed by discipline. This is the data point-fixed at `v1.0.0`.
 
 ---
 

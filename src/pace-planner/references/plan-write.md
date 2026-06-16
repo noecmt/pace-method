@@ -9,7 +9,7 @@ A **capability of the Planner** (`pace-planner`), not a separate skill: a local 
 - The phase rules [`../assets/periodization-rules.csv`](../assets/periodization-rules.csv) — `phase,allowed_intensity,forbidden,volume_modifier`.
 - The sport pack `knowledge_base/sports/cycling.json` — `key_sessions` (legal session types) **and the zone systems** used to derive concrete bounds: `intensity_zones` (power, `ftp_pct`) and `intensity_zones.hr_zones` (`max_hr_pct` / `lthr_pct`).
 - The validator tool [`pace-validate`](../../pace-validate/) + its plan-checklist.
-- `athlete/profile.json` (forwarded; test fixture `athlete/sample.json`) — for the constraint cross-check **and the fitness markers** (`ftp_watts`, `max_hr`, `lthr_bpm`, `threshold_pace_sec_km`, `css_sec_100m`) you derive zones from.
+- `athlete/profile.json` (forwarded; test fixture `athlete/sample.json`) — for the constraint cross-check **and the fitness markers, keyed by discipline** under `fitness.<discipline>` (`ftp_watts`, `max_hr`, `lthr_bpm`, `threshold_pace_sec_km`, `css_sec_100m`); `sports[]` lists the disciplines you derive zones for.
 - `athlete/zones.json` (fixture: `athlete/sample-zones.json`) — the **derived** zones artefact you generate (next); the near-horizon sessions reference its concrete bounds.
 
 > If the master forwarded `{config, profile, zones, active_week}` as context, use those objects — do **not** re-read the files from disk.
@@ -25,13 +25,13 @@ Persist and deliver through the connector layer — [`_schema.md`](../../../exte
 
 1. **Fill plan.md from the template.** Far horizon = season blocks (phase + approx dates + intent, no sessions). Mid horizon = approximate weeks (intent + load type + `volume_modifier`, **no precise sessions**). Near horizon = a pointer to `plan/index.csv` + `plan/weeks/` (no inline table). Record `Sport`, `fitness marker`, and the **source vision reference/commit**.
 
-2. **Derive `athlete/zones.json` first — before any precise session.** A precise session needs concrete bounds (watts/bpm/pace), so materialize the derived zones artefact from `profile.json.fitness` + the sport pack's zone percentages. You are its **first writer** (`generated_by: pace-planner`). For each marker that is **actually present** in `profile.json.fitness`, build the matching zone array:
+2. **Derive `athlete/zones.json` first — before any precise session.** A precise session needs concrete bounds (watts/bpm/pace), so materialize the derived zones artefact from `profile.json.fitness` + the sport pack's zone percentages. You are its **first writer** (`generated_by: pace-planner`). The file is **keyed by discipline**: set a top-level `schema_version: "1.0"` + a `by_discipline` map, and **build one entry per declared `sport` in `profile.sports[]`** that has markers. Within each `by_discipline.<sport>`, for each marker **actually present** in `profile.json.fitness.<sport>`, build the matching zone array (the sport pack is `knowledge_base/sports/<sport>.json`):
    - **Power** (cycling, `ftp_watts`): `min_watts = floor(ftp × pct_min)`, `max_watts = floor(ftp × pct_max)` from `intensity_zones.zones` `ftp_pct`. (FTP 250 -> Z4 = 227–262 W.)
    - **HR** (`max_hr` or `lthr_bpm`): use `lthr_bpm` if present (more precise), else `max_hr`; `min_bpm/max_bpm = floor(ref × pct)` from `hr_zones` `lthr_pct`/`max_hr_pct`. Set `hr_reference` to the marker used.
    - **Pace** (running `threshold_pace_sec_km`, swimming `css_sec_100m`): `round(marker × pct)` per the sport pack's pace zones.
-   Copy the markers used into `fitness_markers`, set `sport`, `version`, `generated_at`. **A zone system whose marker is absent is omitted entirely** (field absent — never `null`, never an invented value); the near sessions then express targets in the coarser system that *does* exist, or qualitatively (degraded — `scenarios/05`). If `zones.json` already exists and the markers are unchanged, reuse it.
+   Copy the markers used into that discipline's `fitness_markers`, set its `hr_reference`; set the file's `generated_at`. **A zone system whose marker is absent is omitted entirely** (field absent — never `null`, never an invented value), and a declared discipline with no markers yet gets **no `by_discipline` entry**; the near sessions then express targets in the coarser system that *does* exist, or qualitatively (degraded — `scenarios/05`). If `zones.json` already exists and the markers are unchanged, reuse it.
 
-3. **Make every near-horizon session phase-legal (deterministic).** For each session, check its zones against its block's row in `periodization-rules.csv`: only `allowed_intensity`, none of `forbidden`. Express each session's target as the **concrete bound from `zones.json`** (e.g. "Z4 = 227–262 W"), not just a zone label. Set near-window volume to reflect the phase `volume_modifier` (e.g. taper ≈ 0.5, race ≈ 0.4). Draw session types from the sport pack's `key_sessions`.
+3. **Make every near-horizon session phase-legal (deterministic).** For each session, check its zones against its block's row in `periodization-rules.csv`: only `allowed_intensity`, none of `forbidden`. Express each session's target as the **concrete bound from `zones.json`** — read it from `by_discipline.<session.sport>` (e.g. "Z4 = 227–262 W"), not just a zone label. Set near-window volume to reflect the phase `volume_modifier` (e.g. taper ≈ 0.5, race ≈ 0.4). Draw session types from the sport pack's `key_sessions`.
 
 4. **Write `plan/index.csv` — all three horizons, one row per week.**
    ```
@@ -41,18 +41,21 @@ Persist and deliver through the connector layer — [`_schema.md`](../../../exte
    - Mid rows: `horizon:mid`, approximate dates, intent-level fields, empty `file`, `status:scheduled`.
    - Near rows: `horizon:near`, precise dates, `file: weeks/<week_id>.json`, `status: active` (current window) or `planned` (next window). **Exactly one near row may be `active` at any time.**
 
-5. **Write `plan/weeks/<week_id>.json` for each near-horizon week.** The session object is the **single home for the whole session lifecycle**: you write only the *plan* fields (`planned`, `status:"planned"`, `actual:null`); the **Run-mode fields are filled later in-place, in this same file** — never a separate `log/` file. Schema (plan-time shape):
+5. **Write `plan/weeks/<week_id>.json` for each near-horizon week.** The session object is the **single home for the whole session lifecycle**: you write only the *plan* fields (`id`, `date`, `slot`, `sport`, `type`, `planned`, `status:"planned"`, `actual:null`); the **Run-mode fields are filled later in-place, in this same file** — never a separate `log/` file. Schema (plan-time shape):
    ```json
    {
+     "schema_version": "1.0",
      "week_id": "2026-W24",
      "block": "Construction", "phase": "base",
      "load_type": "charge", "volume_modifier": 1.0,
      "sessions": [
        {
-         "date": "2026-06-09", "type": "recovery_ride",
+         "id": "2026-06-09-am", "date": "2026-06-09", "slot": "am", "sport": "cycling",
+         "type": "recovery_ride",
          "planned": {
            "duration_min": 75, "zones": ["Z1"],
-           "power": "< 140 W", "structure": "easy, no climbs"
+           "target": { "metric": "power", "zone_ref": "Z1", "range": "< 140 W" },
+           "structure": "easy, no climbs"
          },
          "status": "planned",
          "actual": null
@@ -60,7 +63,10 @@ Persist and deliver through the connector layer — [`_schema.md`](../../../exte
      ]
    }
    ```
-   The `planned.power` (or `bpm`/`pace`) field carries the **concrete bounds copied from `zones.json`** — auditable and robust to future FTP changes. `status ∈ planned | done | adjusted | skipped`. `actual` = null until the Analyst fills it.
+   - **`id` = `<date>-<slot>`**, unique within the `date`. A day may hold **several sessions** (a two-a-day, a triathlon brick): emit one object per session, same `date`, distinct `slot` (`am`/`pm`; overflow → ordinal `-1`/`-2`). A single-session day defaults to `slot:"am"`. A warm-up is **not** a session — fold it into `planned.structure`.
+   - **`sport`** is the session's **discipline** — it selects which `by_discipline.<sport>` block in `zones.json` the targets come from.
+   - **`planned.target`** = `{ metric, zone_ref, range }`: `metric ∈ power | hr | pace` (per the sport pack's `primary_metric`), `range` = the **concrete bounds copied from `zones.json`** (auditable, robust to future marker changes), `zone_ref` = the dominant zone label. The `zones[]` labels stay.
+   - `status ∈ planned | done | adjusted | skipped`. `actual` = null until the Analyst fills it.
 
    **Run-mode fields (you do NOT write them — documented here so the schema is one contract):** the Daily-coach pipeline adds, *on the same session object*, `rationale` (the brief — the coach's `checkin` capability), `adjustment` (the coach's `adjust` capability, only if modulated), and `actual` + `debrief` (the Analyst, after execution). They are **absent until they apply** — never emit empty placeholders at plan time. At the **week level**, the Analyst also maintains a derived `summary` block (sibling of `sessions`: counts, adherence, durations, `intensity_split_min`, a neutral `read`) — **you do not write it either**; it is absent at plan time and filled only after sessions execute. A fully-worked week covering every state (`planned` / `done`+debrief / `adjusted` / `skipped`) **and its `summary`** is in [`../assets/week-example.json`](../assets/week-example.json) — the canonical example for any agent creating or reading a week.
 
@@ -84,7 +90,7 @@ If the plan artefacts exist, **advance the window** — don't regenerate the sea
 
 A plan written before v0.5.0 keeps its precise near-window sessions as **inline Markdown tables** in `plan/plan.md`, with **no `plan/index.csv`** and **no `plan/weeks/*.json`**. When you detect that shape (inline near tables present **and** `plan/index.csv` absent), perform a **one-time migration** — in a **visible diff**, never a silent overwrite:
 
-1. **Emit one `plan/weeks/<week_id>.json` per detailed week.** Parse each inline week table into the week schema above: every session becomes `{date, type, planned{…}, status, actual:null}`, with `planned` carrying the **concrete bounds resolved from `athlete/zones.json`** (the table's zone labels -> real watts/bpm/pace). A session the legacy plan recorded as completed keeps `status:"done"`; the rest are `status:"planned"`.
+1. **Emit one `plan/weeks/<week_id>.json` per detailed week** (with `schema_version:"1.0"`). Parse each inline week table into the week schema above: every session becomes `{id, date, slot, sport, type, planned{…}, status, actual:null}` (`id = <date>-<slot>`, `slot:"am"` for a single-session day, `sport` = the discipline), with `planned.target` carrying the **concrete bounds resolved from `athlete/zones.json`** `by_discipline.<sport>` (the table's zone labels -> real watts/bpm/pace, tagged by `metric`). A session the legacy plan recorded as completed keeps `status:"done"`; the rest are `status:"planned"`.
 2. **Emit `plan/index.csv`** — one row per week across all three horizons (schema in step 4 above). Set **exactly one** near row to `status:active`, chosen by **today ∈ [`start`,`end`]**. The other near row is `planned`; far/mid rows keep `status:scheduled` with an empty `file`.
 3. **Reduce `plan/plan.md` to far + mid + a pointer.** Replace the inline near tables with the near-horizon pointer to `index.csv`/`weeks/`; leave the far/mid narrative intact. **Append a change-log row** (date · "migrated legacy near tables to `weeks/*.json` + `index.csv`" · diff-visible · reason).
 4. **Conform + validate.** Each migrated session must stay phase-legal against `periodization-rules.csv`; gate the whole result through `pace-validate`. If a legacy session is already illegal for its phase, **surface it** (back to the Planner's reasoning) rather than silently "fix" it.

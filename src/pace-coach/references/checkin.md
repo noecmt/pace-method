@@ -5,9 +5,9 @@ A **capability of the Daily coach** (`pace-coach`), not a separate skill: a loca
 ## Inputs
 
 - `plan/index.csv` — the full-season router; read it to find the `status:active` near row.
-- `plan/weeks/<active_week_id>.json` — the active week's precise sessions; you find today's session by `date` here.
+- `plan/weeks/<active_week_id>.json` — the active week's precise sessions; you find today's session(s) by `date` here (one or more, distinguished by `slot`).
 - `athlete/profile.json` (forwarded; test fixture `athlete/sample.json`) — hard constraints, `learned_behaviors`, `rpe_calibration`.
-- `athlete/zones.json` (fixture: `athlete/sample-zones.json`) — the concrete bounds; the active week's `planned` field already carries these (copied at plan-write time), but you may cross-check here.
+- `athlete/zones.json` (fixture: `athlete/sample-zones.json`) — the concrete bounds, **keyed by discipline** under `by_discipline.<sport>`; the active week's `planned.target` already carries these (copied at plan-write time), but you may cross-check the session's discipline block here.
 - recent `plan/weeks/*.json` sessions — the last few sessions' `status` / `actual` / `debrief`, for continuity (what happened yesterday, any open thread); plus `log/signals.md` for any emitted strong signal.
 - the [`pace-elicitation`](../../pace-elicitation/) tool + its `methods.csv` — for the targeted questions you suggest on a sensation-free check-in.
 - The **training principles** (load on demand, for the *why this session today* rationale): `knowledge_base/principles/periodization.md`, `intensity_zones.md`, `polarized_training.md`.
@@ -24,9 +24,9 @@ Per [`_schema.md`](../../../extensions/connectors/_schema.md): probe, use if pre
 
 ## Procedure
 
-1. **Locate today's session (deterministic, no Markdown parsing).** Read `plan/index.csv` -> find the row where `horizon = near` and `status = active` -> load `plan/weeks/<week_id>.json` -> find the session whose `date` equals today. Edge cases: a **rest day** -> state plainly that rest *is* the plan today; a date **outside the ~2-week near window** -> explain window discipline (no precise session is committed yet that far out) and do **not** invent one; today's session **missing from the week file** -> report the gap rather than fabricate a session. **Legacy plan (no `index.csv`):** if `plan/index.csv` is absent but a legacy `plan/plan.md` with inline week tables exists, do **not** grep or improvise a session from the Markdown — the plan needs its one-time storage migration; end the turn pointing back to **Build** (the Planner's `plan-write` capability performs the migration to `index.csv` + `weeks/*.json`). This replaces the old "search the markdown" fallback.
+1. **Locate today's session(s) (deterministic, no Markdown parsing).** Read `plan/index.csv` -> find the row where `horizon = near` and `status = active` -> load `plan/weeks/<week_id>.json` -> find the session(s) whose `date` equals today. **A day may hold more than one session** (a two-a-day, a triathlon brick): if several match, brief **each** in `slot` order (`am` then `pm`), each by its own `id`/`sport`, or — if the athlete clearly means one — disambiguate by `slot`/`sport` and brief that one. Edge cases: a **rest day** -> state plainly that rest *is* the plan today; a date **outside the ~2-week near window** -> explain window discipline (no precise session is committed yet that far out) and do **not** invent one; today's session **missing from the week file** -> report the gap rather than fabricate a session. **Legacy plan (no `index.csv`):** if `plan/index.csv` is absent but a legacy `plan/plan.md` with inline week tables exists, do **not** grep or improvise a session from the Markdown — the plan needs its one-time storage migration; end the turn pointing back to **Build** (the Planner's `plan-write` capability performs the migration to `index.csv` + `weeks/*.json`). This replaces the old "search the markdown" fallback.
 
-2. **Build the "why this session today" rationale.** Tie the session to (a) the **phase intent** of its block (from the week file's `phase` field), (b) its **place in the plan** (where it falls in the week's load shape), (c) the **`learned_behaviors` it honors**, and (d) the **concrete bounds from the session's `planned` field** — name at least one real number ("the Z4 efforts are 227–262 W"), degrading to qualitative cues if the marker was absent at plan-write time. This is an explanation of the *existing* session — never a redesign.
+2. **Build the "why this session today" rationale.** Tie the session to (a) the **phase intent** of its block (from the week file's `phase` field), (b) its **place in the plan** (where it falls in the week's load shape), (c) the **`learned_behaviors` it honors**, and (d) the **concrete bounds from the session's `planned.target.range`** — name at least one real number ("the Z4 efforts are 227–262 W"), degrading to qualitative cues if the marker was absent at plan-write time. This is an explanation of the *existing* session — never a redesign.
 
 3. **Surface signals, don't act on them.** Scan the athlete's prose for same-day signal-shaped input (wrecked legs, joint pain, limited time, heat, poor sleep, extra time). If present, **note it** (verbatim) so you can apply your `adjust` capability ([`adjust.md`](adjust.md)). You do **not** modulate here.
 
@@ -38,8 +38,8 @@ Per [`_schema.md`](../../../extensions/connectors/_schema.md): probe, use if pre
 
    ```json
    {
-     "date": "2026-06-13", "type": "recovery_ride",
-     "planned": { "duration_min": 45, "zones": ["Z1", "Z2"], "power": "0–240 W", "structure": "activation, 2–3 acc. 20s" },
+     "id": "2026-06-13-am", "date": "2026-06-13", "slot": "am", "sport": "cycling", "type": "recovery_ride",
+     "planned": { "duration_min": 45, "zones": ["Z1", "Z2"], "target": { "metric": "power", "zone_ref": "Z2", "range": "0–240 W" }, "structure": "activation, 2–3 acc. 20s" },
      "rationale": "J-1 avant course 135 km — ouvrir les jambes, garder la fraîcheur, zéro fatigue.",
      "status": "planned", "actual": null
    }
