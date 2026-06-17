@@ -26,8 +26,8 @@ date,week,session_id,type,name,duration_min,primary_zone,structure,status
 
 ## hard_rules
 
-- **Generated** by `pace-plan-write` (initial push) and `pace-rolling` (on window advance) from `plan/weeks/*.json` — no other writers.
-- `status` updated by `pace-checkin` / `pace-agent-analyst` (completed / skipped) and `pace-adjust` (adjusted).
+- **Generated** by the planner's `plan-write` capability (initial push) and `rolling` capability (on window advance) from `plan/weeks/*.json` — no other writers.
+- `status` updated by the coach's `checkin` capability / the Analyst (`pace-analyst`) (completed / skipped) and the coach's `adjust` capability (adjusted).
 - Never read as a training signal; never modifies `plan/plan.md` or `plan/weeks/*.json`.
-- On plan amendment (`pace-rolling`): rows beyond the current window may be removed or updated; always **preserve completed rows**.
+- On plan amendment (the planner's `rolling` capability): rows beyond the current window may be removed or updated; always **preserve completed rows**.
 - When a real calendar backend (gcal / notion) is connected, `calendar.csv` is **skipped** — the projection is pushed directly to the backend; `weeks/*.json` remains the source regardless.

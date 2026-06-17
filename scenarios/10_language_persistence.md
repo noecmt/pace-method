@@ -20,7 +20,7 @@ A short interaction that touches several personas, e.g.:
 ## Expected properties
 
 - [ ] **Every** persona reached (Discovery coach, Planner, Daily coach, Analyst) responds in **French**.
-- [ ] Each persona applies `[surface].language` **before its first words** — from the surface **forwarded by `pace-master`** (or loaded via `pace-customize` only if it was entered directly / zero-state onboarding) — with no English preamble that then "switches" to French.
+- [ ] Each agent applies `[surface].language` **before its first words** — from the surface **forwarded by the master** in its context bundle (or resolved from `pace.config.toml` per `docs/07_customize_merge.md` only if it was entered directly / zero-state onboarding) — with no English preamble that then "switches" to French. Because the agent stays the single voice for the whole flow, the language cannot drift mid-flow.
 - [ ] The language source is **`pace.config.toml` only**; `profile.json.language` is **ignored** (adversarial sub-case: `en` in the profile does not override `fr`).
 
 ## Anti-properties (must NOT happen)

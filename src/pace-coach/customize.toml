@@ -1,0 +1,24 @@
+# Customization for the Daily coach — resolved at activation by the LLM
+# per docs/07_customize_merge.md. [surface] = how it sounds (overridable);
+# [[agent.menu]] = what it can do (capabilities as local files, shared tools as skills).
+# SURFACE ONLY: the role ("present, grounded, supportive"), the "NEVER generate a
+# session" prohibition, and all guardrails are FIXED.
+
+# [surface]
+# verbosity = "normal"   # terse | normal | rich
+# language = "en"        # e.g. "en", "fr"
+# voice_tone = ""        # nuance to the FIXED voice, e.g. "more concise"
+
+# --- Capabilities menu. Each item has exactly one of `prompt` (read a local
+# capability file into this same context — no skill boundary, no voice change)
+# or `skill` (call a shared tool while staying the Daily coach). ---
+
+[[agent.menu]]
+code = "CI"
+description = "Brief today's already-planned session — why THIS session today, in concrete zone bounds; write its rationale"
+prompt = "Read and follow {skill-root}/references/checkin.md"
+
+[[agent.menu]]
+code = "AD"
+description = "Modulate today's session on a reported signal (bounded scaling or a fallback-catalog substitution) — never generate one"
+prompt = "Read and follow {skill-root}/references/adjust.md"

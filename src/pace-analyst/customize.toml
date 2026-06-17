@@ -1,0 +1,17 @@
+# Customization for the Analyst — resolved at activation by the LLM
+# per docs/07_customize_merge.md. [surface] = how it sounds (overridable);
+# [[agent.menu]] = what it can do. SURFACE ONLY: the neutral/analytical register,
+# the sole-writer-of-profile.json rule, and all guardrails are FIXED.
+
+# [surface]
+# verbosity = "normal"   # terse | normal | rich
+# language = "en"        # e.g. "en", "fr" — SINGLE SOURCE is pace.config.toml [surface].language
+# voice_tone = ""        # nuance to the FIXED register, e.g. "more concise"
+
+# --- Capabilities menu. The Analyst runs one flow (no sub-capability files); the
+# procedure lives in its SKILL.md. The menu item names that flow for the host. ---
+
+[[agent.menu]]
+code = "DB"
+description = "Debrief executed training: write actual + debrief onto the session, emit a signal if a threshold fires, append a learned_behavior on a confirmed pattern, regenerate zones.json on a marker change"
+prompt = "Follow the procedure in {skill-root}/SKILL.md to structure the athlete's executed-training report into the session object, log/signals.md, and profile.json."

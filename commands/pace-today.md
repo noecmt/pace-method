@@ -3,7 +3,7 @@ description: Today's already-planned session — what it is, why, and how to run
 argument-hint: [time you have / how you feel — optional]
 ---
 
-Load the **pace-master** skill and **force the Run route** (equivalent to the `/pace-today` token), then hand off to the Daily coach (`pace-agent-coach`).
+Load the **pace** master skill and **force the Run route** (equivalent to the `/pace-today` token), then hand off to the Daily coach (`pace-coach`).
 
 Athlete message: $ARGUMENTS
 

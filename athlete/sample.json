@@ -1,16 +1,18 @@
 {
-  "_comment": "Sample athlete profile for scenario testing. Structured long-term state. Sole writer in the method: the Analyst (pace-agent-analyst). The Vision carries the why; this file carries the plannable data. On a plannable fact, this file is authoritative for the Planner.",
+  "_comment": "Sample athlete profile for scenario testing. Structured long-term state. Sole writer in the method: the Analyst (pace-analyst). The Vision carries the why; this file carries the plannable data. On a plannable fact, this file is authoritative for the Planner. `sports` lists the athlete's disciplines (one for a mono-sport athlete, three for a triathlete); `fitness` is keyed by discipline. `current_phase` is programme-level (sport-agnostic), so it sits at the top, not inside a discipline.",
+  "schema_version": "1.0",
   "athlete_id": "sample",
-  "sport": "cycling",
+  "sports": ["cycling"],
   "level": "intermediate",
+  "current_phase": "build",
   "fitness": {
-    "fitness_marker": "ftp",
-    "ftp_watts": 250,
-    "ftp_updated": "2026-04-15",
-    "max_hr": 185,
-    "lthr_bpm": null,
-    "threshold_pace_sec_km": null,
-    "current_phase": "build"
+    "cycling": {
+      "fitness_marker": "ftp",
+      "ftp_watts": 250,
+      "ftp_updated": "2026-04-15",
+      "max_hr": 185,
+      "lthr_bpm": null
+    }
   },
   "constraints": [
     { "id": "weekly_hours", "type": "time", "value": "6-8h/week", "hard": true },

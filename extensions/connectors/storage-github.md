@@ -11,7 +11,7 @@ A GitHub capability is available: a **GitHub MCP tool** (web/Cowork), or the **`
 
 ## Setup (athlete onboarding)
 
-The athlete **forks the `pace-athlete-template` repo** (an empty artefact skeleton: `vision/`, `plan/`, `athlete/`, `log/`) and connects it. `pace-customize` records `[connectors].storage = "github"` + the repo identity.
+The athlete **forks the `pace-athlete-template` repo** (an empty artefact skeleton: `vision/`, `plan/`, `athlete/`, `log/`) and connects it. The `pace` master's onboarding wizard records `[connectors].storage = "github"` + the repo identity in `pace.config.toml`.
 
 ## Artefact mapping
 

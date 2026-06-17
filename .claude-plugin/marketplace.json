@@ -13,25 +13,19 @@
       "name": "pace",
       "source": "./",
       "description": "Plan-first endurance coaching: guides an athlete from goal discovery (vision) through structured, periodized planning to daily session execution — and never lets the day's mood regenerate the plan. Cycling first; running/triathlon next.",
-      "version": "0.5.2",
+      "version": "1.0.0",
       "author": {
         "name": "noecmt",
         "email": "noecramette@yahoo.fr"
       },
       "skills": [
-        "./src/pace-master",
-        "./src/core-skills/pace-elicitation",
-        "./src/core-skills/pace-validate",
-        "./src/core-skills/pace-customize",
-        "./src/coaching-skills/1-discovery/pace-agent-discovery",
-        "./src/coaching-skills/1-discovery/pace-vision",
-        "./src/coaching-skills/2-build/pace-agent-planner",
-        "./src/coaching-skills/2-build/pace-plan",
-        "./src/coaching-skills/2-build/pace-rolling",
-        "./src/coaching-skills/3-run/pace-agent-coach",
-        "./src/coaching-skills/3-run/pace-checkin",
-        "./src/coaching-skills/3-run/pace-adjust",
-        "./src/coaching-skills/3-run/pace-debrief"
+        "./src/pace",
+        "./src/pace-discovery",
+        "./src/pace-planner",
+        "./src/pace-coach",
+        "./src/pace-analyst",
+        "./src/pace-elicitation",
+        "./src/pace-validate"
       ]
     }
   ]

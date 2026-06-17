@@ -35,7 +35,7 @@ On a **first run**, a short **onboarding** sets your language, storage, and conn
 /pace-debrief    report what you did / how you feel
 ```
 
-The orchestrator **`pace-master`** reads your state, detects the mode (Discovery / Build / Run), and routes to the right coach. Artefacts are written to the current folder by default.
+The master concierge **`pace`** reads your state, detects the mode (Discovery / Build / Run), and either recites the planned session itself or hands off to exactly one voiced coach. Artefacts are written to the current folder by default.
 
 Prefer no install? `git clone` the repo and point your agent at `src/` — the skills are plain Markdown.
 
@@ -53,7 +53,7 @@ A connector attaches a capability to an **artefact** — it is **never** a new p
 | **storage** | where the artefacts live | local · GitHub · Notion · Google Drive | local filesystem |
 | **calendar** | deliver upcoming sessions | `plan/calendar.csv` · Google Calendar · Notion | `plan/calendar.csv` |
 
-Your backend choices and private IDs live in `pace.config.toml` (template: [`src/core-skills/pace-customize/pace.config.template.toml`](src/core-skills/pace-customize/pace.config.template.toml)); the pack defaults sit in `pace-customize`. See [`extensions/connectors/`](extensions/connectors/) for the capability contract and each instance.
+Your backend choices and private IDs live in `pace.config.toml` (template: [`pace.config.template.toml`](pace.config.template.toml) at the repo root); the surface defaults and the merge rules sit in each agent's `customize.toml` + [`docs/07_customize_merge.md`](docs/07_customize_merge.md). See [`extensions/connectors/`](extensions/connectors/) for the capability contract and each instance.
 
 ## Read first (design)
 
@@ -61,7 +61,7 @@ The design docs are the source of truth. Start here:
 
 1. [`docs/00_project_brief.md`](docs/00_project_brief.md) — vision, problem, positioning.
 2. [`docs/01_architecture.md`](docs/01_architecture.md) — the skills / plugin / connector model and the three extension axes.
-3. [`docs/02_method.md`](docs/02_method.md) — the orchestrator, the three modes, personas, workflows, artefacts.
+3. [`docs/02_method.md`](docs/02_method.md) — the master concierge, the three modes, the voiced agents and their capabilities, artefacts.
 4. [`docs/03_roadmap.md`](docs/03_roadmap.md) · [`docs/04_evaluation.md`](docs/04_evaluation.md) · [`docs/05_skill_map.md`](docs/05_skill_map.md).
 
 ## License

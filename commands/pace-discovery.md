@@ -3,7 +3,7 @@ description: Revisit your "why" — goal, history, profile. Forces Discovery mod
 argument-hint: [what changed / what to revisit — optional]
 ---
 
-Load the **pace-master** skill and **force the Discovery route** (equivalent to the `/pace-discovery` token), then hand the conversation to the Discovery coach (`pace-agent-discovery`).
+Load the **pace** master skill and **force the Discovery route** (equivalent to the `/pace-discovery` token), then hand the conversation to the Discovery coach (`pace-discovery`).
 
 Athlete message: $ARGUMENTS
 

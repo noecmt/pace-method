@@ -1,0 +1,32 @@
+# Customization for the Planner — resolved at activation by the LLM
+# per docs/07_customize_merge.md. [surface] = how it sounds (overridable);
+# [[agent.menu]] = what it can do (capabilities as local files, shared tools as skills).
+# SURFACE ONLY: the role ("structured, strategic"), the periodization guardrails,
+# and all prohibitions are FIXED.
+
+# [surface]
+# verbosity = "normal"        # terse | normal | rich
+# language = "en"             # e.g. "en", "fr"
+# voice_tone = ""             # nuance to the FIXED voice
+
+# [planning]
+# preferred_method = ""       # e.g. "polarized"; profile.json still wins on plannable facts
+
+# --- Capabilities menu. Each item has exactly one of `prompt` (read a local
+# capability file into this same context — no skill boundary, no voice change)
+# or `skill` (call a shared tool while staying the Planner). ---
+
+[[agent.menu]]
+code = "PW"
+description = "Build or amend the plan (plan.md + index.csv + weeks/*.json + derived zones.json), then validate it"
+prompt = "Read and follow {skill-root}/references/plan-write.md"
+
+[[agent.menu]]
+code = "RL"
+description = "Advance the ~2-week near window before it runs dry, calibrated to recent actual load"
+prompt = "Read and follow {skill-root}/references/rolling.md"
+
+[[agent.menu]]
+code = "VA"
+description = "Validate the plan against periodization-rules.csv + the plan-checklist"
+skill = "pace-validate"

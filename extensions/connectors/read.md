@@ -2,14 +2,15 @@
 
 `class: read` · `degraded_fallback: manual` · conforms to [`_schema.md`](_schema.md).
 
-Read connectors fetch **completed session data and readiness signals** from external sport platforms. Consumed by `pace-checkin`, `pace-agent-analyst`, `pace-rolling`. When absent, these skills fall back to **manual entry** (ask the athlete for the relevant figures).
+Read connectors fetch **completed session data and readiness signals** from external sport platforms. Consumed by the coach's `checkin` capability, the Analyst (`pace-analyst`), and the planner's `rolling` capability. When absent, these fall back to **manual entry** (ask the athlete for the relevant figures).
 
-## Resolution rule (no runtime)
+## Resolution rule (no runtime) — **capability-first**
 
 The consuming skill:
-1. Checks whether the athlete has enabled a read connector in `pace.config.toml` (e.g. `strava = true`).
-2. Probes the capability (MCP or API tool available?). Both true -> reads it. Either absent -> manual.
-3. Never blocks on missing data; always degrades cleanly.
+1. **Probes the capability first**: is a read MCP/API tool present in this session (a tool whose name/description indicates the platform's activities / streams / fitness trends)? **Present -> use it by default** for **Phase-1 qualitative** enrichment — the athlete connected it, so they want it used. No need to wait for an explicit ask.
+2. The `pace.config.toml` flag (e.g. `strava`) is an **explicit opt-out**, not a pre-requisite: `strava = false` (or `false` for that connector) **suppresses** the probe; absent or `true` leaves the default on. ("Skill" here means the consuming agent's capability — `checkin` / `rolling` — or the Analyst.)
+3. **Phase-2 measured use stays spike-gated** regardless of the above (see `strava.md`): the capability-first default only enables the Phase-1 *qualitative* read.
+4. Never blocks on missing data; if the tool is absent (or opted out), **degrade cleanly to manual entry** — never fabricate a metric (scenario 05).
 
 ## Active instances
 

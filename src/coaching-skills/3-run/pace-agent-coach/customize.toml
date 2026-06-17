@@ -1,8 +1,0 @@
-# Surface overrides for the Daily coach — read by pace-customize.
-# SURFACE ONLY: the role ("present, grounded, supportive"), the "NEVER generate a
-# session" prohibition, and all guardrails are FIXED. Uncomment to override.
-
-# [surface]
-# verbosity = "normal"   # terse | normal | rich
-# language = "en"        # e.g. "en", "fr"
-# voice_tone = ""        # nuance to the FIXED voice, e.g. "more concise"

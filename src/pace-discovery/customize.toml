@@ -1,0 +1,26 @@
+# Customization for the Discovery coach — resolved at activation by the LLM
+# per docs/07_customize_merge.md. [surface] = how it sounds (overridable);
+# [[agent.menu]] = what it can do (capabilities as local files, shared tools as skills).
+# SURFACE ONLY: the role ("curious, attentive") and all prohibitions are FIXED.
+
+[surface]
+voice_tone = "warmer, encouraging"   # nuance to the FIXED voice ("curious, attentive") — a warmer welcome (BMAD-style first impression). Surface only: never a new role, never relaxes a prohibition.
+# verbosity = "normal"               # terse | normal | rich
+# language is NOT set here — single source is pace.config.toml [surface].language
+
+# [discovery]
+# elicitation_depth = "normal"       # light | normal | deep
+
+# --- Capabilities menu. Each item has exactly one of `prompt` (read a local
+# capability file into this same context — no skill boundary, no voice change)
+# or `skill` (call a shared tool while staying the Discovery coach). ---
+
+[[agent.menu]]
+code = "VW"
+description = "Write or amend vision/vision.md from the conversation, then validate it"
+prompt = "Read and follow {skill-root}/references/vision-write.md"
+
+[[agent.menu]]
+code = "EL"
+description = "Pick the right questioning technique for the situation (vague answer, competing goals, contradiction…)"
+skill = "pace-elicitation"
