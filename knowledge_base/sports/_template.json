@@ -1,0 +1,51 @@
+{
+  "_comment": "TEMPLATE — copy to knowledge_base/sports/<sport_id>.json (a pack in the athlete repo overrides the base plugin on an id collision: same relative path, local wins), rename sport_id to match the filename, then replace every value below. Conforms to _schema.md — diff cycling.json for a complete worked example. The primary zone key is '<fitness_marker>_pct'; zones must be ordered by id (1..n) and contiguous over the marker range. hr_zones is the transversal 5-zone HR system — declare it even when an athlete lacks max_hr / lthr_bpm. Keep at least one active-recovery key_session.",
+  "sport_id": "_template",
+  "version": "1.0",
+  "primary_metric": "power_watts | pace_min_per_km | hr_bpm",
+  "fitness_marker": "threshold",
+  "references": [
+    "Cite the book / article / source backing these zones and key sessions."
+  ],
+  "intensity_zones": {
+    "system": "name_your_primary_zone_system",
+    "zones": [
+      { "id": 1, "name": "Active recovery", "threshold_pct": [0.00, 0.55] },
+      { "id": 2, "name": "Endurance",       "threshold_pct": [0.56, 0.75] },
+      { "id": 3, "name": "Tempo",           "threshold_pct": [0.76, 0.90] },
+      { "id": 4, "name": "Threshold",       "threshold_pct": [0.91, 1.05] },
+      { "id": 5, "name": "VO2max",          "threshold_pct": [1.06, 1.20] }
+    ],
+    "hr_system": "friel_5zones",
+    "hr_zones": [
+      { "id": 1, "name": "Recovery",          "max_hr_pct": [0.00, 0.68], "lthr_pct": [0.00, 0.85] },
+      { "id": 2, "name": "Aerobic endurance", "max_hr_pct": [0.68, 0.83], "lthr_pct": [0.85, 0.89] },
+      { "id": 3, "name": "Tempo",             "max_hr_pct": [0.83, 0.89], "lthr_pct": [0.90, 0.94] },
+      { "id": 4, "name": "Threshold",         "max_hr_pct": [0.89, 0.94], "lthr_pct": [0.95, 0.99] },
+      { "id": 5, "name": "VO2max / max",      "max_hr_pct": [0.94, 1.00], "lthr_pct": [1.00, null] }
+    ]
+  },
+  "key_sessions": {
+    "endurance_long": {
+      "purpose": "Aerobic base volume (describe its role in this sport)",
+      "typical_duration_min": [90, 240],
+      "intensity": "Z2 dominant, conversation possible"
+    },
+    "recovery_session": {
+      "purpose": "Active recovery — REQUIRED: keep at least one active-recovery session (the modulate fallback catalog draws from here)",
+      "typical_duration_min": [20, 60],
+      "intensity": "Strict Z1, no intensity"
+    },
+    "threshold_intervals": {
+      "purpose": "Raise the threshold marker",
+      "typical_duration_min": [60, 90],
+      "intensity": "Z4 as 2x15-20min, equal-or-shorter Z1 recovery"
+    },
+    "vo2max_intervals": {
+      "purpose": "Stimulate maximal aerobic capacity",
+      "typical_duration_min": [45, 75],
+      "intensity": "Z5 as 5x3min, equal Z1 recovery"
+    }
+  },
+  "periodization": ["polarized", "pyramidal", "linear"]
+}
