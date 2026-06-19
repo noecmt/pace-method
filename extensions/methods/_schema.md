@@ -8,7 +8,7 @@ Axis 3 of extension. A **method** (polarized, double-threshold, block periodizat
 | --- | --- |
 | `method_id` | Unique id (e.g. `polarized`, `double_threshold`). |
 | `version` | Pack version. |
-| `summary.md` | The strategy in prose: principle, intensity distribution, who it suits, contraindications. |
+| `METHOD.md` | The strategy in prose: principle, intensity distribution, who it suits, contraindications. (The Planner's `plan-write` capability reads this file by name.) |
 | `session_structures` | CSV of the canonical session structures the strategy uses: `session_id, phase, zones, structure, purpose`. The Planner draws sessions from here. |
 | `periodization_bias` | How it shapes blocks (e.g. intensity distribution per phase) — must remain compatible with `periodization-rules.csv`. |
 | `references` | Sources backing the strategy. |

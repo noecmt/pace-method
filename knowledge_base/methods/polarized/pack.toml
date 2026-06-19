@@ -1,0 +1,16 @@
+# Polarized method pack — curated baseline shipped with the plugin.
+# A local pack with the same method_id in <athlete-repo>/knowledge_base/methods/polarized/
+# overrides this one (override stack: same relative path, local wins).
+
+method_id = "polarized"
+version = "1.0"
+
+# How the method shapes blocks. Must stay COMPATIBLE with periodization-rules.csv:
+# it may restrict the distribution, never authorise an intensity a phase forbids.
+# (No overrides_periodization — the deterministic phase-legality check still governs.)
+periodization_bias = "~80% time in Z1-Z2 / ~20% in Z4-Z5 across the week, minimal Z3 ('no man's land'). The hard ~20% lives in BUILD, where Z4-Z5 are allowed. In BASE (Z4-Z5 forbidden) the intensity touch is limited to Z3/sweet-spot. Taper, race and recovery follow periodization-rules.csv unchanged (Z1-Z2 only)."
+
+references = [
+  "Seiler S. (2010) — What is Best Practice for Training Intensity and Duration Distribution in Endurance Athletes? Int. J. Sports Physiol. Perform. 5(3):276-291. doi:10.1123/ijspp.5.3.276",
+  "Stoggl T., Sperlich B. (2014) — Polarized training has greater impact on key endurance variables than threshold, high-intensity, or high-volume training. Front. Physiol. 5:33. doi:10.3389/fphys.2014.00033",
+]

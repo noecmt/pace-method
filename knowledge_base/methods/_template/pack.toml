@@ -1,0 +1,18 @@
+# TEMPLATE — copy this folder to knowledge_base/methods/<method_id>/ (in the ATHLETE
+# repo to extend the method privately; a local pack overrides the base plugin on an
+# id collision — same relative path, local wins). Rename method_id to match the folder,
+# then replace every value below. Conforms to extensions/methods/_schema.md — diff the
+# polarized/ pack for a complete worked example. Activate it with [method] pack = "<id>"
+# in pace.config.toml.
+
+method_id = "_template"
+version = "1.0"
+
+# How your method shapes blocks. It may RESTRICT the per-phase distribution; it may NEVER
+# authorise an intensity that periodization-rules.csv forbids for a phase. The Planner's
+# deterministic phase-legality check always governs. Do NOT add overrides_periodization.
+periodization_bias = "Describe your method's intensity distribution per phase (e.g. ~80/20, pyramidal, block). Keep it compatible with periodization-rules.csv."
+
+references = [
+  "Cite the book / article / coach backing this strategy.",
+]
