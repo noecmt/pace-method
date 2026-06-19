@@ -20,6 +20,15 @@ Axis 3 of extension. A **method** (polarized, double-threshold, block periodizat
 - **Session structures, not invented runtime sessions.** The catalog is fixed in the pack; the Run coach still never generates.
 - Optional: a `method-onboarding` workflow (explain -> short trial -> Analyst measures -> adopt/discard).
 
+## Resolution (override stack)
+
+A plugin install is **read-only**, so a method pack resolves at **two locations**, the **local copy winning** on an `id` collision:
+
+1. **`<athlete-repo>/knowledge_base/methods/<id>/`** — the athlete's local pack (written by the user / `pace-extend`). **Wins.**
+2. **`<plugin-install>/knowledge_base/methods/<id>/`** — the curated base pack shipped with the method.
+
+The athlete repo **mirrors the plugin's relative tree**, so the rule is simply *"same relative path, local wins"*. **Both sides obey this same contract** — a local pack must satisfy these fields and hard rules exactly as a base pack does. The plugin's `extensions/` (contracts) is **not** mirrored locally.
+
 ## Example (illustrative, not implemented in V0)
 
 ```text

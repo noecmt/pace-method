@@ -7,12 +7,24 @@ A **capability of the Planner** (`pace-planner`), not a separate skill: a local 
 - The **Planner's strategy** (far blocks, mid-week intents, near-window sessions).
 - The template [`../assets/plan-template.md`](../assets/plan-template.md) — far / mid horizons + near pointer.
 - The phase rules [`../assets/periodization-rules.csv`](../assets/periodization-rules.csv) — `phase,allowed_intensity,forbidden,volume_modifier`.
-- The sport pack `knowledge_base/sports/cycling.json` — `key_sessions` (legal session types) **and the zone systems** used to derive concrete bounds: `intensity_zones` (power, `ftp_pct`) and `intensity_zones.hr_zones` (`max_hr_pct` / `lthr_pct`).
+- The sport pack `knowledge_base/sports/<sport>.json` (canonical instance: `cycling.json`) — `key_sessions` (legal session types) **and the zone systems** used to derive concrete bounds: `intensity_zones` (power, `ftp_pct`) and `intensity_zones.hr_zones` (`max_hr_pct` / `lthr_pct`). Resolved via the override stack below.
+- The method pack `knowledge_base/methods/<id>/` (`METHOD.md` + `session_structures.csv`) — read **only when** `pace.config.toml` declares `[method] pack = "<id>"`. Also resolved via the override stack below.
 - The validator tool [`pace-validate`](../../pace-validate/) + its plan-checklist.
 - `athlete/profile.json` (forwarded; test fixture `athlete/sample.json`) — for the constraint cross-check **and the fitness markers, keyed by discipline** under `fitness.<discipline>` (`ftp_watts`, `max_hr`, `lthr_bpm`, `threshold_pace_sec_km`, `css_sec_100m`); `sports[]` lists the disciplines you derive zones for.
 - `athlete/zones.json` (fixture: `athlete/sample-zones.json`) — the **derived** zones artefact you generate (next); the near-horizon sessions reference its concrete bounds.
 
 > If the master forwarded `{config, profile, zones, active_week}` as context, use those objects — do **not** re-read the files from disk.
+
+## Pack resolution — override stack (local wins)
+
+A plugin install is **read-only**, so an athlete's custom packs live in **their own repo**. Resolve **every** sport and method pack at **two locations**, in this order — the **local copy wins** on an `id` collision:
+
+1. **`<athlete-repo>/knowledge_base/{sports,methods}/<id>`** — the athlete's local pack (written by the user / `pace-extend`). **Wins.**
+2. **`<plugin-install>/knowledge_base/{sports,methods}/<id>`** — the curated base pack shipped with the method.
+
+The athlete repo **mirrors the plugin's relative tree** (`knowledge_base/sports|methods/`), so resolution is the trivial rule *"same relative path, local wins"*. Any `knowledge_base/sports/<sport>.json` or `knowledge_base/methods/<id>/` path named elsewhere in this file denotes this **resolved result**, not a fixed install location.
+
+**Consuming a method pack.** When `pace.config.toml` declares `[method] pack = "<id>"`, read its resolved `METHOD.md` + `session_structures.csv` **before** you plan. **Cite the pack explicitly** in your reasoning ("per the polarized method…") so conformance is auditable, and draw sessions from its `session_structures`. A method pack may **restrict** the intensity distribution per phase (`periodization_bias`); it may **never** authorise an intensity that `periodization-rules.csv` forbids for the phase — the deterministic phase-legality check (step 3) still governs.
 
 ## Connectors (capability-detected)
 

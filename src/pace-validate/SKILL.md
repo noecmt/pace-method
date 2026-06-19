@@ -24,6 +24,7 @@ A **shared tool**, not an agent: **no voice, no user-facing output, writes nothi
 - For a **plan**, also the periodization table (deterministic checks):
   `../pace-planner/assets/periodization-rules.csv`.
 - For cross-checks: `athlete/profile.json` (a plannable fact / `learned_behavior` may make an artefact invalid — e.g. scenario 02) and `athlete/zones.json` (the derived zones must exist and stay coherent with the profile's markers).
+- Any **sport / method pack** a plan consumes — resolved via the **override stack** (`<athlete-repo>/knowledge_base/{sports,methods}/<id>` **first**, then the plugin install; same relative path, local wins). A **local** pack is validated against **the same** `_schema.md` as a base pack (`knowledge_base/sports/_schema.md`, `extensions/methods/_schema.md`).
 
 ## Procedure
 
@@ -51,6 +52,7 @@ Soft checks (quality):
 - **Deterministic where possible.** Anything checkable against a CSV is checked against the CSV, not by feel — these are the anti-drift guardrails.
 - **Gate semantics.** A hard-check failure means the artefact does not pass; downstream, a scenario that depends on it cannot pass either (no passing scenario = no merge).
 - **No voice, no artefact.** You report; you never rewrite the vision or the plan yourself.
+- **Override stack.** A pack resolves local-first (athlete repo) then base (plugin install); on an `id` collision the **local pack wins**. Both sides are held to the **same contract** — validate a local pack exactly as a base pack against its `_schema.md`.
 
 ## Output discipline
 

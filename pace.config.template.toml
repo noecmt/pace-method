@@ -7,6 +7,12 @@
 # Precedence: pack defaults (customize.toml) < this file. Later wins, but only
 # within the keys below. Hard rules, artefact contracts, and prohibitions are FIXED
 # and can never be overridden here.
+#
+# Override stack for packs: the plugin install is read-only, so your custom sport
+# and method packs live in `knowledge_base/{sports,methods}/` of THIS athlete repo.
+# On an `id` collision they WIN over the plugin's base packs (same relative path,
+# local wins). Generating a pack and activating it are separate steps — activate it
+# declaratively (e.g. `[method] pack = "..."`).
 
 [surface]
 language = "en"        # output language: "en" | "fr" | ...
