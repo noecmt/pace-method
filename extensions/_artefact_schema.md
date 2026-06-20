@@ -86,6 +86,21 @@ A regenerate-not-patch aggregate (sibling of `sessions`). The Planner/`rolling` 
 - **`distance_km`** is **keyed by sport** (actual only) — a cross-discipline distance sum is meaningless (2 km swim + 100 km bike ≠ 102). A mono-sport week is just a one-key object `{ "cycling": 137 }`.
 - **`by_sport`** is present **only when the week has >1 sport**; absent otherwise (the totals + one-key `distance_km` already say everything). Per sport: `sessions` = count of that discipline's sessions; `duration_min` / `distance_km` = **actual** (executed).
 
+### `custom` — the opt-in extension field (additive, no version bump)
+
+`planned`, `actual`, and `debrief` may each carry an **optional** `custom` object: a flat map of extra, athlete-declared metrics the core shapes don't name (e.g. `hrv_ms`, `sleep_h`, `bodyweight_kg`).
+
+```json
+"actual": { "duration_min_actual": 90, "distance_km": 42, "rpe": 5, "notes": null,
+            "custom": { "hrv_ms": 68, "sleep_h": 7.5 } }
+```
+
+- **Always optional, never required.** A session without `custom` is fully valid. The field is **purely additive** — it changes no existing field and does **not** bump `schema_version`: every artefact stays `schema_version: "1.0"` and shape-compatible. A reader that ignores `custom` reads a valid 1.0 file.
+- **Flat scalars only.** Keys are `snake_case`; values are scalars (number / string / bool) — no nested objects, no arrays.
+- **Gated by declaration.** A `custom` key is honored **only when it is declared** in `pace.config.toml [custom_metrics]` (which positions — `planned`/`actual`/`debrief` — it may appear on, and its type). The Analyst writes/reads only declared keys; `pace-validate` flags an undeclared or mistyped key. Undeclared keys are ignored, never invented.
+
+> **Nutrition / recovery / any *domain* does NOT ride on `custom`.** A domain (nutrition, recovery, …) is a **parallel advisor agent that writes its own artefact** — never a key on the training session (the three extension axes, `CLAUDE.md`). `custom` is for a *scalar the athlete tracks alongside* a session; anything that needs prose, rules, or its own history is a **domain pack**, not a `custom` key.
+
 ## Profile `athlete/profile.json`
 
 Top level: `schema_version`, `athlete_id`, **`sports`** (array), `level`, **`current_phase`** (programme-level, sport-agnostic — *not* inside a discipline), **`fitness`** (keyed by discipline), `constraints[]`, `preferred_methods[]`, `equipment[]`, `rpe_calibration`, `learned_behaviors[]`.
@@ -118,3 +133,4 @@ Top level: `schema_version`, `generated_by`, `generated_at`, **`by_discipline`**
 - **One writer per moment.** Profile: intake creates, Analyst updates. Zones: Planner first, Analyst on marker change. Summary: Analyst only. No agent writes outside its lane.
 - **Derived artefacts are regenerated, never patched** (`zones.json`, `summary`).
 - **Distance is never planned** (time + zones/target is the plan's currency); it appears only in `actual` and, aggregated by sport, in `summary`.
+- **`custom` is additive and gated.** The optional `planned`/`actual`/`debrief.custom` map never bumps `schema_version`; only keys declared in `pace.config.toml [custom_metrics]` are honored (flat snake_case scalars). Domains never ride on `custom` — they own their own artefact.

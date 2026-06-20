@@ -44,3 +44,24 @@ gdrive_folder_id = ""     # Google Drive folder ID
 # Calendar
 gcal_calendar_id = "primary"    # Google Calendar ID ("primary" or a specific ID)
 notion_calendar_db_id = ""      # Notion sessions database ID (created on first use if empty)
+
+# ── Custom metrics (opt-in, additive) ──────────────────────────────────────────
+# Declare any extra scalar you track alongside a session. Each declared key may
+# then appear in that session's `planned` / `actual` / `debrief` `custom` object
+# (a flat snake_case map of scalars). Only DECLARED keys are read or written; an
+# undeclared `custom` key is ignored and flagged by pace-validate. This is purely
+# additive — it never bumps the artefact `schema_version` (stays "1.0").
+#
+# NOT for nutrition/recovery/any whole domain: a domain is a parallel advisor with
+# its OWN artefact, never a key on the training session. `custom` is for a single
+# scalar (HRV, sleep hours, bodyweight) you want recorded with a session.
+[custom_metrics]
+# [custom_metrics.hrv_ms]
+# on    = ["actual"]            # positions allowed: planned | actual | debrief
+# type  = "number"             # number | string | bool
+# label = "Morning HRV (ms)"
+#
+# [custom_metrics.sleep_h]
+# on    = ["actual"]
+# type  = "number"
+# label = "Sleep (hours)"
