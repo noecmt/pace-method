@@ -1,0 +1,18 @@
+# custom-metrics-snippet — the exact shape extend-custom appends to the athlete's
+# pace.config.toml [custom_metrics] section. One sub-table per declared metric.
+#
+# A custom metric is a SINGLE FLAT SCALAR tracked beside a session (HRV, sleep,
+# bodyweight, RPE). Declaring it is purely additive — it NEVER bumps the artefact
+# schema_version (stays "1.0"). Only DECLARED keys are honoured; an undeclared
+# `custom` key is ignored and flagged by pace-validate. NOT for a whole domain
+# (nutrition/recovery) — a domain is a parallel advisor with its own artefact.
+
+[custom_metrics.hrv_ms]
+on    = ["actual"]            # positions allowed: planned | actual | debrief
+type  = "number"             # number | string | bool
+label = "Morning HRV (ms)"
+
+[custom_metrics.sleep_h]
+on    = ["actual"]
+type  = "number"
+label = "Sleep (hours)"

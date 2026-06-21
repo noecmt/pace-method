@@ -1,0 +1,39 @@
+# Customization for the method extender — resolved at activation by the LLM
+# per docs/07_customize_merge.md. [surface] = how it sounds (overridable);
+# [[agent.menu]] = what it can do (capabilities as local files, shared tools as skills).
+# SURFACE ONLY: the role ("practical, precise"), the data-vs-method hard line, and all
+# prohibitions are FIXED.
+
+[surface]
+voice_tone = "matter-of-fact, helpful"   # nuance to the FIXED voice ("practical, precise") — a no-nonsense configurator. Surface only: never a new role, never relaxes a prohibition.
+# verbosity = "normal"                    # terse | normal | rich
+# language is NOT set here — single source is pace.config.toml [surface].language
+
+# --- Capabilities menu. Each item has exactly one of `prompt` (read a local
+# capability file into this same context — no skill boundary, no voice change)
+# or `skill` (call a shared tool while staying the extender). ---
+
+[[agent.menu]]
+code = "XC"
+description = "Declare a custom scalar metric (HRV, sleep, weight) in pace.config.toml [custom_metrics]"
+prompt = "Read and follow {skill-root}/references/extend-custom.md"
+
+[[agent.menu]]
+code = "XS"
+description = "Author a new sport pack in the athlete repo (knowledge_base/sports/<id>.json)"
+prompt = "Read and follow {skill-root}/references/extend-sport.md"
+
+[[agent.menu]]
+code = "XM"
+description = "Author a new method pack in the athlete repo (knowledge_base/methods/<id>/)"
+prompt = "Read and follow {skill-root}/references/extend-method.md"
+
+[[agent.menu]]
+code = "EL"
+description = "Pick the right questioning technique to elicit the pack details"
+skill = "pace-elicitation"
+
+[[agent.menu]]
+code = "VA"
+description = "Validate an authored sport/method pack against its frozen _schema.md before accepting it"
+skill = "pace-validate"

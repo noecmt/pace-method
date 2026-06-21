@@ -25,7 +25,8 @@
         "./src/pace-coach",
         "./src/pace-analyst",
         "./src/pace-elicitation",
-        "./src/pace-validate"
+        "./src/pace-validate",
+        "./src/pace-extend"
       ]
     }
   ]
