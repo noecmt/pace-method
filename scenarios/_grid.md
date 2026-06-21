@@ -196,3 +196,15 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 | 14 Proactive rolling | — | Master reads `index.csv`, finds no `status:planned` near row after the active one, **proposes** `/pace-plan` (concierge lane); silent on an obvious auto-route; never self-rolls, never routes the depletion through the Analyst/`signals.csv`; Planner `rolling` runs on acceptance. |
 
 **Status: 2 new v1.1.0 gates defined, awaiting evaluation.** The 6 V0 (01–06) + v0.4.0 (07–10) + v0.5.0/v1.0.0 (11–12) verdicts are unaffected — both additions are new surfaces that relax **no** existing guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact).
+
+---
+
+## v1.0.1 — extensibility (custom method pack + override stack) (pending host-LLM run)
+
+> One **additive** gate on the method extension axis: (15) the Planner consumes a declared method pack (`[method] pack = "polarized"`), citing it and drawing sessions from its `session_structures.csv`, shaping the ~80/20 distribution **without** authorising any intensity `periodization-rules.csv` forbids for the phase; a sub-case checks the **override stack** (a local pack of the same `method_id` wins over the shipped baseline). This relaxes **no** V0 guardrail — the deterministic phase-legality check still governs, the `periodization_bias` only *restricts* the distribution. The method packs live under `knowledge_base/methods/` and are invisible to `node tools/lint-contracts.mjs` (it validates neither method packs nor week files) — re-run still **0/0**.
+
+| Scenario | Verdict | Basis / what to check |
+| --- | --- | --- |
+| 15 Custom method pack | — | Planner reads the pack only because `pace.config.toml` declares it; cites it ("per the polarized method…"); sessions drawn from the resolved `session_structures.csv`; ~80/20 distribution; **base week never gets Z4/Z5** (Z3/sweet-spot only), true hard sessions only in build; override stack: a local `polarized` pack wins over the baseline. Det: every planned session's zones ⊆ phase `allowed_intensity`, ∩ `forbidden` = ∅, `session_id` ∈ resolved pack; local-wins when present. |
+
+**Status: 1 new v1.0.1 gate defined, awaiting evaluation.** All prior verdicts (01–14) are unaffected — the method axis is a new surface that relaxes **no** existing guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact).
