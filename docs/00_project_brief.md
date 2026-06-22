@@ -55,7 +55,7 @@ BMAD won as a **minimal open-source methodology**, adoptable with Markdown and a
 
 ## Distribution
 
-The method (skills) and its plugin packaging are **open-source and free**. An optional **hosted Strava/Garmin connector** may, later, remove the install friction for non-technical users. The same core powers both; the free tier stays fully functional via self-hosting. See the sequence in `03_roadmap.md`.
+The method (skills) and its plugin packaging are **open-source and free**. The method content is host-agnostic (`SKILL.md` is an open cross-agent standard); each host needs only a thin adapter, never a content fork. The roadmap extends from CLI/IDE hosts (V1, shipped) to multi-host distribution — IDE-filesystem hosts (Cursor, VS Code/Copilot, Codex) and web hosts via the storage connector — and a hosted chat UI (pace-chat) for non-technical athletes (V2). Real training data via Strava's official MCP arrives in V3. See the full sequence in `03_roadmap.md`.
 
 ---
 
@@ -81,6 +81,6 @@ The method (skills) and its plugin packaging are **open-source and free**. An op
 
 ## Status
 
-Design frozen, start of V0 implementation (skills). Open-source project; validate before building, do not rebuild what already exists.
+**V1 shipped (v1.0.1).** The method is packaged as a plugin: master + menu architecture (7 skills), schema-frozen artefacts, running sport pack, polarized method pack, override stack. V2 next: multi-host distribution (IDE adapters + web via storage connector + pace-chat). Open-source; validate before building.
 
-*Last updated: May 2026*
+*Last updated: June 2026*

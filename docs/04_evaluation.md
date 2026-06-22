@@ -30,7 +30,7 @@ The CSV files make several of these checks **near-deterministic**: we compare th
 | **Human-in-the-loop** | Technical | Does the system do what it should? | ✅ (maintainer) |
 | **Athlete-in-the-loop** | Felt experience | Is it useful and fitting? | ✅ (test athlete) |
 | **Expert-in-the-loop** | Expertise | Is it physiologically sound? | ✅ (KB + tables) |
-| **Data-in-the-loop** | Ground truth | Does the data confirm the felt experience? | ❌ (-> V2, Strava) |
+| **Data-in-the-loop** | Ground truth | Does the data confirm the felt experience? | ❌ (-> V3, Strava) |
 | **Scenario-in-the-loop** | Edge cases | Does it hold under pressure? | ✅ **top priority** |
 
 > The loops can contradict each other — that's where it gets interesting. A session can be technically coherent, well received, yet physiologically questionable.
@@ -52,7 +52,8 @@ scenarios/
 ├── 03_profile_contradiction.md  <- "vegetarian" constraint -> no inconsistent recommendation
 ├── 04_taper_override.md         <- taper D-5, athlete wants 4h -> refuse/advise against, explaining
 ├── 05_degraded_input.md         <- no sensation provided -> asks the right questions, does not hallucinate
-└── 06_routing.md                <- varied messages -> does the master propose the right mode?
+├── 06_routing.md                <- varied messages -> does the master propose the right mode?
+└── 07_measured_debrief.md       <- (V3) planned-vs-actual on anonymised Strava fixture; checks: log reflects KPIs, strava_baseline updated, no invented session
 ```
 
 ---
@@ -70,4 +71,4 @@ LangGraph/LangSmith are out (no more coded orchestrator). Simple and fitting:
 | LLM-as-Judge | Qualitative evaluation at scale | V1+ |
 | CSV / spreadsheet grid | Tracking expert reviews | From V0 |
 
-*Last updated: May 2026*
+*Last updated: June 2026*

@@ -173,7 +173,7 @@ Git provides the audit trail and validation: every plan change is a **reviewable
 
 ```
 Skills (git clone)  ->  Plugin (1-command install)  ->  Connector layer (read / storage / calendar)
-   V0                       V1                            V1 (storage · calendar · Strava Phase 1) -> V2 (Strava measured)
+   V0                       V1                            V1 (storage · calendar · Strava Phase 1) -> V2 (multi-host) -> V3 (Strava measured)
 ```
 
 - **Skills** — `git clone`, zero runtime. Target: tech-savvy athletes and developers.
