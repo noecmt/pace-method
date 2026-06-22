@@ -4,6 +4,32 @@ A **capability file** of the `pace` master: loaded on demand into the same conte
 
 ---
 
+## 0. How to cross the boundary (mechanically) — the rule that makes routing actually work
+
+Throughout this file and the walkthrough, **"route to X" / "launch X" / "auto-route" all mean exactly one mechanical operation:**
+
+> **`Read` the target agent's `SKILL.md` (plus the named capability file, e.g. `references/plan-write.md`) into THIS SAME turn, then continue acting AS that agent until its result message is produced.**
+
+There is **no runtime that transfers the conversation to another skill** (Claude Code / the Agent SDK have no such primitive — see `docs/06`). So routing is a **silent context load**, not a delegation to a separate process. Two non-negotiables:
+
+- **Zero routing text.** No mode announcement, no "routing you to the Planner", no "🔄 handing off", no "waiting for the agent's reply".
+- **Never end the turn on the route decision.** The turn is only finished once the agent's own result message has been produced, in this same turn.
+
+**❌ WRONG (the failure this rule fixes)** — the master narrates a handoff and stops:
+
+```text
+État détecté : Build route validée. Je route vers le Planner.
+🔄 Hand off au Planner (pace-planner:plan-write) — construire les séances…
+Attente : réponse du Planner avec semaine planifiée.
+            ↑ turn ends here, plan-write never runs, nothing is written
+```
+
+**✅ RIGHT** — silently `Read src/pace-planner/SKILL.md` + `references/plan-write.md`, run the Build flow, and the **only** user-facing output is the Planner's single result message (the planned week with concrete watts/HR + rationale), already in `[surface].language`. The files (`plan/weeks/*.json`, `zones.json`, …) are actually written.
+
+The only true separate-skill calls are the shared **tools** `pace-elicitation` / `pace-validate`, invoked *as tools* while the agent keeps its voice.
+
+---
+
 ## 1. Read state
 
 Check the athlete repo for the config + the three persistent artefacts:
@@ -105,7 +131,7 @@ Three rules keep it clean:
 
 ## 6. Context passing
 
-When routing, hand the launched agent a compact context bundle:
+When you continue into the agent (the §0 Read-and-continue), it **uses** (never re-reads) a compact context bundle you already loaded:
 
 | Route | Artefacts handed over | Plus |
 | --- | --- | --- |
@@ -120,7 +146,7 @@ Always include: the athlete's intent in one line, and any slash-force or proposa
 
 ## 7. Worked walkthrough — `scenarios/06_routing.md` (test trace)
 
-Each case traced through the procedure above; the result must match the scenario's expected route.
+Each case traced through the procedure above; the result must match the scenario's expected route. **In every case below, "auto-route / launch / route to `<agent>`" means the §0 mechanism** — `Read` that agent's `SKILL.md` (+ its capability) into the same turn and continue as it, silently, through to its result message — **never** a narrated handoff that ends the turn.
 
 - **A — no vision, no plan, "start training for a gran fondo in September."** State: nothing exists. Intent: a goal, forward-looking. Matrix -> **Discovery**. Lane: auto-route (obvious, no plan to run). ✅ `pace-discovery`.
 
@@ -141,4 +167,4 @@ Each case traced through the procedure above; the result must match the scenario
 
 - **I — vision + plan, `index.csv` shows no `status:planned` near row after the active one, "où j'en suis ?" (`scenarios/14`).** State read (§1) flags horizon depletion. Lane: **concierge** — recite where they are + one aiguillage question, and **append the rolling proposal** (§5b): "next week isn't planned — `/pace-plan` to extend." On acceptance/command -> route to `pace-planner` (rolling). ✅ Proposes from plan state, never imposes, never via the Analyst. *(Contrast: an obvious Run intent in the same state auto-routes silently — the nudge waits for a concierge moment.)*
 
-**Anti-properties to keep:** never start coaching instead of routing; never impose re-Discovery on a signal; never route to Run when no plan exists; **on zero-state, never jump straight to Discovery — onboard first**; never **self-roll** the plan or staple the rolling nudge onto an auto-route; never recompute the week `summary` under the concierge lane.
+**Anti-properties to keep:** never start coaching instead of routing; never impose re-Discovery on a signal; never route to Run when no plan exists; **on zero-state, never jump straight to Discovery — onboard first**; never **self-roll** the plan or staple the rolling nudge onto an auto-route; never recompute the week `summary` under the concierge lane; **and never narrate a handoff or end the turn on a route decision — routing is the silent §0 Read-and-continue, finished only when the agent's result message is produced.**

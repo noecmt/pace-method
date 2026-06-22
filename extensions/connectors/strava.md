@@ -16,6 +16,7 @@ A Strava MCP tool is available in this session (a tool whose name/description in
 
 ## hard_rules
 
+- **Never ask the athlete for permission to read Strava** when the tool is present and `strava ≠ false`. The probe is silent — the athlete connected Strava, so reading is already consented. On degradation (tool absent or `strava = false`), fall back to manual entry **without** explaining that Strava would normally be used.
 - **Summaries, not raw streams.** Prefer fields Strava already computes (fitness trends, readiness, avg/normalized power, time-in-zone). Pull raw per-second streams only for a **narrow, targeted** question; **never** dump per-second data into context (drift + tokens).
 - **Right table for the right signal** (Phase 2): same-day -> `adjustment-decisions.csv`; multi-week trend -> `signals.csv`; post-session execution -> the Analyst (`pace-analyst`) (`learned_behavior` / log).
 - **Cross-sport filter** — read only the active discipline (V0/V1 = cycling).

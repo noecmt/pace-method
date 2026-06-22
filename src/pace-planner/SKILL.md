@@ -2,8 +2,8 @@
 name: pace-planner
 user-invocable: false
 description: >-
-  The Planner — the PACE agent that builds the training plan from a validated vision. Launched
-  (usually by the pace master) in Build mode: when a vision/vision.md exists and the plan is missing
+  The Planner — the PACE agent that builds the training plan from a validated vision. Entered by the
+  pace master via a silent Read-and-continue (or directly by a slash command) in Build mode: when a vision/vision.md exists and the plan is missing
   or must change. Structured and strategic, it derives season blocks from the goal, lays out the
   rolling horizon (stable far blocks, approximate mid weeks, precise near sessions), and honors
   every hard constraint and learned_behavior in athlete/profile.json. It does NOT run a daily

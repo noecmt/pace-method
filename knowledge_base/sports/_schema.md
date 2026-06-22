@@ -29,6 +29,15 @@ A sport pack is a single JSON file `knowledge_base/sports/<sport_id>.json`. It c
   `adjustment-decisions.csv` fallback actions (e.g. `recovery_ride`); keep them stable.
 - A new sport = add this JSON, nothing else. Personas/workflows are identical across sports.
 
+## Resolution (override stack)
+
+A plugin install is **read-only**, so a sport pack resolves at **two locations**, the **local copy winning** on an `id` collision:
+
+1. **`<athlete-repo>/knowledge_base/sports/<id>.json`** — the athlete's local pack (written by the user / `pace-extend`). **Wins.**
+2. **`<plugin-install>/knowledge_base/sports/<id>.json`** — the curated base pack (e.g. `cycling.json`).
+
+The athlete repo **mirrors the plugin's relative tree**, so the rule is simply *"same relative path, local wins"*. **Both sides obey this same contract** — a local pack must satisfy the required fields and rules exactly as a base pack does. The plugin's `extensions/` (contracts) is **not** mirrored locally.
+
 ## Validation
 
 A pack is valid if all required fields are present and well-typed, the primary `zones` are contiguous, `hr_zones` is present and ordered, and at least one active-recovery `key_session` exists. `cycling.json` is the canonical example to diff against.

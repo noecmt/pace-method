@@ -111,6 +111,8 @@ The **adjust** capability enforces this boundary by reading `adjustment-decision
 
 The athlete must experience **one coach, one message** per turn. In the new model this is no longer a fragile "silent handoff between skills" to be maintained — it is **enforced by the architecture**: a flow crosses one skill boundary (master -> agent), then the chosen agent stays the single active voice and pulls in its steps by reading local files. Reading a capability file is not a voice change; calling `pace-elicitation`/`pace-validate` as a tool is not a voice change.
 
+**What "crossing the boundary" means mechanically.** There is no runtime that transfers the conversation to another skill (Claude Code / the Agent SDK have no such primitive — `06_architecture_pivot.md` §2). So "route to the agent" = the master **`Read`s the agent's `SKILL.md` (+ the named capability file) into the same turn and continues acting as that agent** until its result message is produced. It is a **silent context load, not a delegation**: the master never narrates a handoff and never ends its turn on the route decision. (A turn that prints "🔄 handing off to the Planner… waiting for its reply" and stops — leaving `plan-write` un-run — is exactly the bug this enforces against; the master's `references/routing.md` §0 carries the rule and an anti-example.)
+
 The only thing rendered to the athlete each turn is the **single message of the agent that owns the conversation**, in `[surface].language`, at the configured verbosity. Concretely:
 
 - **No skill narrates its own machinery** — not "I'm the master, let me read your state", not "routing you to the coach", not "Reading surface configuration…". The athlete sees the answer, not the plumbing.

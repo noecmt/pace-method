@@ -63,4 +63,6 @@ The master only **records** this config. The agents' **capabilities** consume it
 
 Each agent's `customize.toml` carries (a) an optional `[surface]` (the overridable keys above, commented out unless the athlete sets them), and — wired in the command-surface step — (b) its `[[agent.menu]]` items, each dispatching to **a capability** via `prompt = "Read and follow {skill-root}/references/<x>.md"` or to **a shared tool** via `skill = "pace-validate"`. The menu is the BMAD `[[agent.menu]]` rendered for the host (and for pace-chat, as the intent menu with a "talk freely" escape hatch).
 
+**The master's routing menu items use `prompt`, not `skill`.** Routing from the master to a voiced agent is a **silent Read-and-continue** (`references/routing.md` §0): the item's `prompt` instructs the master to `Read` the target agent's `SKILL.md` (+ its capability file) into the same turn and continue *as* that agent — there is no runtime that "invokes" the agent as a separate skill (`06_architecture_pivot.md` §2). `skill =` therefore stays reserved for genuine **shared tools** (`pace-validate`, `pace-elicitation`), which an agent calls while keeping its voice.
+
 *Last updated: June 2026 (master-concierge + menu model, per ADR `06_architecture_pivot.md`)*

@@ -31,9 +31,15 @@ A connector **may implement multiple classes**. Notion can be both `storage` (ar
 On a turn that *could* use a connector, the agent:
 1. **Probes** — checks whether the relevant MCP tool is available in the session.
 2. **If present** -> uses it, strictly within the connector's `hard_rules`.
-3. **If absent** -> **degrades cleanly** to the fallback (manual entry / local filesystem) and **says so**. Never block, never invent the data.
+3. **If absent** -> **degrades cleanly** to the fallback (manual entry / local filesystem) and **says so in plain language**. Never block, never invent the data.
 
 All of the above is **text the agent follows** — there is no detection code, no process.
+
+**Degradation message tone.** The one line emitted on degradation must be in `[surface].language` and use no technical terms ("MCP", "connector", "CSV", "fallback", "backend"). Examples:
+- "Google Calendar isn't available right now — I'll keep your sessions in a local file."
+- "Strava isn't connected — tell me how the session went."
+- "GitHub isn't reachable — I'll save everything on this device."
+Never explain the technical reason for the degradation.
 
 ## Hard rules (every connector)
 

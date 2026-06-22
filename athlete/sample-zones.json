@@ -1,5 +1,5 @@
 {
-  "_comment": "Derived artefact fixture for scenario testing — the precompiled intensity zones for athlete/sample.json (cycling, FTP 250W, max_hr 185). NEVER hand-edited: regenerated from profile.json + the sport pack by the planner's plan-write capability (first time) or the Analyst / pace-analyst (on a marker change). Keyed by discipline under `by_discipline` (one entry for a mono-sport athlete, three for a triathlete). Each discipline's `fitness_markers` must always match profile.json.fitness.<discipline> (pace-validate enforces this).",
+  "_comment": "Derived artefact fixture for scenario testing — precompiled intensity zones for athlete/sample.json (cycling FTP 250W/max_hr 185; running threshold_pace 270 s/km/max_hr 178). NEVER hand-edited: regenerated from profile.json + the sport pack by the planner's plan-write capability (first time) or the Analyst / pace-analyst (on a marker change). Keyed by discipline under `by_discipline`. Each discipline's `fitness_markers` must always match profile.json.fitness.<discipline> (pace-validate enforces this).",
   "schema_version": "1.0",
   "generated_by": "pace-planner",
   "generated_at": "2026-04-15",
@@ -26,6 +26,29 @@
         { "id": 3, "name": "Tempo",             "min_bpm": 154, "max_bpm": 164, "ref_pct": [0.83, 0.89] },
         { "id": 4, "name": "Threshold",         "min_bpm": 165, "max_bpm": 173, "ref_pct": [0.89, 0.94] },
         { "id": 5, "name": "VO2max / max",      "min_bpm": 174, "max_bpm": 185, "ref_pct": [0.94, 1.00] }
+      ]
+    },
+    "running": {
+      "_comment_pace": "pace_zones: fast_sec_km = fastest (lowest sec/km) end of zone; slow_sec_km = slowest (highest sec/km) end. Derived as round(threshold_pace_sec_km × threshold_pace_factor). 1-second gaps between adjacent zones match the cycling rounding convention.",
+      "fitness_markers": {
+        "threshold_pace_sec_km": 270,
+        "max_hr": 178,
+        "lthr_bpm": null
+      },
+      "hr_reference": "max_hr",
+      "pace_zones": [
+        { "id": 1, "name": "Easy / Recovery", "fast_sec_km": 311, "slow_sec_km": 378, "threshold_pace_factor": [1.15, 1.40] },
+        { "id": 2, "name": "Aerobic",          "fast_sec_km": 292, "slow_sec_km": 310, "threshold_pace_factor": [1.08, 1.15] },
+        { "id": 3, "name": "Tempo",            "fast_sec_km": 276, "slow_sec_km": 291, "threshold_pace_factor": [1.02, 1.08] },
+        { "id": 4, "name": "Threshold",        "fast_sec_km": 262, "slow_sec_km": 275, "threshold_pace_factor": [0.97, 1.02] },
+        { "id": 5, "name": "Interval",         "fast_sec_km": 230, "slow_sec_km": 261, "threshold_pace_factor": [0.85, 0.97] }
+      ],
+      "hr_zones": [
+        { "id": 1, "name": "Recovery",          "min_bpm": 0,   "max_bpm": 121, "ref_pct": [0.00, 0.68] },
+        { "id": 2, "name": "Aerobic endurance", "min_bpm": 122, "max_bpm": 147, "ref_pct": [0.68, 0.83] },
+        { "id": 3, "name": "Tempo",             "min_bpm": 148, "max_bpm": 158, "ref_pct": [0.83, 0.89] },
+        { "id": 4, "name": "Threshold",         "min_bpm": 159, "max_bpm": 167, "ref_pct": [0.89, 0.94] },
+        { "id": 5, "name": "VO2max / max",      "min_bpm": 168, "max_bpm": 178, "ref_pct": [0.94, 1.00] }
       ]
     }
   }

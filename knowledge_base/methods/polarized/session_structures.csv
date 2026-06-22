@@ -1,0 +1,11 @@
+session_id,phase,zones,structure,purpose
+base_endurance,base,"Z1,Z2","2-4h continuous, fully conversational","The ~80% low-intensity aerobic base — protect easy volume"
+base_recovery,base,"Z1","30-60min very easy spin, no climbs","Active recovery between key days (modulate fallback)"
+base_sweetspot,base,"Z3,sweet_spot","2x20min sweet-spot, 5min Z1 between","Base-legal intensity touch (Z4-Z5 forbidden in base); kept limited, polarized minimises Z3"
+build_endurance,build,"Z1,Z2","2-4h conversational","The ~80% — easy volume retained through build"
+build_vo2max,build,"Z5","5x3min Z5, equal Z1 recovery","The hard ~20% — VO2max stimulus (the true polarized high end)"
+build_threshold,build,"Z4","3x10min Z4, 5min Z1 recovery","The hard ~20% — lactate-threshold stimulus"
+build_recovery,build,"Z1","30-45min easy","Active recovery between hard days"
+taper_activation,taper,"Z1,Z2","60-75min easy with a few short Z2 efforts","Maintain feel without fatigue — phase forbids Z4-Z5 and long rides"
+race_openers,race,"Z1,Z2","30-40min easy with a few brief accelerations (not structured intervals)","Pre-race activation — no structured intervals, no long ride"
+recovery_spin,recovery,"Z1","30-45min very easy regeneration","Regeneration week — Z4-Z5 and long rides forbidden"
