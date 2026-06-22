@@ -6,7 +6,7 @@ Sessions pushed as **calendar events** to the athlete's Google Calendar via the 
 
 ## capability_probe (plain language)
 
-A Google Calendar MCP tool is available in this session (`mcp__claude_ai_Google_Calendar__*`, after OAuth). Absent / unauthenticated -> degrade to `local-csv`.
+A Google Calendar MCP tool is available in this session (`mcp__claude_ai_Google_Calendar__*`, after OAuth). Absent / unauthenticated -> keep sessions in a local file (see degradation tone rule in `_schema.md`).
 > Status: only auth tools are exposed until the user authorizes (`mcp__claude_ai_Google_Calendar__authenticate` then `complete_authentication`). Confirm exact file-tool names on first connect.
 
 ## Config (from `pace.config.toml`)
@@ -32,8 +32,17 @@ gcal_calendar_id = "primary"   # or a specific calendar ID from the athlete's ac
 - **Session adjusted** (the coach's `adjust` capability) -> update the existing event (description + duration); do **not** delete and recreate.
 - **Session skipped** -> update title to `[PACE — skipped] {session_name}`; keep the event for the audit trail.
 
+## Confirmation rule
+
+- **Bulk creates / bulk updates** (plan-write initial push; rolling new-window push): before writing events, ask one line in `[surface].language`:
+  > "N sessions ready for your Google Calendar (DD Mon – DD Mon) — shall I add them? [yes / skip]"
+
+  Proceed on "yes". On "skip": write `plan/calendar.csv` only, note it in the reply.
+- **Status-only updates** (adjust modulation, analyst completed/skipped): silent — no confirmation. The event already exists; a status change is a micro-update.
+
 ## hard_rules
 
 - One event per planned session; no duplicate creates.
 - Store the Google event ID alongside the session record in `log/` for future updates.
 - Never read calendar events as training signals.
+- Never ask for confirmation on status-only updates.

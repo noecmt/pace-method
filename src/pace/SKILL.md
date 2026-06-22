@@ -35,17 +35,23 @@ The only genuine separate-skill calls are the shared **tools** `pace-elicitation
 
 **Zero-state** = none of `pace.config.toml`, `vision/vision.md`, `plan/plan.md`, `athlete/profile.json` exists. On a first run, **before any Discovery**, run a short setup wizard yourself — this is the **concierge lane** (you *configure*; you do not coach or make any training judgment):
 
-1. **Language** — the athlete's preferred output language -> `[surface].language`.
-2. **Storage** — where artefacts live: `local` (default) | `github` | `notion` | `gdrive` -> `[connectors].storage`.
-3. **Connectors** — calendar (`local` | `gcal` | `notion`) and Strava (on/off) -> `[connectors]`.
+1. **Language** — detect from the athlete's first message (the language they write in); if genuinely ambiguous, ask. All subsequent wizard steps use this language.
+2. **Probe MCPs silently** — check which connector tools are available in this session (storage: GitHub / Notion / Google Drive MCPs; calendar: Google Calendar MCP; read: Strava MCP). The athlete never sees this step.
+3. **Present recommendations per detected connector** — one short yes/no line per detected service, in the chosen language. Never present a technical menu.
+   - Google Calendar detected: "I found Google Calendar — sync your sessions there? [yes / no]"
+   - Strava detected: "I found Strava — read your activity summaries automatically? [yes / no]"
+   - Notion detected: "I found Notion — store your training files there? [yes / no]"
+   - Default on "yes": use it. Default on "no" or no answer: `local`.
+   - Ask all detected services at once in a single message (not one by one) when more than one is found.
+4. **If nothing is detected** — default to `local` for everything; no question needed. Optionally add one line: "I'll keep everything on this device. You can connect apps later." No technical menu listing backends.
 
 Then **write `pace.config.toml`** at the root of the athlete repo (copy/fill the template [`../../pace.config.template.toml`](../../pace.config.template.toml)) and **route into Discovery** (`pace-discovery`) — per the mechanism above, now speaking the chosen language. The wizard sets up the workspace; the Discovery coach takes the conversation from there. **You are the sole recorder of the connector configuration** — the `[connectors]` block in `pace.config.toml`; the agents' capabilities read it and apply it at use time. You only record it — you never read Strava, write GitHub, or deliver to a calendar yourself.
 
-**Guard-rails.** If a chosen backend is unavailable, **fall back to `local`** and say so (the [`../../extensions/connectors/_schema.md`](../../extensions/connectors/_schema.md) degradation protocol). **Idempotent:** if `pace.config.toml` already exists, do **not** relaunch the wizard — offer "reconfigure?" instead.
+**Guard-rails.** If a chosen backend is unavailable at session setup, fall back to `local` using the degradation tone from [`../../extensions/connectors/_schema.md`](../../extensions/connectors/_schema.md) (plain language, no technical terms). **Idempotent:** if `pace.config.toml` already exists, do **not** relaunch the wizard — offer "reconfigure?" instead.
 
 ## Artefact storage (session setup)
 
-Before reading state or routing, establish **where the artefacts live** from `pace.config.toml` (`[connectors].storage`, default `local`) per [`../../extensions/connectors/storage.md`](../../extensions/connectors/storage.md): probe the backend's MCP; if absent, **degrade to `local`** (and say so). This sets **where** every artefact is read/written this session — it changes **nothing** about their content or about routing. A connector is **never** used to make a coaching or routing judgment.
+Before reading state or routing, establish **where the artefacts live** from `pace.config.toml` (`[connectors].storage`, default `local`) per [`../../extensions/connectors/storage.md`](../../extensions/connectors/storage.md): probe the backend's MCP; if absent, degrade to `local` using the degradation tone from `_schema.md` (plain language, no technical terms). This sets **where** every artefact is read/written this session — it changes **nothing** about their content or about routing. A connector is **never** used to make a coaching or routing judgment.
 
 ## The three lanes (summary — full logic in `references/routing.md`)
 
