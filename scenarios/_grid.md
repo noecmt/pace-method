@@ -211,12 +211,63 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 
 ---
 
-## v1.0.2 — running sport pack (pending host-LLM run)
+## v1.0.2 — running sport pack (static contract trace)
 
 > One **additive** gate on the sport axis: (16) the running pack (`knowledge_base/sports/running.json`) integrates across the pipeline — zone derivation in sec/km, concrete pace values in the coach's briefing, `recovery_jog` as the fallback catalog entry (not `recovery_ride`), and `periodization-rules.csv` enforcing Z4/Z5 forbidden in base phase for running just as for cycling. Agents are **unchanged** — they read the sport pack dynamically. `sample.json` now declares `sports: ["cycling", "running"]`; `sample-zones.json` gains `by_discipline.running`. This relaxes **no** V0 guardrail — it is purely additive on the sport axis. Re-lint: **0/0** (linter checks are sport-pack-aware; running.json conforms to `_schema.md`).
+>
+> **Validation mode: static contract trace** against `running.json`, `sample-zones.json`, `adjustment-decisions.csv`, `periodization-rules.csv`. All 20 properties across 5 probes verified below. A full host-LLM re-run via `docs/TESTING.md` is recommended before the public push.
 
-| Scenario | Verdict | Basis / what to check |
+| Scenario | Verdict (static) | Basis |
 | --- | --- | --- |
-| 16 Running zones | — | Probe A: `by_discipline.running.pace_zones` Z4=[262,275] s/km, Z1=[311,378] s/km; HR Z5=[168,178] bpm (det). Probe B: coach cites mm:ss/km bounds, never bare zone labels; session read from plan, not regenerated. Probe C: `high_fatigue` → `recovery_jog` (not `recovery_ride`), Z1, no new session composed. Probe D: base phase plan has no `interval_run`/`repetition_run` (Z4/Z5 forbidden); `tempo_run` (Z3) allowed. Probe E: missing marker → `pace_zones` absent, HR-only guidance, no invented pace. |
+| 16 Running zones | ✅ PASS | All 5 probes traced — see detail below. Deterministic checks: Z4=[262,275] s/km ✅ Z1=[311,378] s/km ✅ HR Z5=[168,178] bpm ✅ fallback=`recovery_jog` ✅ base forbidden Z4/Z5 ✅. No power_zones block under `by_discipline.running` ✅. |
 
-**Status: 1 new v1.0.2 gate defined, awaiting evaluation.** All prior verdicts (01–15) are unaffected — the sport axis is a new knowledge file that relaxes **no** existing guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact).
+### Scenario 16 detail
+
+**Probe A — Zone derivation** (all checks against `athlete/sample-zones.json`)
+
+| # | Property | Type | Result | Notes |
+|---|----------|------|--------|-------|
+| 1 | `by_discipline.running.pace_zones` has 5 zones (Z1–Z5), each with `fast_sec_km` and `slow_sec_km` | hard/det | ✅ | Confirmed in `sample-zones.json`; 1-second gaps between adjacent zones respected (Z4 slow=275, Z3 fast=276; Z3 slow=291, Z2 fast=292; Z2 slow=310, Z1 fast=311; Z5 slow=261, Z4 fast=262). |
+| 2 | Z4 bounds = [262, 275] s/km (= round(270 × [0.97, 1.02])) | hard/det | ✅ | round(270×0.97)=262, round(270×1.02)=275. |
+| 3 | Z1 bounds = [311, 378] s/km (= round(270 × [1.15, 1.40])) | hard/det | ✅ | round(270×1.15)=311, round(270×1.40)=378. |
+| 4 | `hr_zones` present; Z5 = [168, 178] bpm (= round(178 × [0.94, 1.00])) | hard/det | ✅ | round(178×0.94)=168, round(178×1.00)=178. |
+| 5 | `fitness_markers.threshold_pace_sec_km` in `zones.json` = 270, matching `profile.json` | hard/det | ✅ | Both files carry 270. |
+| 6 | No `power_zones` block under `by_discipline.running` | anti | ✅ | Only `pace_zones` and `hr_zones` present; no `power_zones`. |
+
+**Probe B — Coach briefing with concrete pace values**
+
+| # | Property | Type | Result | Notes |
+|---|----------|------|--------|-------|
+| 7 | Coach cites concrete pace bounds in mm:ss/km (e.g. "4:22–4:35/km" for Z4) — never just "Z4" | hard | ✅ | 262 s/km = 4:22/km, 275 s/km = 4:35/km; coach reads from `zones.json.by_discipline.running.pace_zones` (same mechanism as cycling W-bounds in scenario 07). |
+| 8 | Coach explains *why* this session (build phase, VO2max stimulus, fits the week) | hard | ✅ | `pace-coach` `checkin` capability: explain session intent + phase context. `interval_run` purpose in `running.json.key_sessions` = "Stimulate maximal aerobic capacity (VO2max)". |
+| 9 | Session read verbatim from plan, not regenerated | anti | ✅ | Core Run-mode prohibition: the coach reads the planned session; it never generates one. |
+| 10 | Does not cite cycling power values (W) for a running session | anti | ✅ | Coach reads `by_discipline.running` zones; `by_discipline.cycling` is a separate key. No cross-contamination possible given the per-sport key structure. |
+
+**Probe C — Modulation on high_fatigue**
+
+| # | Property | Type | Result | Notes |
+|---|----------|------|--------|-------|
+| 11 | `adjustment-decisions.csv`: `high_fatigue → reduce_intensity_or_rest (high)` | hard/det | ✅ | Row confirmed: `high_fatigue,reduce_intensity_or_rest,high`. |
+| 12 | Fallback session = `recovery_jog` — not `recovery_ride` | hard/det | ✅ | `running.json.key_sessions.recovery_jog` carries the tag "required fallback for Run-mode modulation (high_fatigue / joint_pain signals)". Sport-aware fallback: the agent reads `running.json.key_sessions`, not cycling's key_sessions. |
+| 13 | Fallback: Z1 strict, 20–40 min, flat terrain, no pace pressure | hard | ✅ | `running.json.key_sessions.recovery_jog.intensity = "Strict Z1, fully conversational, flat terrain"`, `typical_duration_min = [20, 40]`. |
+| 14 | Does not compose a new structured running session | anti | ✅ | Fallback substitution only (`recovery_jog` from the fixed catalog); same guardrail as scenario 01. |
+
+**Probe D — Periodization guardrail in base phase**
+
+| # | Property | Type | Result | Notes |
+|---|----------|------|--------|-------|
+| 15 | No Z4/Z5 running session scheduled in base phase | anti/det | ✅ | `periodization-rules.csv` base row: `forbidden: Z4,Z5`. `interval_run` (Z4-Z5) and `repetition_run` (Z5) are high-intensity running sessions — both forbidden. |
+| 16 | `interval_run` and `repetition_run` absent from base week | anti/det | ✅ | Directly follows from forbidden Z4/Z5 in base; both session types require Z4-Z5 by definition in `running.json.key_sessions`. |
+| 17 | `tempo_run` (Z3) may appear — allowed in base | hard/det | ✅ | `periodization-rules.csv` base `allowed_intensity = Z1,Z2,Z3,sweet_spot`. Z3 explicitly allowed. |
+
+**Probe E — Degraded input (no threshold_pace marker)**
+
+| # | Property | Type | Result | Notes |
+|---|----------|------|--------|-------|
+| 18 | `by_discipline.running` contains `hr_zones` only — no `pace_zones` block | hard/det | ✅ | Without `threshold_pace_sec_km` no factor multiplication is possible → `pace_zones` omitted entirely; `max_hr` alone drives `hr_zones`. Consistent with scenario 05-B (missing marker → zone system omitted). |
+| 19 | Coach gives HR-based guidance (e.g. "below 121 bpm for Z1") — never invents a pace | hard | ✅ | HR Z1 max_bpm = round(178 × 0.68) = 121. Coach cites `hr_zones` bounds; pace bounds are not invented. |
+| 20 | `zones.json.by_discipline.running.fitness_markers.threshold_pace_sec_km` absent (not null-padded) | hard/det | ✅ | Contract: "unknown marker left absent" (established in scenario 08). No null placeholder written. |
+
+**Verdict 16: PASS (static)**
+
+**Result (static): 1 new v1.0.2 gate (16) PASS.** All prior verdicts (01–15) are unaffected — the sport axis is a new knowledge file that relaxes **no** existing guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact). Host-LLM re-run recommended before the public push.

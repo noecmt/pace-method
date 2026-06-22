@@ -13,7 +13,7 @@
       "name": "pace",
       "source": "./",
       "description": "Plan-first endurance coaching: guides an athlete from goal discovery (vision) through structured, periodized planning to daily session execution — and never lets the day's mood regenerate the plan. Cycling first; running/triathlon next.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "noecmt",
         "email": "noecramette@yahoo.fr"
