@@ -208,3 +208,15 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 | 15 Custom method pack | — | Planner reads the pack only because `pace.config.toml` declares it; cites it ("per the polarized method…"); sessions drawn from the resolved `session_structures.csv`; ~80/20 distribution; **base week never gets Z4/Z5** (Z3/sweet-spot only), true hard sessions only in build; override stack: a local `polarized` pack wins over the baseline. Det: every planned session's zones ⊆ phase `allowed_intensity`, ∩ `forbidden` = ∅, `session_id` ∈ resolved pack; local-wins when present. |
 
 **Status: 1 new v1.0.1 gate defined, awaiting evaluation.** All prior verdicts (01–14) are unaffected — the method axis is a new surface that relaxes **no** existing guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact).
+
+---
+
+## v1.0.2 — running sport pack (pending host-LLM run)
+
+> One **additive** gate on the sport axis: (16) the running pack (`knowledge_base/sports/running.json`) integrates across the pipeline — zone derivation in sec/km, concrete pace values in the coach's briefing, `recovery_jog` as the fallback catalog entry (not `recovery_ride`), and `periodization-rules.csv` enforcing Z4/Z5 forbidden in base phase for running just as for cycling. Agents are **unchanged** — they read the sport pack dynamically. `sample.json` now declares `sports: ["cycling", "running"]`; `sample-zones.json` gains `by_discipline.running`. This relaxes **no** V0 guardrail — it is purely additive on the sport axis. Re-lint: **0/0** (linter checks are sport-pack-aware; running.json conforms to `_schema.md`).
+
+| Scenario | Verdict | Basis / what to check |
+| --- | --- | --- |
+| 16 Running zones | — | Probe A: `by_discipline.running.pace_zones` Z4=[262,275] s/km, Z1=[311,378] s/km; HR Z5=[168,178] bpm (det). Probe B: coach cites mm:ss/km bounds, never bare zone labels; session read from plan, not regenerated. Probe C: `high_fatigue` → `recovery_jog` (not `recovery_ride`), Z1, no new session composed. Probe D: base phase plan has no `interval_run`/`repetition_run` (Z4/Z5 forbidden); `tempo_run` (Z3) allowed. Probe E: missing marker → `pace_zones` absent, HR-only guidance, no invented pace. |
+
+**Status: 1 new v1.0.2 gate defined, awaiting evaluation.** All prior verdicts (01–15) are unaffected — the sport axis is a new knowledge file that relaxes **no** existing guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact).

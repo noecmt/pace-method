@@ -1,0 +1,62 @@
+{
+  "sport_id": "running",
+  "version": "1.0",
+  "primary_metric": "pace_sec_per_km",
+  "fitness_marker": "threshold_pace",
+  "references": [
+    "Daniels J. — Daniels' Running Formula, 4th ed., Human Kinetics, 2022 (ISBN 978-1718200203).",
+    "Friel J. — The Triathlete's Training Bible, 5th ed., VeloPress, 2016 (ISBN 978-1934030837)."
+  ],
+  "intensity_zones": {
+    "_comment_direction": "threshold_pace_factor is a multiplier on threshold_pace_sec_km. Factor > 1.0 = running slower than threshold (low-intensity zones). Factor < 1.0 = running faster than threshold (high-intensity zones). Zones are listed easy→hard (Z1 first); the factor range [lo, hi] gives the fast end (lo) and slow end (hi) of each zone in sec/km terms.",
+    "system": "daniels_5zones",
+    "zones": [
+      { "id": 1, "name": "Easy / Recovery",  "threshold_pace_factor": [1.15, 1.40] },
+      { "id": 2, "name": "Aerobic",           "threshold_pace_factor": [1.08, 1.15] },
+      { "id": 3, "name": "Tempo",             "threshold_pace_factor": [1.02, 1.08] },
+      { "id": 4, "name": "Threshold",         "threshold_pace_factor": [0.97, 1.02] },
+      { "id": 5, "name": "Interval",          "threshold_pace_factor": [0.85, 0.97] }
+    ],
+    "hr_system": "friel_5zones",
+    "hr_zones": [
+      { "id": 1, "name": "Recovery",          "max_hr_pct": [0.00, 0.68], "lthr_pct": [0.00, 0.85] },
+      { "id": 2, "name": "Aerobic endurance", "max_hr_pct": [0.68, 0.83], "lthr_pct": [0.85, 0.89] },
+      { "id": 3, "name": "Tempo",             "max_hr_pct": [0.83, 0.89], "lthr_pct": [0.90, 0.94] },
+      { "id": 4, "name": "Threshold",         "max_hr_pct": [0.89, 0.94], "lthr_pct": [0.95, 0.99] },
+      { "id": 5, "name": "VO2max / max",      "max_hr_pct": [0.94, 1.00], "lthr_pct": [1.00, null] }
+    ]
+  },
+  "key_sessions": {
+    "recovery_jog": {
+      "purpose": "Active recovery — required fallback for Run-mode modulation (high_fatigue / joint_pain signals)",
+      "typical_duration_min": [20, 40],
+      "intensity": "Strict Z1, fully conversational, flat terrain"
+    },
+    "easy_run": {
+      "purpose": "Aerobic base volume, daily low-stress accumulation",
+      "typical_duration_min": [40, 75],
+      "intensity": "Z1-Z2, conversation easy, no pace pressure"
+    },
+    "long_run": {
+      "purpose": "Weekly aerobic cornerstone, fat-oxidation and endurance",
+      "typical_duration_min": [90, 180],
+      "intensity": "Z1-Z2 throughout; last 20% may drift to low Z3 if feeling strong"
+    },
+    "tempo_run": {
+      "purpose": "Raise lactate threshold and build ability to sustain Z3 (serves as the base-phase sweet-spot equivalent)",
+      "typical_duration_min": [40, 65],
+      "intensity": "Z3 as 25-40min continuous or 2x15min with 5min Z1 jog recovery"
+    },
+    "interval_run": {
+      "purpose": "Stimulate maximal aerobic capacity (VO2max)",
+      "typical_duration_min": [50, 75],
+      "intensity": "Z4-Z5 as 6-8x1000m or 5x1500m, 90s-2min Z1 jog recovery"
+    },
+    "repetition_run": {
+      "purpose": "Running economy and neuromuscular speed",
+      "typical_duration_min": [40, 60],
+      "intensity": "Z5 as 8-12x200m or 6-8x400m, full recovery between reps"
+    }
+  },
+  "periodization": ["polarized", "pyramidal", "linear"]
+}
