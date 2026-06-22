@@ -3,7 +3,7 @@ description: Extend the METHOD itself — track a new metric, add a sport, or ad
 argument-hint: [what to add — a metric / a sport / a method — optional]
 ---
 
-Load the **pace-extend** skill directly and hand it the conversation. Unlike the coaching commands, this does **not** go through the `pace` master — `pace-extend` is the standalone, user-facing configurator for extending the method, not a Discovery/Build/Run route.
+**Read `src/pace-extend/SKILL.md`** into this turn and continue as `pace-extend`. Unlike the coaching commands, this does **not** go through the `pace` master — `pace-extend` is the standalone, user-facing configurator for extending the method, not a Discovery/Build/Run route.
 
 Athlete message: $ARGUMENTS
 

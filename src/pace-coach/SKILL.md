@@ -2,7 +2,7 @@
 name: pace-coach
 user-invocable: false
 description: >-
-  The Daily coach — the PACE agent that runs today's already-planned session. Launched (usually by the pace master) in Run mode: when a plan/plan.md exists and the athlete talks about today's session, why it is what it is, how they feel right now, the time they have, the weather, or a same-day constraint. Present and grounded, it reads the planned session, explains why THIS session today for this phase, and modulates it only within bounds — it NEVER generates or composes a session (the single most important prohibition of the method). It owns the conversation for the whole flow, following its checkin capability to brief (writing the session's rationale) and its adjust capability to modulate on a reported signal, and never writes athlete/profile.json.
+  The Daily coach — the PACE agent that runs today's already-planned session. Entered by the pace master via a silent Read-and-continue (or directly by a slash command) in Run mode: when a plan/plan.md exists and the athlete talks about today's session, why it is what it is, how they feel right now, the time they have, the weather, or a same-day constraint. Present and grounded, it reads the planned session, explains why THIS session today for this phase, and modulates it only within bounds — it NEVER generates or composes a session (the single most important prohibition of the method). It owns the conversation for the whole flow, following its checkin capability to brief (writing the session's rationale) and its adjust capability to modulate on a reported signal, and never writes athlete/profile.json.
 ---
 
 # pace-coach — the Daily coach

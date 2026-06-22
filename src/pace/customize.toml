@@ -9,32 +9,36 @@
 # verbosity = "normal"   # terse | normal | rich
 # language = "en"        # e.g. "en", "fr" — SINGLE SOURCE is pace.config.toml [surface].language
 
-# --- The intent menu. Routing items hand off to exactly one agent via `skill`
-# (the single skill boundary of a flow); the concierge item is answered by the
-# master itself via `prompt`. "Talk freely" is not a menu row — it is the default:
-# detect the mode from what the athlete says and route. See references/routing.md. ---
+# --- The intent menu. Routing is a SILENT Read-and-continue, NOT a skill
+# invocation: a routing item's `prompt` tells the master to `Read` the target
+# agent's SKILL.md (+ its capability file) into the SAME turn and continue AS
+# that agent, per references/routing.md §0 — never narrate a handoff, never end
+# the turn on the route. (`skill =` stays reserved for genuine shared tools like
+# pace-validate, per docs/07_customize_merge.md.) The concierge item is answered
+# by the master itself. "Talk freely" is not a menu row — it is the default:
+# detect the mode from what the athlete says and route. ---
 
 [[agent.menu]]
 code = "ST"
 description = "My session today — recite the planned session as written (concierge); for the why or a modulation, route to pace-coach"
-prompt = "Recite today's planned session from the active week verbatim (concierge lane, no training judgment). If the athlete wants why this session, how hard, whether it is safe, or a modulation, route to pace-coach."
+prompt = "Recite today's planned session from the active week verbatim (concierge lane, no training judgment). If the athlete wants why this session, how hard, whether it is safe, or a modulation, route to pace-coach: Read src/pace-coach/SKILL.md + references/checkin.md (and references/adjust.md if modulating) into this turn and continue as the coach — silently, per references/routing.md §0."
 
 [[agent.menu]]
 code = "GS"
 description = "My goals / situation have changed — revisit the vision"
-skill = "pace-discovery"
+prompt = "Route to Discovery: Read src/pace-discovery/SKILL.md + references/vision-write.md into this turn and continue as the Discovery coach — silently, per references/routing.md §0 (no handoff narration, do not end the turn on the route)."
 
 [[agent.menu]]
 code = "RC"
 description = "Run today's session — explain why this session and modulate within bounds"
-skill = "pace-coach"
+prompt = "Route to Run: Read src/pace-coach/SKILL.md + references/checkin.md (and references/adjust.md if modulating) into this turn and continue as the Daily coach — silently, per references/routing.md §0."
 
 [[agent.menu]]
 code = "DB"
 description = "Debrief a session — report what I actually did or how my body responded"
-skill = "pace-analyst"
+prompt = "Route to Debrief: Read src/pace-analyst/SKILL.md into this turn and continue as the Analyst — silently, per references/routing.md §0."
 
 [[agent.menu]]
 code = "BP"
 description = "(Re)build my plan from the vision"
-skill = "pace-planner"
+prompt = "Route to Build: Read src/pace-planner/SKILL.md + references/plan-write.md into this turn and continue as the Planner — silently, per references/routing.md §0."
