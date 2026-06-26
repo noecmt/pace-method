@@ -36,11 +36,13 @@ To access today's session(s): read `plan/index.csv` -> find the row where `statu
 `plan/index.csv` covers the full season (all three horizons). Far and mid rows are approximate and have no `file`; near rows carry a `file` path and a concrete status:
 
 ```csv
-week_id,horizon,start,end,block,phase,load_type,volume_modifier,status,file
-{{far_week_id}},far,{{start}},{{end}},{{block}},{{phase}},,,scheduled,
-{{mid_week_id}},mid,{{start}},{{end}},{{block}},{{phase}},{{load_type}},{{volume_modifier}},scheduled,
-{{near_week_id}},near,{{start}},{{end}},{{block}},{{phase}},{{load_type}},{{volume_modifier}},active,weeks/{{near_week_id}}.json
+week_id,horizon,start,end,block,phase,intent,load_type,volume_modifier,status,file
+{{far_week_id}},far,{{start}},{{end}},{{block}},{{phase}},{{intent}},,,scheduled,
+{{mid_week_id}},mid,{{start}},{{end}},{{block}},{{phase}},{{intent}},{{load_type}},{{volume_modifier}},scheduled,
+{{near_week_id}},near,{{start}},{{end}},{{block}},{{phase}},{{intent}},{{load_type}},{{volume_modifier}},active,weeks/{{near_week_id}}.json
 ```
+
+A filled example index (full season, all three horizons) lives in `assets/index-example.csv`.
 
 Each `plan/weeks/<week_id>.json` carries the precise sessions for that week, including the concrete zone bounds copied from `athlete/zones.json`.
 

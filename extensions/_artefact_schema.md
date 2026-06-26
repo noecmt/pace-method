@@ -12,7 +12,7 @@ The **core artefacts** are the athlete-repo files the agents communicate through
 | Athlete profile | `athlete/profile.json` | `"1.0"` | Discovery intake (creates once), Analyst (sole updater) |
 | Derived zones | `athlete/zones.json` | `"1.0"` | Planner (first), Analyst (regenerates on a marker change) |
 
-`vision/vision.md` and `plan/plan.md` are **narrative** artefacts (Markdown), not covered by a JSON `schema_version`; their contract is the validation checklist in `pace-validate`.
+`vision/vision.md` and `plan/plan.md` are **narrative** artefacts (Markdown), not covered by a JSON `schema_version`; their contract is the validation checklist in `pace-validate`. `plan/index.csv` is **structured** (CSV) but carries no `schema_version`; its column contract is frozen below (a filled example: `src/pace-planner/assets/index-example.csv`).
 
 ## Two identity axes: discipline vs programme
 
@@ -100,6 +100,29 @@ A regenerate-not-patch aggregate (sibling of `sessions`). The Planner/`rolling` 
 - **Gated by declaration.** A `custom` key is honored **only when it is declared** in `pace.config.toml [custom_metrics]` (which positions — `planned`/`actual`/`debrief` — it may appear on, and its type). The Analyst writes/reads only declared keys; `pace-validate` flags an undeclared or mistyped key. Undeclared keys are ignored, never invented.
 
 > **Nutrition / recovery / any *domain* does NOT ride on `custom`.** A domain (nutrition, recovery, …) is a **parallel advisor agent that writes its own artefact** — never a key on the training session (the three extension axes, `CLAUDE.md`). `custom` is for a *scalar the athlete tracks alongside* a session; anything that needs prose, rules, or its own history is a **domain pack**, not a `custom` key.
+
+## Plan index `plan/index.csv`
+
+The **routing index** for the whole season: one row per week across all three horizons, the only file the `pace` master reads to find the active week and to detect a plan-state rolling proposal (no near week planned after the active one). Routes to `plan/weeks/<week_id>.json` for near weeks. Written by the Planner (`plan-write`, `rolling`); never hand-edited.
+
+Columns (in order):
+
+| Column | Meaning |
+|---|---|
+| `week_id` | `<ISO-year>-W<week>` (e.g. `2026-W24`), or `BREAK` for a planned non-training span |
+| `horizon` | `near` \| `mid` \| `far` — distance from today; only `near` rows carry a `file` |
+| `start`, `end` | ISO dates bounding the week |
+| `block` | season block number (matches a block in `plan.md`) |
+| `phase` | a phase row in `periodization-rules.csv` (`base`/`build`/`taper`/`race`/`recovery`) |
+| `intent` | one-line week intent (the mid-horizon "approximate week" intent, recited without opening the week file) |
+| `load_type` | `load` \| `recovery` \| `taper` \| `race` \| `skip` — empty on `far` rows (not yet shaped) |
+| `volume_modifier` | phase volume multiplier — empty on `far` rows |
+| `status` | `scheduled` (mid/far) → `planned` → `active` → `done`; or `skip` (e.g. `BREAK`) |
+| `file` | `weeks/<week_id>.json` for `near` rows only; empty for `mid`/`far` (no precise sessions yet) |
+
+- **Far/mid rows are approximate**: `far` has no `load_type`/`volume_modifier`/`file`; `mid` carries the load shape but still no `file`. Only `near` rows are resolved to a week file.
+- **Exactly one `active` row** at a time (`horizon = near`, carrying the current `file`) — what the master routes "today" to.
+- **`BREAK` rows** (status `skip`, `load_type` `skip`, volume `0.0`, no `file`) mark planned non-training spans (travel, holiday) so the rolling logic skips them.
 
 ## Profile `athlete/profile.json`
 

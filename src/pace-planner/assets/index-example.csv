@@ -1,0 +1,10 @@
+week_id,horizon,start,end,block,phase,intent,load_type,volume_modifier,status,file
+2026-W23,near,2026-06-01,2026-06-07,1,build,Réancrer le volume aérobie après coupure,recovery,0.7,done,weeks/2026-W23.json
+2026-W24,near,2026-06-08,2026-06-14,1,build,Semaine de charge — tempo + seuil + sortie longue,load,1.0,active,weeks/2026-W24.json
+2026-W25,near,2026-06-15,2026-06-21,1,build,Consolider la charge avant décharge,load,1.0,planned,weeks/2026-W25.json
+2026-W26,mid,2026-06-22,2026-06-28,1,build,Semaine de récupération — réduire la fatigue,recovery,0.7,scheduled,
+2026-W27,mid,2026-06-29,2026-07-05,2,build,Reprise de charge — intensité spécifique,load,1.0,scheduled,
+BREAK,mid,2026-07-06,2026-07-20,2,recovery,Repos complet — vacances,skip,0.0,skip,
+2026-W30,far,2026-07-21,2026-07-27,3,build,Retour post-coupure — reconstruire la base,recovery,0.7,scheduled,
+2026-W34,far,2026-08-18,2026-08-24,4,taper,Affûtage avant l'objectif,taper,0.5,scheduled,
+2026-W35,far,2026-08-25,2026-08-31,5,race,Course objectif — gran fondo,race,0.4,scheduled,
