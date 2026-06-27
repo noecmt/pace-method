@@ -58,8 +58,8 @@ Persist and deliver through the connector layer — [`_schema.md`](../../../exte
    {
      "schema_version": "1.0",
      "week_id": "2026-W24",
-     "block": "Construction", "phase": "base",
-     "load_type": "charge", "volume_modifier": 1.0,
+     "block": 1, "phase": "base",
+     "load_type": "load", "volume_modifier": 1.0,
      "sessions": [
        {
          "id": "2026-06-09-am", "date": "2026-06-09", "slot": "am", "sport": "cycling",

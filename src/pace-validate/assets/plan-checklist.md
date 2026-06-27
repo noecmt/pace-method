@@ -2,6 +2,8 @@
 
 Used by `pace-validate` to check the plan artefacts. Several checks are **deterministic**: compare against `periodization-rules.csv`, `plan/index.csv`, and `plan/weeks/*.json`. A plan is **valid** only if every hard check passes.
 
+**Shape is contract-checked.** Every `plan/weeks/*.json` must conform to [`extensions/week.schema.json`](../../../extensions/week.schema.json) and `plan/index.csv` to [`extensions/index.schema.json`](../../../extensions/index.schema.json) (column names, order, and enums). Validate the shape against those schemas **first** — a file that fails its schema is **not valid**, before any semantic check below runs.
+
 ## Hard checks (must pass — else not valid)
 
 - [ ] **Three horizons in `plan/index.csv`**: at least one `horizon:far` row, at least one `horizon:mid` row, and at least one `horizon:near` row covering the current season.
@@ -17,6 +19,7 @@ Used by `pace-validate` to check the plan artefacts. Several checks are **determ
 - [ ] **Zones coherence (deterministic, per discipline)**: `athlete/zones.json` **exists** and is **not stale** — for **every declared discipline** in `profile.sports`, `zones.by_discipline.<d>.fitness_markers` equals the current `profile.json.fitness.<d>` markers. A missing `zones.json`, a missing `by_discipline` entry for a declared discipline that has markers, or any divergence (a marker changed in the profile but not regenerated in the zones), => **not valid**. (A marker absent from a discipline's profile block must be absent from that discipline's zones too — omitted, not invented.)
 - [ ] **Session discipline resolves (deterministic)**: every session's `sport` in `weeks/*.json` is a discipline declared in `profile.sports`, and its `planned.target.range` is drawn from that discipline's zones block (`zones.by_discipline.<sport>`), with `target.metric` matching the sport pack's `primary_metric` family (`power`/`hr`/`pace`).
 - [ ] **Schema version present**: each `weeks/*.json`, `profile.json`, and `zones.json` carries `schema_version` (frozen contract: `extensions/_artefact_schema.md`).
+- [ ] **Shape conforms (deterministic)**: every `weeks/*.json` validates against `extensions/week.schema.json` and `index.csv` against `extensions/index.schema.json` — required fields present, no unknown fields, enums (`phase`/`load_type`/`status`/`metric`/`horizon`) and id/date patterns respected. A schema-invalid file => **not valid**.
 
 ## Soft checks (quality)
 

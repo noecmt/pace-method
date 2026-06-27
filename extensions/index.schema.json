@@ -1,0 +1,80 @@
+{
+  "profile": "tabular-data-resource",
+  "title": "PACE plan index (plan/index.csv)",
+  "description": "Frozen column contract for the season routing index — one row per week across all three horizons. Table Schema (Frictionless) describing a CSV. Human-readable doc: extensions/_artefact_schema.md. Column ORDER is normative and matches the `fields` order below. Written by the Planner (plan-write, rolling); never hand-edited.",
+  "schema": {
+    "missingValues": [""],
+    "fields": [
+      {
+        "name": "week_id",
+        "type": "string",
+        "title": "Week id",
+        "description": "<ISO-year>-W<week> (e.g. 2026-W24), or BREAK for a planned non-training span.",
+        "constraints": {
+          "required": true,
+          "pattern": "^(\\d{4}-W\\d{2}|BREAK)$"
+        }
+      },
+      {
+        "name": "horizon",
+        "type": "string",
+        "description": "Distance from today. Only near rows carry a file.",
+        "constraints": { "required": true, "enum": ["near", "mid", "far"] }
+      },
+      {
+        "name": "start",
+        "type": "date",
+        "format": "%Y-%m-%d",
+        "constraints": { "required": true }
+      },
+      {
+        "name": "end",
+        "type": "date",
+        "format": "%Y-%m-%d",
+        "constraints": { "required": true }
+      },
+      {
+        "name": "block",
+        "type": "integer",
+        "description": "Season block number — matches a block in plan.md.",
+        "constraints": { "required": true, "minimum": 1 }
+      },
+      {
+        "name": "phase",
+        "type": "string",
+        "description": "A phase row in periodization-rules.csv.",
+        "constraints": { "required": true, "enum": ["base", "build", "taper", "race", "recovery"] }
+      },
+      {
+        "name": "intent",
+        "type": "string",
+        "description": "One-line week intent (the mid-horizon approximate-week intent, recited without opening the week file).",
+        "constraints": { "required": true }
+      },
+      {
+        "name": "load_type",
+        "type": "string",
+        "description": "Week load shape. Empty on far rows (not yet shaped).",
+        "constraints": { "required": false, "enum": ["load", "recovery", "taper", "race", "skip"] }
+      },
+      {
+        "name": "volume_modifier",
+        "type": "number",
+        "description": "Phase volume multiplier. Empty on far rows.",
+        "constraints": { "required": false, "minimum": 0 }
+      },
+      {
+        "name": "status",
+        "type": "string",
+        "description": "scheduled (mid/far) -> planned -> active -> done; or skip (e.g. BREAK). Exactly one near row is active at any time.",
+        "constraints": { "required": true, "enum": ["scheduled", "planned", "active", "done", "skip"] }
+      },
+      {
+        "name": "file",
+        "type": "string",
+        "description": "weeks/<week_id>.json for near rows only; empty for mid/far (no precise sessions yet).",
+        "constraints": { "required": false, "pattern": "^weeks/(\\d{4}-W\\d{2}|BREAK)\\.json$" }
+      }
+    ]
+  }
+}

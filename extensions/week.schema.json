@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pace-method/extensions/week.schema.json",
+  "title": "PACE week file (plan/weeks/<week_id>.json)",
+  "description": "Frozen contract for a week file — the single home for each session's whole lifecycle. Human-readable doc: extensions/_artefact_schema.md. schema_version 1.0. Run-mode fields (rationale, adjustment, debrief) and the derived summary are ABSENT until they apply — never empty placeholders at plan time.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "week_id", "block", "phase", "load_type", "volume_modifier", "sessions"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "week_id": {
+      "type": "string",
+      "pattern": "^\\d{4}-W\\d{2}$",
+      "description": "ISO week label of the week's start date, e.g. 2026-W24."
+    },
+    "block": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Season block number — matches a block row in plan.md and the index."
+    },
+    "phase": {
+      "type": "string",
+      "enum": ["base", "build", "taper", "race", "recovery"],
+      "description": "A phase row in periodization-rules.csv."
+    },
+    "load_type": {
+      "type": "string",
+      "enum": ["load", "recovery", "taper", "race", "skip"],
+      "description": "Week load shape."
+    },
+    "volume_modifier": { "type": "number", "minimum": 0 },
+    "sessions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/session" }
+    },
+    "summary": { "$ref": "#/$defs/summary" }
+  },
+  "$defs": {
+    "custom": {
+      "type": "object",
+      "description": "Opt-in, gated, additive map of athlete-declared scalars (pace.config.toml [custom_metrics]). Flat snake_case keys, scalar values only.",
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" },
+      "additionalProperties": { "type": ["number", "string", "boolean"] }
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "date", "slot", "sport", "type", "planned", "status", "actual"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}-.+$",
+          "description": "<date>-<slot>, unique within the date."
+        },
+        "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "slot": {
+          "type": "string",
+          "description": "am | pm (free token; overflow -> ordinal -1/-2). Single-session day defaults to am."
+        },
+        "sport": {
+          "type": "string",
+          "description": "The discipline (cycling, running, swimming...). Selects the zones.json by_discipline block."
+        },
+        "type": {
+          "type": "string",
+          "description": "Session type, from the sport pack's key_sessions."
+        },
+        "planned": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["duration_min", "zones", "target", "structure"],
+          "properties": {
+            "duration_min": { "type": "integer", "minimum": 0 },
+            "zones": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+            "target": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["metric", "zone_ref", "range"],
+              "properties": {
+                "metric": { "type": "string", "enum": ["power", "hr", "pace"] },
+                "zone_ref": { "type": "string" },
+                "range": {
+                  "type": "string",
+                  "description": "Concrete bounds copied verbatim from zones.json (e.g. '243–278 W')."
+                }
+              }
+            },
+            "structure": { "type": "string" },
+            "custom": { "$ref": "#/$defs/custom" }
+          }
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Run-mode (Coach checkin) — absent until it applies."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["planned", "done", "adjusted", "skipped"]
+        },
+        "actual": {
+          "description": "null while planned; filled by the Analyst post-execution.",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["duration_min_actual", "distance_km", "rpe", "notes"],
+              "properties": {
+                "duration_min_actual": { "type": ["integer", "null"], "minimum": 0 },
+                "distance_km": { "type": ["number", "null"], "minimum": 0 },
+                "rpe": { "type": ["integer", "null"], "minimum": 0, "maximum": 10 },
+                "notes": { "type": ["string", "null"] },
+                "custom": { "$ref": "#/$defs/custom" }
+              }
+            }
+          ]
+        },
+        "debrief": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["read"],
+          "properties": {
+            "read": { "type": "string" },
+            "verbatim": { "type": "array", "items": { "type": "string" } },
+            "notes": { "type": "array", "items": { "type": "string" } },
+            "custom": { "$ref": "#/$defs/custom" }
+          }
+        },
+        "adjustment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["signals", "rows"],
+          "properties": {
+            "signals": { "type": "array", "items": { "type": "string" } },
+            "rows": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "The adjustment-decisions.csv rows applied."
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "description": "Derived aggregate (Analyst only; regenerated, never patched). Absent at plan time.",
+      "additionalProperties": false,
+      "required": ["status", "sessions", "adherence", "duration_min", "distance_km", "intensity_split_min", "read", "generated_by", "generated_at"],
+      "properties": {
+        "status": { "type": "string" },
+        "sessions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["total", "done", "adjusted", "skipped", "pending"],
+          "properties": {
+            "total": { "type": "integer", "minimum": 0 },
+            "done": { "type": "integer", "minimum": 0 },
+            "adjusted": { "type": "integer", "minimum": 0 },
+            "skipped": { "type": "integer", "minimum": 0 },
+            "pending": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "adherence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "duration_min": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["planned", "actual"],
+          "properties": {
+            "planned": { "type": "integer", "minimum": 0 },
+            "actual": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "distance_km": {
+          "type": "object",
+          "description": "Keyed by sport (actual only). A cross-discipline sum is meaningless.",
+          "additionalProperties": { "type": "number", "minimum": 0 }
+        },
+        "intensity_split_min": {
+          "type": "object",
+          "additionalProperties": { "type": "number", "minimum": 0 }
+        },
+        "by_sport": {
+          "type": "object",
+          "description": "Present only when the week spans >1 sport.",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["sessions", "duration_min", "distance_km"],
+            "properties": {
+              "sessions": { "type": "integer", "minimum": 0 },
+              "duration_min": { "type": "integer", "minimum": 0 },
+              "distance_km": { "type": "number", "minimum": 0 }
+            }
+          }
+        },
+        "read": { "type": "string" },
+        "generated_by": { "type": "string" },
+        "generated_at": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" }
+      }
+    }
+  }
+}

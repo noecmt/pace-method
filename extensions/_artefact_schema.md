@@ -14,6 +14,8 @@ The **core artefacts** are the athlete-repo files the agents communicate through
 
 `vision/vision.md` and `plan/plan.md` are **narrative** artefacts (Markdown), not covered by a JSON `schema_version`; their contract is the validation checklist in `pace-validate`. `plan/index.csv` is **structured** (CSV) but carries no `schema_version`; its column contract is frozen below (a filled example: `src/pace-planner/assets/index-example.csv`).
 
+> **Executable contracts.** This file is the **human-readable** contract; the **machine-checkable** ones live beside it and are authoritative on shape: [`week.schema.json`](week.schema.json) (JSON Schema, draft 2020-12) for `plan/weeks/<week_id>.json`, and [`index.schema.json`](index.schema.json) (Table Schema, the standard descriptor for a CSV — there is no `.csv` schema language) for `plan/index.csv`. A visual or a validator reads the `*.schema.json`; this prose explains it. The two must stay in lockstep — change both in the same diff.
+
 ## Two identity axes: discipline vs programme
 
 The single load-bearing distinction this contract pins down:

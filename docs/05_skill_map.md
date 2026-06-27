@@ -45,7 +45,7 @@ src/
 │   ├── SKILL.md
 │   ├── customize.toml
 │   ├── references/{plan-write.md, rolling.md}   <- capabilities (was pace-plan / pace-rolling)
-│   └── assets/{plan-template.md, periodization-rules.csv, week-example.json}
+│   └── assets/{plan-template.md, periodization-rules.csv, week-example.json, index-example.csv}
 ├── pace-coach/
 │   ├── SKILL.md
 │   ├── customize.toml
@@ -87,11 +87,11 @@ The athlete-instance config (connectors + integration IDs, formerly `pace-custom
 |---|---|---|---|---|---|
 | `pace` | master | state (vision/plan), message, signals, `index.csv` horizon | (recites session/week `summary` in concierge lane; routes in route lane; proposes rolling on horizon depletion) | `references/routing.md`, `signals.csv`, `customize.toml` | V0 (horizon nudge: V1) |
 | `pace-discovery` | agent | profile, answers | `vision/vision.md` (via `vision-write`) | `references/vision-write.md`, `assets/vision-template.md`, `customize.toml` | V0 |
-| `pace-planner` | agent | vision, profile, KB, recent `weeks/*.json` | `plan/plan.md`, `weeks/*.json`, `zones.json` (first creation) | `references/{plan-write.md, rolling.md}`, `assets/{plan-template.md, periodization-rules.csv, week-example.json}`, `customize.toml` | V0 (rolling: V1) |
+| `pace-planner` | agent | vision, profile, KB, recent `weeks/*.json` | `plan/plan.md`, `weeks/*.json`, `zones.json` (first creation) | `references/{plan-write.md, rolling.md}`, `assets/{plan-template.md, periodization-rules.csv, week-example.json, index-example.csv}`, `customize.toml` | V0 (rolling: V1) |
 | `pace-coach` | agent | plan, session, day state, `adjustment-decisions.csv` | session `rationale` + `adjustment` (`weeks/*.json`) | `references/{checkin.md, adjust.md}`, `assets/adjustment-decisions.csv`, `customize.toml` | V0 |
 | `pace-analyst` | agent | `weeks/*.json`, `log/signals.md`, plan | session `actual`+`debrief` **+ week-level `summary`** (`weeks/*.json`), `log/signals.md`, `profile.json` (learned_behaviors), `zones.json` (regenerated) | `customize.toml` | V0 (minimal; `summary`: V1) |
 | `pace-elicitation` | tool | — | — | `methods.csv` | V0 |
-| `pace-validate` | tool | target artefact | validation report (internal) | `vision-checklist.md`, `plan-checklist.md` | V0 |
+| `pace-validate` | tool | target artefact | validation report (internal) | `vision-checklist.md`, `plan-checklist.md` (shape-checks against `extensions/{week,index}.schema.json`) | V0 |
 
 > **Minimal V0 scope** (plan-first validation): `pace`, `pace-elicitation`, `pace-validate`, `pace-discovery` (+ `vision-write`), `pace-planner` (+ `plan-write`), `pace-coach` (+ `checkin` + `adjust`), and `pace-analyst` **in a minimal declarative version** (just appending a `learned_behavior` to `profile.json` — needed for scenario 02). The rest (the `rolling` capability and the measured/Strava debrief) comes later.
 
@@ -188,9 +188,16 @@ Contract of a sport pack (to add running, tri, swimming without touching the tru
 
 Contracts of axes 2 and 3. Present from now on (even if not implemented) to freeze the extension interface: a domain pack declares what it reads (plan/session) and its output artefact; a method pack declares its planning strategy + its session structures.
 
-### `extensions/_artefact_schema.md`
+### `extensions/_artefact_schema.md` (+ the executable schemas)
 
 The **frozen contract of the core artefacts** (`weeks/*.json`, `profile.json`, `zones.json`): their `schema_version`, the session object (`id`/`slot`/`sport` + the metric-agnostic `target`), the week `summary` (incl. per-sport `distance_km`/`by_sport`), and the **discipline (session) vs programme (athlete)** split — `profile.sports[]` + `fitness`/`zones` keyed by discipline. This is the data point-fixed at `v1.0.0`.
+
+`_artefact_schema.md` is the **human-readable** contract; the **machine-checkable** ones ship beside it and are authoritative on shape:
+
+- `extensions/week.schema.json` — **JSON Schema** (draft 2020-12) for `plan/weeks/<week_id>.json`. `additionalProperties:false` throughout (the stable shape a visual or validator can rely on), enums for `phase`/`load_type`/`status`/`metric`, `id`/`date` patterns, the full lifecycle (plan → `rationale`/`adjustment` → `actual`/`debrief` → `summary`), and the gated additive `custom` map.
+- `extensions/index.schema.json` — **Table Schema** (Frictionless) for `plan/index.csv`. A CSV has no schema language of its own, so its column contract (names, normative order, enums, `BREAK`, near-only `file`) is expressed in JSON.
+
+The prose and the `*.schema.json` must move **in lockstep** (one diff). `pace-validate`'s `plan-checklist.md` now runs a deterministic **shape-check** against both schemas before any semantic check, and `pace-planner` carries a hard **Definition of Done** (no Build turn ends until `index.csv` + every near `weeks/*.json` exist and validate, with `pace-validate` actually VALID).
 
 ---
 

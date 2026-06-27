@@ -23,13 +23,15 @@ Version sequence for the skills / plugin / connector model, endurance scope. Eac
 
 ---
 
-## V1 — Plugin *(shipped — v1.0.0 + v1.0.1)*
+## V1 — Plugin *(shipped — v1.0.0 + v1.0.1 + v1.0.2)*
 
 **Form**: V0 repackaged as a plugin (1 command), working in Claude Code and Claude Desktop.
 
 **v1.0.0** — Architecture pivot (ADR `06_architecture_pivot.md`): 13 skills → 7 (master concierge + 4 voiced agents + 2 shared tools); former workflow skills absorbed as local capability files (`references/*.md`); `customize.toml` per-agent resolved by the LLM, no Python runtime; schema freeze (`extensions/_artefact_schema.md`): week/session lifecycle, discipline-keyed fitness and zones, metric-agnostic `target`; silent pipeline (one skill boundary per flow: master → agent); curated 5-command surface (`/pace`, `/pace-discovery`, `/pace-plan`, `/pace-today`, `/pace-debrief`); derived `zones.json`; Discovery intake seeding `profile.json`; `pace.config.toml` as athlete-instance config.
 
 **v1.0.1** — Method packs and override stack: local athlete-side packs win over plugin defaults (`knowledge_base/` resolved local-first); **running sport pack** (conforming to `_schema.md` — first proof of the "sport = knowledge only, no new agent" axiom); curated polarized method pack shipped with the plugin.
+
+**v1.0.2** — Contract hardening (reliable plan-file production): the `plan/index.csv` column contract frozen + a filled example; the core-artefact shapes made **executable** — `extensions/week.schema.json` (JSON Schema) and `extensions/index.schema.json` (Table Schema for the CSV) beside the human-readable `_artefact_schema.md`; a deterministic **shape-check** in `pace-validate` (`plan-checklist.md`) and a hard **Definition of Done** on the Planner (no Build turn ends until `index.csv` + every near `weeks/*.json` exist and validate). Motivation: make `index.csv`/week-file creation reliable and the week shape stable enough to build a visual on top.
 
 **Validated**: one-command install on a clean machine → working Discovery + plan + run, terminal and desktop. The running pack proves the three extension axes hold in practice.
 
