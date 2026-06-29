@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pace-method/extensions/profile.schema.json",
+  "title": "PACE athlete profile (athlete/profile.json)",
+  "description": "Frozen contract for the athlete profile — structured long-term state. Human-readable doc: extensions/_artefact_schema.md (## Profile). schema_version 1.0. Created once by the Discovery intake; thereafter the Analyst (pace-analyst) is the sole updater. `sports` is a list of disciplines; `fitness` is keyed by discipline; `current_phase` is programme-level (sport-agnostic). Optional `_comment`/`_comment_*` metadata keys are tolerated for fixture annotation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "athlete_id", "sports", "current_phase", "fitness", "constraints", "learned_behaviors"],
+  "patternProperties": {
+    "^_comment": { "type": "string" },
+    "^\\$schema$": { "type": "string" }
+  },
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "athlete_id": { "type": "string" },
+    "sports": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "Declared disciplines: one for a mono-sport athlete, several for a triathlete. Every entry needs a matching fitness.<sport> block."
+    },
+    "level": { "type": "string" },
+    "current_phase": {
+      "type": "string",
+      "enum": ["base", "build", "taper", "race", "recovery"],
+      "description": "Programme-level (sport-agnostic). A phase row in periodization-rules.csv."
+    },
+    "fitness": {
+      "type": "object",
+      "description": "Keyed by discipline. Each fitness.<sport> block holds that discipline's markers. A flat marker block (fitness.fitness_marker at this level) is invalid — markers must sit under a discipline.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["fitness_marker"],
+        "properties": {
+          "fitness_marker": {
+            "type": "string",
+            "description": "The discipline's primary marker name, e.g. ftp, threshold_pace."
+          },
+          "max_hr": { "type": ["integer", "null"] },
+          "lthr_bpm": { "type": ["integer", "null"] }
+        },
+        "additionalProperties": { "type": ["number", "string", "null"] }
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "type", "value", "hard"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string" },
+          "value": { "type": "string" },
+          "hard": { "type": "boolean" }
+        }
+      }
+    },
+    "preferred_methods": { "type": "array", "items": { "type": "string" } },
+    "equipment": { "type": "array", "items": { "type": "string" } },
+    "rpe_calibration": { "type": "string" },
+    "learned_behaviors": {
+      "type": "array",
+      "description": "Analyst-written behavioural rules. Each item is keyed by id.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string" },
+          "observation": { "type": "string" },
+          "rule": { "type": "string" },
+          "source": { "type": "string" },
+          "confidence": { "type": "string", "enum": ["low", "medium", "high"] },
+          "learned_on": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" }
+        }
+      }
+    }
+  }
+}

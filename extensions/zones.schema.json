@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pace-method/extensions/zones.schema.json",
+  "title": "PACE derived zones (athlete/zones.json)",
+  "description": "Frozen contract for the derived intensity zones — concrete bounds keyed by discipline. Human-readable doc: extensions/_artefact_schema.md (## Derived zones). schema_version 1.0. NEVER hand-edited: regenerated whole from profile.json.fitness.<d> + the sport pack by the Planner (first) or the Analyst (on a marker change). LIMITS: zone id ordering (1..n) and contiguity, and the invariant by_discipline.<d>.fitness_markers == profile.fitness.<d>, are RELATIONAL and stay enforced in tools/lint-contracts.mjs (§7) — JSON Schema is single-document and cannot express them. Optional `_comment`/`_comment_*` metadata keys are tolerated for fixture annotation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "generated_by", "generated_at", "by_discipline"],
+  "patternProperties": {
+    "^_comment": { "type": "string" },
+    "^\\$schema$": { "type": "string" }
+  },
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "generated_by": { "type": "string" },
+    "generated_at": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "by_discipline": {
+      "type": "object",
+      "description": "Keyed by discipline. Each block mirrors the single-sport zones shape. A zone system is omitted (not invented) when its marker is absent; a discipline with no markers has no entry.",
+      "additionalProperties": { "$ref": "#/$defs/disciplineZones" }
+    }
+  },
+  "$defs": {
+    "disciplineZones": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fitness_markers", "hr_reference"],
+      "patternProperties": {
+        "^_comment": { "type": "string" }
+      },
+      "properties": {
+        "fitness_markers": {
+          "type": "object",
+          "description": "Mirror of profile.json.fitness.<discipline> markers (pace-validate enforces equality).",
+          "additionalProperties": { "type": ["number", "string", "null"] }
+        },
+        "hr_reference": { "type": "string", "description": "max_hr | lthr_bpm — the reference the hr_zones are derived from." },
+        "power_zones": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name", "min_watts", "max_watts", "ftp_pct"],
+            "properties": {
+              "id": { "type": "integer", "minimum": 1 },
+              "name": { "type": "string" },
+              "min_watts": { "type": ["number", "null"] },
+              "max_watts": { "type": ["number", "null"] },
+              "ftp_pct": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": { "type": ["number", "null"] }
+              }
+            }
+          }
+        },
+        "hr_zones": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name", "min_bpm", "max_bpm", "ref_pct"],
+            "properties": {
+              "id": { "type": "integer", "minimum": 1 },
+              "name": { "type": "string" },
+              "min_bpm": { "type": ["number", "null"] },
+              "max_bpm": { "type": ["number", "null"] },
+              "ref_pct": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": { "type": ["number", "null"] }
+              }
+            }
+          }
+        },
+        "pace_zones": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name", "fast_sec_km", "slow_sec_km", "threshold_pace_factor"],
+            "properties": {
+              "id": { "type": "integer", "minimum": 1 },
+              "name": { "type": "string" },
+              "fast_sec_km": { "type": ["number", "null"] },
+              "slow_sec_km": { "type": ["number", "null"] },
+              "threshold_pace_factor": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": { "type": ["number", "null"] }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -14,7 +14,7 @@ The **core artefacts** are the athlete-repo files the agents communicate through
 
 `vision/vision.md` and `plan/plan.md` are **narrative** artefacts (Markdown), not covered by a JSON `schema_version`; their contract is the validation checklist in `pace-validate`. `plan/index.csv` is **structured** (CSV) but carries no `schema_version`; its column contract is frozen below (a filled example: `src/pace-planner/assets/index-example.csv`).
 
-> **Executable contracts.** This file is the **human-readable** contract; the **machine-checkable** ones live beside it and are authoritative on shape: [`week.schema.json`](week.schema.json) (JSON Schema, draft 2020-12) for `plan/weeks/<week_id>.json`, and [`index.schema.json`](index.schema.json) (Table Schema, the standard descriptor for a CSV — there is no `.csv` schema language) for `plan/index.csv`. A visual or a validator reads the `*.schema.json`; this prose explains it. The two must stay in lockstep — change both in the same diff.
+> **Executable contracts.** This file is the **human-readable** contract; the **machine-checkable** ones live beside it and are authoritative on shape: [`week.schema.json`](week.schema.json), [`profile.schema.json`](profile.schema.json), and [`zones.schema.json`](zones.schema.json) (JSON Schema, draft 2020-12) for `plan/weeks/<week_id>.json`, `athlete/profile.json`, and `athlete/zones.json`; and [`index.schema.json`](index.schema.json) (Table Schema, the standard descriptor for a CSV — there is no `.csv` schema language) for `plan/index.csv`. A visual or a validator reads the `*.schema.json`; this prose explains it. The two forms must stay in lockstep — change both in the same diff. **Limit:** JSON Schema is single-document, so the *relational* checks (zone id ordering & contiguity, `zones.<d>.fitness_markers == profile.fitness.<d>`, the summary recompute, phase ∈ periodization-rules.csv) stay in `tools/lint-contracts.mjs`; the schemas cover structural shape only.
 
 ## Two identity axes: discipline vs programme
 
@@ -128,6 +128,8 @@ Columns (in order):
 
 ## Profile `athlete/profile.json`
 
+> **Executable contract:** [`profile.schema.json`](profile.schema.json) (JSON Schema, draft 2020-12) is authoritative on shape; this prose explains it. Change both in the same diff.
+
 Top level: `schema_version`, `athlete_id`, **`sports`** (array), `level`, **`current_phase`** (programme-level, sport-agnostic — *not* inside a discipline), **`fitness`** (keyed by discipline), `constraints[]`, `preferred_methods[]`, `equipment[]`, `rpe_calibration`, `learned_behaviors[]`.
 
 ```json
@@ -139,6 +141,8 @@ Top level: `schema_version`, `athlete_id`, **`sports`** (array), `level`, **`cur
 Each `fitness.<discipline>` holds that discipline's markers (incl. `max_hr`/`lthr_bpm`, which may differ by sport). A triathlete has one entry per declared sport. **Created once** by the Discovery intake; thereafter the **Analyst is the sole updater** — and writes a marker into the **correct discipline**.
 
 ## Derived zones `athlete/zones.json`
+
+> **Executable contract:** [`zones.schema.json`](zones.schema.json) (JSON Schema, draft 2020-12) is authoritative on shape; this prose explains it. Change both in the same diff. The id-ordering, contiguity, and `fitness_markers == profile.fitness.<d>` invariants are relational and live in the linter, not the schema.
 
 Top level: `schema_version`, `generated_by`, `generated_at`, **`by_discipline`** (map). Each discipline mirrors the old single-sport shape:
 
