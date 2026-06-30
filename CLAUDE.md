@@ -95,6 +95,8 @@ The split is deliberate and load-bearing:
 - **CSV/JSON/YAML** — anything enumerable, rule-based, or validatable. These are the
   anti-drift guardrails and make evaluation near-deterministic.
 
+The four structured core artefacts each have an executable contract: `extensions/{week,index,profile,zones}.schema.json` (`_artefact_schema.md` is the human-readable companion). **Every agent that creates or modifies an artefact cites its schema and follows the "write checklist"** in `extensions/_artefact_schema.md` before emitting (required keys, `schema_version`, enums, absent-not-null, self-validate) — the single anti-malformed-file guard. When you change a shape, move the prose and the `*.schema.json` in lockstep (one diff).
+
 Key decision tables (specified in `docs/05_skill_map.md`):
 
 - `periodization-rules.csv` — `phase,allowed_intensity,forbidden,volume_modifier` (the Planner must conform to this; covers all plan phases: base, build, taper, race, recovery).

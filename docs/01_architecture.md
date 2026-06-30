@@ -142,7 +142,7 @@ Coaching is full of rule-based tabular data. In CSV rather than prose, it become
 
 Principle: **Markdown for reasoning and personas; CSV/JSON/YAML for anything enumerable, rule-based, or validatable.**
 
-The strongest form of this guardrail is the **core-artefact contract made executable**: the shapes of `plan/weeks/*.json` and `plan/index.csv` are frozen as schema files — `extensions/week.schema.json` (JSON Schema) and `extensions/index.schema.json` (Table Schema, the standard descriptor for a CSV). `extensions/_artefact_schema.md` is the human-readable companion; the `*.schema.json` is authoritative on shape. This lets the Planner's writes be **shape-checked deterministically** (and makes a stable visual buildable on top of `weeks/*.json`) — no runtime needed: a host LLM (or a downstream app like pace-chat) validates against the schema.
+The strongest form of this guardrail is the **core-artefact contract made executable**: the shapes of all four structured core artefacts are frozen as schema files — `extensions/week.schema.json` (`plan/weeks/*.json`), `extensions/profile.schema.json` (`athlete/profile.json`), and `extensions/zones.schema.json` (`athlete/zones.json`) as JSON Schema, plus `extensions/index.schema.json` (`plan/index.csv`) as a Table Schema (the standard descriptor for a CSV). `extensions/_artefact_schema.md` is the human-readable companion; the `*.schema.json` is authoritative on shape, and its **write checklist** is cited at every point an agent creates or modifies an artefact. This lets each writer's output be **shape-checked deterministically** (and makes a stable visual buildable on top of `weeks/*.json`) — no runtime needed: a host LLM (or a downstream app like pace-chat) validates against the schema.
 
 ---
 

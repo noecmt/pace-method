@@ -156,6 +156,17 @@ Top level: `schema_version`, `generated_by`, `generated_at`, **`by_discipline`**
 - **Invariant (per discipline):** `by_discipline.<d>.fitness_markers` must equal `profile.json.fitness.<d>` markers — `pace-validate` enforces this for every declared discipline.
 - A marker that is absent → its zone system is **omitted** for that discipline (not invented). A discipline with no markers yet → no entry.
 
+## Emitting a core artefact — the write checklist
+
+Every agent that **creates or modifies** a structured artefact (`week`, `profile`, `zones`, `index`) runs this checklist **before writing** — it is the single anti-malformed-file guard, stated once here and linked from each write-point. A capability that "shows the shape" is not enough: conform to the schema, then emit.
+
+1. **The machine contract is the artefact's `*.schema.json`** ([`week`](week.schema.json) / [`profile`](profile.schema.json) / [`zones`](zones.schema.json) / [`index`](index.schema.json)). Produce **exactly** the keys it defines — every JSON schema here is `additionalProperties: false`: no unknown key, no placeholder, no commentary field (the `_comment`/`$schema` keys exist only in the test fixtures).
+2. **`schema_version: "1.0"`** sits at the top of every `week`/`profile`/`zones` file you write.
+3. **All required keys present; enums and patterns exact** — `phase`/`status`/`metric`/`load_type` ∈ their enum; dates `YYYY-MM-DD`; `week_id` `YYYY-Www`; a session `id` is exactly `<date>-<slot>` and unique within its date; `planned.target` is exactly `{metric, zone_ref, range}`; types are exact (integers where the schema says integer).
+4. **Inapplicable ⇒ absent, never `null` and never invented.** Run-mode fields (`rationale`, `adjustment`, `debrief`, the week `summary`) are **omitted** at plan time, not emitted empty. A marker absent from the profile ⇒ its zone system is **omitted** for that discipline — never `null`, never a guessed value.
+5. **Derived artefacts are regenerated whole** (`zones.json`, the week `summary`) — never patched field-by-field.
+6. **Self-check before emitting.** Validate the object you produced against its named schema (required keys, enums, types, `additionalProperties`); on any divergence, fix it — never emit a partial artefact, and never emit syntactically invalid JSON/CSV (no trailing comma, correct quoting and types).
+
 ## Rules (all core artefacts)
 
 - **`schema_version` is mandatory** at the top of every week/profile/zones file. Bump it only via a visible git diff with a migration note; same-version files must stay shape-compatible.
