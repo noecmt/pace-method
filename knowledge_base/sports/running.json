@@ -8,7 +8,7 @@
     "Friel J. — The Triathlete's Training Bible, 5th ed., VeloPress, 2016 (ISBN 978-1934030837)."
   ],
   "intensity_zones": {
-    "_comment_direction": "threshold_pace_factor is a multiplier on threshold_pace_sec_km. Factor > 1.0 = running slower than threshold (low-intensity zones). Factor < 1.0 = running faster than threshold (high-intensity zones). Zones are listed easy→hard (Z1 first); the factor range [lo, hi] gives the fast end (lo) and slow end (hi) of each zone in sec/km terms.",
+    "_comment_direction": "threshold_pace_factor is a multiplier on threshold_pace_sec_km. Factor > 1.0 = running slower than threshold (low-intensity zones). Factor < 1.0 = running faster than threshold (high-intensity zones). Zones are listed easy->hard (Z1 first); the factor range [lo, hi] gives the fast end (lo) and slow end (hi) of each zone in sec/km terms.",
     "system": "daniels_5zones",
     "zones": [
       { "id": 1, "name": "Easy / Recovery",  "threshold_pace_factor": [1.15, 1.40] },

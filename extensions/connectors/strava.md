@@ -20,7 +20,7 @@ A Strava MCP tool is available in this session (a tool whose name/description in
 - **Summaries, not raw streams.** Prefer fields Strava already computes (fitness trends, readiness, avg/normalized power, time-in-zone). Pull raw per-second streams only for a **narrow, targeted** question; **never** dump per-second data into context (drift + tokens).
 - **Right table for the right signal** (Phase 2): same-day -> `adjustment-decisions.csv`; multi-week trend -> `signals.csv`; post-session execution -> the Analyst (`pace-analyst`) (`learned_behavior` / log).
 - **Cross-sport filter** — read only the active discipline (V0/V1 = cycling).
-- **Never** generate or suggest an unplanned session from the data; it informs context/modulation within the existing rules only.
+- **Never** *prescribe* a future session from the data, and never let the data alone propose one; it informs context/modulation within the existing rules only. (This does **not** block the Analyst from **recording** an activity the athlete *reports* as an `unplanned` executed session — that is memory of the past done, athlete-driven; a Strava summary merely **grounds** it. The prohibition is on the connector *inventing* a session to do.)
 
 ## privacy
 

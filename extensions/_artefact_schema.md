@@ -33,14 +33,15 @@ Top level: `schema_version`, `week_id`, `block`, `phase`, `load_type`, `volume_m
 
 | Field | When | Written by | Meaning |
 |---|---|---|---|
-| `id` | always | Planner | **`<date>-<slot>`**, unique within the `date`. The stable key (the `date` alone is **not** a key — a day may hold several sessions). |
+| `id` | always | Planner (or Analyst on an unplanned session) | **`<date>-<slot>`**, unique within the `date`. The stable key (the `date` alone is **not** a key — a day may hold several sessions). |
 | `date` | always | Planner | ISO date. |
-| `slot` | always | Planner | `am` \| `pm` (free token; overflow → ordinal `-1`/`-2`). A single-session day defaults to `am`, so the id stays stable if a `pm` is added later. |
+| `slot` | always | Planner | `am` \| `pm` (free token; overflow -> ordinal `-1`/`-2`). A single-session day defaults to `am`, so the id stays stable if a `pm` is added later. |
 | `sport` | always | Planner | the **discipline** (`cycling`, `running`, `swimming`…). Drives which `zones.json` discipline the targets come from. |
 | `type` | always | Planner | session type, from the sport pack's `key_sessions`. |
-| `planned` | always | Planner | `{ duration_min, zones[], target, structure }` — see `target` below. |
+| `unplanned` | if off-plan | Analyst | `true` **only** when the Analyst recorded an *executed* activity absent from the plan (a training on a rest day, a bonus session). Implies `planned: null`. Omitted on a normal planned session. Recording the *past done* is **memory**, not session generation (`plan-first` governs the *future to-do*). |
+| `planned` | always (may be `null`) | Planner | `{ duration_min, zones[], target, structure }` — see `target` below. **`null` on an `unplanned` session** (no prescription existed), a meaningful value like `actual: null` while planned — never a placeholder on a planned session. |
 | `rationale` | Run | Coach (`checkin`) | the brief — why *this* session today. |
-| `status` | always | Planner→Analyst | `planned` \| `done` \| `adjusted` \| `skipped`. |
+| `status` | always | Planner->Analyst | `planned` \| `done` \| `adjusted` \| `skipped`. |
 | `actual` | post-exec | Analyst | `{ duration_min_actual, distance_km, rpe, notes }` (all nullable). `null` while `planned`. |
 | `debrief` | post-exec | Analyst | `{ read, verbatim[], notes[] }`. |
 | `adjustment` | if modulated | Coach (`adjust`) | `{ signals[], rows[] }` — the `adjustment-decisions.csv` rows applied. |
@@ -84,7 +85,7 @@ A regenerate-not-patch aggregate (sibling of `sessions`). The Planner/`rolling` 
 }
 ```
 
-- **Sport-agnostic totals** (sum cleanly across disciplines): `sessions` (counts by status), `adherence` `(done+adjusted)/(done+adjusted+skipped)`, `duration_min` `{planned, actual}`, `intensity_split_min` (executed minutes by the dominant planned zone's band — the zone *numbers* exist in every pack, so the bands hold), `status`, `read` (≤2 sentences, neutral).
+- **Sport-agnostic totals** (sum cleanly across disciplines): `sessions` (counts by status), `adherence` `(done+adjusted)/(done+adjusted+skipped)`, `duration_min` `{planned, actual}`, `intensity_split_min` (executed minutes by the dominant planned zone's band — the zone *numbers* exist in every pack, so the bands hold), `status`, `read` (≤2 sentences, neutral). An **`unplanned`** session has no planned zone, so it is classified by its **reported executed zone** if the athlete gave one, else its minutes are **omitted** from the split (never a fabricated band); its `actual` still counts toward `sessions`, `duration_min.actual`, `distance_km`, and `adherence`.
 - **`distance_km`** is **keyed by sport** (actual only) — a cross-discipline distance sum is meaningless (2 km swim + 100 km bike ≠ 102). A mono-sport week is just a one-key object `{ "cycling": 137 }`.
 - **`by_sport`** is present **only when the week has >1 sport**; absent otherwise (the totals + one-key `distance_km` already say everything). Per sport: `sessions` = count of that discipline's sessions; `duration_min` / `distance_km` = **actual** (executed).
 
@@ -119,7 +120,7 @@ Columns (in order):
 | `intent` | one-line week intent (the mid-horizon "approximate week" intent, recited without opening the week file) |
 | `load_type` | `load` \| `recovery` \| `taper` \| `race` \| `skip` — empty on `far` rows (not yet shaped) |
 | `volume_modifier` | phase volume multiplier — empty on `far` rows |
-| `status` | `scheduled` (mid/far) → `planned` → `active` → `done`; or `skip` (e.g. `BREAK`) |
+| `status` | `scheduled` (mid/far) -> `planned` -> `active` -> `done`; or `skip` (e.g. `BREAK`) |
 | `file` | `weeks/<week_id>.json` for `near` rows only; empty for `mid`/`far` (no precise sessions yet) |
 
 - **Far/mid rows are approximate**: `far` has no `load_type`/`volume_modifier`/`file`; `mid` carries the load shape but still no `file`. Only `near` rows are resolved to a week file.
@@ -154,7 +155,7 @@ Top level: `schema_version`, `generated_by`, `generated_at`, **`by_discipline`**
 
 - **Derived, never hand-edited.** Regenerated **whole** (never patched) from `profile.json.fitness.<d>` + the sport pack percentages.
 - **Invariant (per discipline):** `by_discipline.<d>.fitness_markers` must equal `profile.json.fitness.<d>` markers — `pace-validate` enforces this for every declared discipline.
-- A marker that is absent → its zone system is **omitted** for that discipline (not invented). A discipline with no markers yet → no entry.
+- A marker that is absent -> its zone system is **omitted** for that discipline (not invented). A discipline with no markers yet -> no entry.
 
 ## Emitting a core artefact — the write checklist
 
@@ -163,7 +164,7 @@ Every agent that **creates or modifies** a structured artefact (`week`, `profile
 1. **The machine contract is the artefact's `*.schema.json`** ([`week`](week.schema.json) / [`profile`](profile.schema.json) / [`zones`](zones.schema.json) / [`index`](index.schema.json)). Produce **exactly** the keys it defines — every JSON schema here is `additionalProperties: false`: no unknown key, no placeholder, no commentary field (the `_comment`/`$schema` keys exist only in the test fixtures).
 2. **`schema_version: "1.0"`** sits at the top of every `week`/`profile`/`zones` file you write.
 3. **All required keys present; enums and patterns exact** — `phase`/`status`/`metric`/`load_type` ∈ their enum; dates `YYYY-MM-DD`; `week_id` `YYYY-Www`; a session `id` is exactly `<date>-<slot>` and unique within its date; `planned.target` is exactly `{metric, zone_ref, range}`; types are exact (integers where the schema says integer).
-4. **Inapplicable ⇒ absent, never `null` and never invented.** Run-mode fields (`rationale`, `adjustment`, `debrief`, the week `summary`) are **omitted** at plan time, not emitted empty. A marker absent from the profile ⇒ its zone system is **omitted** for that discipline — never `null`, never a guessed value.
+4. **Inapplicable ⇒ absent, never `null` and never invented.** Run-mode fields (`rationale`, `adjustment`, `debrief`, the week `summary`) are **omitted** at plan time, not emitted empty. A marker absent from the profile ⇒ its zone system is **omitted** for that discipline — never `null`, never a guessed value. **The one intentional `null`:** `planned: null` on an **`unplanned`** session (paired with `unplanned: true`) is a *meaningful* value — the activity was executed without a prescription — exactly like `actual: null` while planned; it is not a placeholder and is the only case where a required key is legitimately `null`.
 5. **Derived artefacts are regenerated whole** (`zones.json`, the week `summary`) — never patched field-by-field.
 6. **Self-check before emitting.** Validate the object you produced against its named schema (required keys, enums, types, `additionalProperties`); on any divergence, fix it — never emit a partial artefact, and never emit syntactically invalid JSON/CSV (no trailing comma, correct quoting and types).
 

@@ -45,7 +45,7 @@ Never explain the technical reason for the degradation.
 
 - A connector **attaches to an artefact**, never to a persona's internals; adding one modifies **no persona**.
 - **Never from the `pace` master** — the orchestrator routes; connectors are used *inside* the consuming agents' capabilities (read) or by the storage layer (write).
-- **Never generates a session** — read data may *inform* context/modulation within the existing rules, never *create* a plan or session.
+- **Never generates a *prescribed* session** — read data may *inform* context/modulation within the existing rules, never *create* a plan or a session to **do**. (Recording an activity the athlete **reports** as an `unplanned` *executed* session is the Analyst's memory job, not connector-driven generation — see `strava.md`.)
 - **PACE works without it** — graceful degradation is mandatory, not optional.
 
 ## Instances

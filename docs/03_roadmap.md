@@ -27,13 +27,13 @@ Version sequence for the skills / plugin / connector model, endurance scope. Eac
 
 **Form**: V0 repackaged as a plugin (1 command), working in Claude Code and Claude Desktop.
 
-**v1.0.0** — Architecture pivot (ADR `06_architecture_pivot.md`): 13 skills → 7 (master concierge + 4 voiced agents + 2 shared tools); former workflow skills absorbed as local capability files (`references/*.md`); `customize.toml` per-agent resolved by the LLM, no Python runtime; schema freeze (`extensions/_artefact_schema.md`): week/session lifecycle, discipline-keyed fitness and zones, metric-agnostic `target`; silent pipeline (one skill boundary per flow: master → agent); curated 5-command surface (`/pace`, `/pace-discovery`, `/pace-plan`, `/pace-today`, `/pace-debrief`); derived `zones.json`; Discovery intake seeding `profile.json`; `pace.config.toml` as athlete-instance config.
+**v1.0.0** — Architecture pivot (ADR `06_architecture_pivot.md`): 13 skills -> 7 (master concierge + 4 voiced agents + 2 shared tools); former workflow skills absorbed as local capability files (`references/*.md`); `customize.toml` per-agent resolved by the LLM, no Python runtime; schema freeze (`extensions/_artefact_schema.md`): week/session lifecycle, discipline-keyed fitness and zones, metric-agnostic `target`; silent pipeline (one skill boundary per flow: master -> agent); curated 5-command surface (`/pace`, `/pace-discovery`, `/pace-plan`, `/pace-today`, `/pace-debrief`); derived `zones.json`; Discovery intake seeding `profile.json`; `pace.config.toml` as athlete-instance config.
 
 **v1.0.1** — Method packs and override stack: local athlete-side packs win over plugin defaults (`knowledge_base/` resolved local-first); **running sport pack** (conforming to `_schema.md` — first proof of the "sport = knowledge only, no new agent" axiom); curated polarized method pack shipped with the plugin.
 
 **v1.0.2** — Contract hardening (reliable plan-file production): the `plan/index.csv` column contract frozen + a filled example; the core-artefact shapes made **executable** — `extensions/week.schema.json` (JSON Schema) and `extensions/index.schema.json` (Table Schema for the CSV) beside the human-readable `_artefact_schema.md`; a deterministic **shape-check** in `pace-validate` (`plan-checklist.md`) and a hard **Definition of Done** on the Planner (no Build turn ends until `index.csv` + every near `weeks/*.json` exist and validate). Motivation: make `index.csv`/week-file creation reliable and the week shape stable enough to build a visual on top.
 
-**Validated**: one-command install on a clean machine → working Discovery + plan + run, terminal and desktop. The running pack proves the three extension axes hold in practice.
+**Validated**: one-command install on a clean machine -> working Discovery + plan + run, terminal and desktop. The running pack proves the three extension axes hold in practice.
 
 **Known V1 limitations**: connector layer (storage / calendar) designed but not wired; no measured Strava data; method reaches technical users only (CLI / IDE required).
 
@@ -62,7 +62,7 @@ Since June 2026, Strava ships an **official remote MCP** (read-only, OAuth, subs
 
 - **Phase 0 (gate)**: spike on the real MCP — enumerate tools, response shapes, whether time-in-zone is exposed, field stability. No CSV/JSON contract is frozen before this spike.
 - **Phase 1**: capability detection + graceful fallback to manual entry; agents read activity summaries for qualitative context only — no schema change, no signal calibration.
-- **Phase 2 (measured loop)**: `pace-analyst` wired to real data — planned-vs-actual at summary level (avg power vs target zone, duration, time-in-zone — never per-second); `strava_baseline` in `profile.json` (sole writer: the Analyst); signals routed to the right tables (today's modulation → `adjustment-decisions.csv`; multi-week trend → `signals.csv`; post-session execution → `learned_behavior`); `rolling` capability calibrated on real recent load. Non-subscribers fall back to manual entry.
+- **Phase 2 (measured loop)**: `pace-analyst` wired to real data — planned-vs-actual at summary level (avg power vs target zone, duration, time-in-zone — never per-second); `strava_baseline` in `profile.json` (sole writer: the Analyst); signals routed to the right tables (today's modulation -> `adjustment-decisions.csv`; multi-week trend -> `signals.csv`; post-session execution -> `learned_behavior`); `rolling` capability calibrated on real recent load. Non-subscribers fall back to manual entry.
 - **Phase 3 (evaluation)**: scenario 07 (measured debrief on anonymised fixture); checks: log reflects summary KPIs, `strava_baseline` updated, no invented session.
 
 **No-runtime constraint**: prefer pre-computed Strava fields (avg power, FC, fitness trend, readiness) over raw per-second streams; never dump streams into the context.

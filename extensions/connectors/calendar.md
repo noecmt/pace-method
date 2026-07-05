@@ -12,13 +12,13 @@ Pushes **upcoming planned sessions** from `plan/plan.md` to the athlete's schedu
 
 ## Writers
 
-The planner's `plan-write` capability (initial push), the planner's `rolling` capability (rolling window), the coach's `adjust` capability (single session update). No other capability touches the calendar connector.
+The planner's `plan-write` capability (initial push), the planner's `rolling` capability (rolling window), the coach's `adjust` capability (single session update), and the Analyst (session status -> `completed`/`skipped` post-execution). No other capability touches the calendar connector.
 
 ## Hard rules
 
 - **One-way: PACE -> calendar.** Never read the calendar as a training signal; that path goes through the coach's `checkin` capability / the Analyst (`pace-analyst`).
 - **Reflects the plan, never shapes it.** An entry in the calendar has no authority over `plan/plan.md`.
-- **Never generates a session.** The calendar entry copies what is already in the plan.
+- **Never generates a *planned* session.** The calendar entry copies what is already in the plan. *Exception, status-only:* an `unplanned` session the Analyst recorded (an executed off-plan activity) may be reflected as a **`completed`** row in `plan/calendar.csv` (the local fallback); a status-only MCP calendar simply has no pre-existing event to update — a clean degradation, never a fabricated future event.
 - PACE works fully without any calendar connector (`local-csv` is always available).
 
 ## Instances

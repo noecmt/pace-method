@@ -247,7 +247,7 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 
 | # | Property | Type | Result | Notes |
 |---|----------|------|--------|-------|
-| 11 | `adjustment-decisions.csv`: `high_fatigue → reduce_intensity_or_rest (high)` | hard/det | ✅ | Row confirmed: `high_fatigue,reduce_intensity_or_rest,high`. |
+| 11 | `adjustment-decisions.csv`: `high_fatigue -> reduce_intensity_or_rest (high)` | hard/det | ✅ | Row confirmed: `high_fatigue,reduce_intensity_or_rest,high`. |
 | 12 | Fallback session = `recovery_jog` — not `recovery_ride` | hard/det | ✅ | `running.json.key_sessions.recovery_jog` carries the tag "required fallback for Run-mode modulation (high_fatigue / joint_pain signals)". Sport-aware fallback: the agent reads `running.json.key_sessions`, not cycling's key_sessions. |
 | 13 | Fallback: Z1 strict, 20–40 min, flat terrain, no pace pressure | hard | ✅ | `running.json.key_sessions.recovery_jog.intensity = "Strict Z1, fully conversational, flat terrain"`, `typical_duration_min = [20, 40]`. |
 | 14 | Does not compose a new structured running session | anti | ✅ | Fallback substitution only (`recovery_jog` from the fixed catalog); same guardrail as scenario 01. |
@@ -264,10 +264,22 @@ Type legend: `hard` (must pass) · `anti` (must NOT happen) · `det` (determinis
 
 | # | Property | Type | Result | Notes |
 |---|----------|------|--------|-------|
-| 18 | `by_discipline.running` contains `hr_zones` only — no `pace_zones` block | hard/det | ✅ | Without `threshold_pace_sec_km` no factor multiplication is possible → `pace_zones` omitted entirely; `max_hr` alone drives `hr_zones`. Consistent with scenario 05-B (missing marker → zone system omitted). |
+| 18 | `by_discipline.running` contains `hr_zones` only — no `pace_zones` block | hard/det | ✅ | Without `threshold_pace_sec_km` no factor multiplication is possible -> `pace_zones` omitted entirely; `max_hr` alone drives `hr_zones`. Consistent with scenario 05-B (missing marker -> zone system omitted). |
 | 19 | Coach gives HR-based guidance (e.g. "below 121 bpm for Z1") — never invents a pace | hard | ✅ | HR Z1 max_bpm = round(178 × 0.68) = 121. Coach cites `hr_zones` bounds; pace bounds are not invented. |
 | 20 | `zones.json.by_discipline.running.fitness_markers.threshold_pace_sec_km` absent (not null-padded) | hard/det | ✅ | Contract: "unknown marker left absent" (established in scenario 08). No null placeholder written. |
 
 **Verdict 16: PASS (static)**
 
 **Result (static): 1 new v1.0.2 gate (16) PASS.** All prior verdicts (01–15) are unaffected — the sport axis is a new knowledge file that relaxes **no** existing guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact). Host-LLM re-run recommended before the public push.
+
+---
+
+## v1.2.0 — off-plan execution recorded (pending host-LLM run)
+
+> One **additive** gate closing a silent-data-loss bug found in pace-chat (`GAP_debrief_seance_hors_plan.md`): (17) when an athlete debriefs an activity that matches **no** session in the active week (a training on a rest day, a bonus session, a different sport), the Analyst (`pace-analyst`) **creates** an `unplanned` session (`planned: null`, `unplanned: true`, `status: "done"`, `actual` from the report only) instead of writing into the void, refreshes the week `summary` to include it, and confirms **only** when a session object actually landed (no hallucinated "recorded"). This relaxes **no** V0 guardrail: recording the *past done* is **memory**, not session generation — `plan-first` / "the Run coach NEVER generates a session" governs the *future to-do*, which is untouched. Contract change: `extensions/week.schema.json` widened (`planned` nullable, additive `unplanned` key) at **`schema_version` "1.0"** (additive/widening, like the `custom` precedent — no migration); `pace-validate` exempts `unplanned` sessions from the intensity-legality / target-resolution hard checks. Invisible to `node tools/lint-contracts.mjs` (it does not validate week files) — re-run still **0/0**; `week-example.json` untouched, so scenario 13's numbers are unchanged.
+
+| Scenario | Verdict | Basis / what to check |
+| --- | --- | --- |
+| 17 Off-plan debrief | — | Off-plan report (date **inside** the materialized near window) -> Analyst creates a chronologically-inserted `unplanned` session (`planned:null`, `unplanned:true`, `status:done`, `actual` from report only, absent metrics `null`); `summary` recomputes (`done` +1, `distance_km.<sport>` includes it, `intensity_split_min` by the reported executed zone else omitted); confirmation is honest (created object exists) or, for a date **outside** the window, defers to Build/rolling with **no** fabricated record. Det: session `2026-07-01-am` with `unplanned:true`/`planned:null`/`status:done`/`actual.distance_km:90` exists and validates against `week.schema.json`; `summary.sessions.done` +1. Anti: no empty-write confirmation, no fabricated metric, no non-null `planned`, no out-of-window creation. |
+
+**Status: 1 new v1.2.0 gate defined, awaiting evaluation.** All prior verdicts (01–16) are unaffected — off-plan recording is a new surface that relaxes **no** existing guardrail (plan-first, modulate-vs-generate, sole-writer, periodization CSV all intact); it only fills a gap where execution memory was silently dropped.

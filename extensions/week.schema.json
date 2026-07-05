@@ -46,6 +46,13 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["id", "date", "slot", "sport", "type", "planned", "status", "actual"],
+      "allOf": [
+        { "$comment": "planned:null <=> unplanned:true — an unplanned session has no prescription, and a null prescription must be tagged unplanned.",
+          "if": { "properties": { "planned": { "type": "null" } } },
+          "then": { "required": ["unplanned"] } },
+        { "if": { "required": ["unplanned"] },
+          "then": { "properties": { "planned": { "type": "null" } } } }
+      ],
       "properties": {
         "id": {
           "type": "string",
@@ -65,29 +72,39 @@
           "type": "string",
           "description": "Session type, from the sport pack's key_sessions."
         },
+        "unplanned": {
+          "const": true,
+          "description": "Present (true) ONLY when the Analyst recorded an executed activity that was absent from the plan (memory of execution, not a prescription). Implies planned:null. A normal planned session omits this key."
+        },
         "planned": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["duration_min", "zones", "target", "structure"],
-          "properties": {
-            "duration_min": { "type": "integer", "minimum": 0 },
-            "zones": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
-            "target": {
+          "description": "The prescription. null on an unplanned (executed off-plan) session — a meaningful value, analogous to actual:null while planned; never a placeholder on a planned session.",
+          "oneOf": [
+            { "type": "null" },
+            {
               "type": "object",
               "additionalProperties": false,
-              "required": ["metric", "zone_ref", "range"],
+              "required": ["duration_min", "zones", "target", "structure"],
               "properties": {
-                "metric": { "type": "string", "enum": ["power", "hr", "pace"] },
-                "zone_ref": { "type": "string" },
-                "range": {
-                  "type": "string",
-                  "description": "Concrete bounds copied verbatim from zones.json (e.g. '243–278 W')."
-                }
+                "duration_min": { "type": "integer", "minimum": 0 },
+                "zones": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+                "target": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["metric", "zone_ref", "range"],
+                  "properties": {
+                    "metric": { "type": "string", "enum": ["power", "hr", "pace"] },
+                    "zone_ref": { "type": "string" },
+                    "range": {
+                      "type": "string",
+                      "description": "Concrete bounds copied verbatim from zones.json (e.g. '243–278 W')."
+                    }
+                  }
+                },
+                "structure": { "type": "string" },
+                "custom": { "$ref": "#/$defs/custom" }
               }
-            },
-            "structure": { "type": "string" },
-            "custom": { "$ref": "#/$defs/custom" }
-          }
+            }
+          ]
         },
         "rationale": {
           "type": "string",

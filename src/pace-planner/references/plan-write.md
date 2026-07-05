@@ -77,7 +77,7 @@ Persist and deliver through the connector layer — [`_schema.md`](../../../exte
      ]
    }
    ```
-   - **`id` = `<date>-<slot>`**, unique within the `date`. A day may hold **several sessions** (a two-a-day, a triathlon brick): emit one object per session, same `date`, distinct `slot` (`am`/`pm`; overflow → ordinal `-1`/`-2`). A single-session day defaults to `slot:"am"`. A warm-up is **not** a session — fold it into `planned.structure`.
+   - **`id` = `<date>-<slot>`**, unique within the `date`. A day may hold **several sessions** (a two-a-day, a triathlon brick): emit one object per session, same `date`, distinct `slot` (`am`/`pm`; overflow -> ordinal `-1`/`-2`). A single-session day defaults to `slot:"am"`. A warm-up is **not** a session — fold it into `planned.structure`.
    - **`sport`** is the session's **discipline** — it selects which `by_discipline.<sport>` block in `zones.json` the targets come from.
    - **`planned.target`** = `{ metric, zone_ref, range }`: `metric ∈ power | hr | pace` (per the sport pack's `primary_metric`), `range` = the **concrete bounds copied from `zones.json`** (auditable, robust to future marker changes), `zone_ref` = the dominant zone label. The `zones[]` labels stay.
    - `status ∈ planned | done | adjusted | skipped`. `actual` = null until the Analyst fills it.

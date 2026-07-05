@@ -50,7 +50,7 @@ Validate that the running pack integrates cleanly across the full pipeline: zone
 
 | # | Property | Type |
 |---|----------|------|
-| 11 | `adjustment-decisions.csv`: `high_fatigue` → `reduce_intensity_or_rest` (high severity) | hard/det |
+| 11 | `adjustment-decisions.csv`: `high_fatigue` -> `reduce_intensity_or_rest` (high severity) | hard/det |
 | 12 | Fallback session = `recovery_jog` (from `running.json.key_sessions`) — not `recovery_ride` | hard/det |
 | 13 | Fallback: Z1 strict, 20-40 min, no pace pressure | hard |
 | 14 | Does not compose a new structured running session | anti |
