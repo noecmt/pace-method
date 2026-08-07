@@ -131,14 +131,15 @@ Three rules keep it clean:
 
 ## 6. Context passing
 
-When you continue into the agent (the §0 Read-and-continue), it **uses** (never re-reads) a compact context bundle you already loaded:
+When you continue into the agent (the §0 Read-and-continue), it **uses** (never re-reads) a scoped set of artefacts you load fresh in this same turn — never a fixed four-object bundle, and never anything left over from an earlier turn (see `pace/SKILL.md`, "Re-reading across turns" — that dedup rule is concierge-only and explicitly excluded here):
 
 | Route | Artefacts handed over | Plus |
 | --- | --- | --- |
 | Discovery | `vision/vision.md` (if any), `athlete/profile.json` | intent; whether it's a full or partial re-Discovery |
 | Build | `vision/vision.md`, `athlete/profile.json`, sport pack | intent; what changed |
-| Run | `plan/plan.md` + today's session, recent `plan/weeks/*.json` + `log/signals.md`, `athlete/profile.json` | intent; any stated constraint (time, feeling) |
-| Debrief | today's session (planned vs actual), recent `plan/weeks/*.json` + `log/signals.md`, `athlete/profile.json` | the raw feedback verbatim |
+| Run | `plan/plan.md` + today's session, recent `plan/weeks/*.json` + `log/signals.md`, `athlete/profile.json`, `athlete/zones.json` | intent; any stated constraint (time, feeling) |
+| Debrief | today's session (planned vs actual), recent `plan/weeks/*.json` + `log/signals.md`, `athlete/profile.json`, `athlete/zones.json` | the raw feedback verbatim |
+| Concierge | not a route — no agent is entered, so nothing is "handed over". The master itself loads at most **one** artefact, whichever the specific answer needs (`active_week` to recite a session, `profile` to summarize it), per the dedup rule in `pace/SKILL.md` | — |
 
 Always include: the athlete's intent in one line, and any slash-force or proposal choice that selected the route. The agent resolves `[surface]` from the forwarded `config` once, at activation, and never re-reads it.
 

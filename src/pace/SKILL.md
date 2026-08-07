@@ -2,7 +2,7 @@
 name: pace
 user-invocable: false
 description: >-
-  Default entry point for ANY endurance-coaching interaction in PACE (cycling, running, triathlon, swimming). Use this FIRST whenever the athlete talks about training, a plan, a session, a goal, fatigue, a race, or progress — before any other PACE skill. pace does NOT coach: it reads state, pre-loads the forwarded context bundle (config + profile + zones + active week), detects the mode (Discovery / Build / Run), and EITHER answers the trivial case itself (concierge lane) OR routes to exactly one voiced agent (route lane). It crosses at most one skill boundary per flow (master -> agent); it never generates a session, never makes a training judgment, and never emits a signal.
+  Default entry point for ANY endurance-coaching interaction in PACE (cycling, running, triathlon, swimming). Use this FIRST whenever the athlete talks about training, a plan, a session, a goal, fatigue, a race, or progress — before any other PACE skill. pace does NOT coach: it reads state, resolves `config` for language, detects the mode (Discovery / Build / Run), and EITHER answers the trivial case itself (concierge lane, loading only the one artefact that answer needs) OR routes to exactly one voiced agent (route lane), loading exactly the objects that route needs before crossing the boundary. It crosses at most one skill boundary per flow (master -> agent); it never generates a session, never makes a training judgment, and never emits a signal.
 ---
 
 # pace — the master concierge
@@ -21,15 +21,12 @@ The only genuine separate-skill calls are the shared **tools** `pace-elicitation
 
 ## Behavior (every turn)
 
-1. **Read state and pre-load for forwarding — in a single pass.** Check existence of `pace.config.toml`, `vision/vision.md`, `plan/plan.md`, `athlete/profile.json`. (During scenario testing the profile fixture is `athlete/sample.json`.) If **none** exist, this is a **first run** (-> onboarding, below). While reading state, also load the **forwarded context bundle** you will hand to the routed agent:
-   - `pace.config.toml` -> `config` (carries `[surface].language` — the single place language is resolved)
-   - `athlete/profile.json` -> `profile`
-   - `athlete/zones.json` -> `zones` (if present)
-   - `plan/index.csv` (if present) -> find the `status:active` near row -> load `plan/weeks/<active_week_id>.json` -> `active_week`
-   These four objects are read **once here**; the agent you continue into uses what you pass and does **not** re-read them from disk. While you have `index.csv` open, note the **horizon state** for the proactive rolling check: is there any `horizon:near` row with `status:planned` **after** the active one? (No -> the precise window is depleted.)
+1. **Read state — existence + `config`, every turn, light.** Check existence of `pace.config.toml`, `vision/vision.md`, `plan/plan.md`, `athlete/profile.json` (existence only for the last three — not their content yet). (During scenario testing the profile fixture is `athlete/sample.json`.) If **none** exist, this is a **first run** (-> onboarding, below). Read `pace.config.toml` in full -> `config` (carries `[surface].language` — the single place language is resolved; read **every turn**, in every lane, regardless of conversation history). While here, also read `log/signals.md` (open bullets) and `plan/index.csv` (if present) — find the `status:active` near row (its id is what you'll use in step 4 if you need the active week's content) and note the **horizon state** for the proactive rolling check: is there any `horizon:near` row with `status:planned` **after** the active one? (No -> the precise window is depleted.) **Do not yet load `profile`, `zones`, or the active week's full content** — mode/lane detection below needs only existence + `index.csv`, not those objects' content; loading them happens in step 4, scoped to what you actually end up needing.
 2. **Detect the mode** — Onboarding (zero-state) / Discovery / Build / Run / Debrief (see the Modes table).
 3. **Pick a lane** — answer directly (concierge), route (auto when obvious), or propose 1–3. Full lane-selection logic, the state×intent matrix, and the classification rule are in [`references/routing.md`](references/routing.md).
-4. **Route or answer.** When routing, apply the mechanism above (Read the agent's files, continue as it, silently) with the forwarded bundle + the athlete's intent (see *Context passing*).
+4. **Load what this needs, then route or answer.**
+   - **Routing to an agent** — load exactly the objects [`references/routing.md`](references/routing.md) §6 lists for that route (e.g. Discovery: vision + profile; Build: vision + profile + sport pack; Run/Debrief: today's session/`active_week` + recent weeks + profile + zones), fresh, every time — regardless of whether you loaded any of them earlier in this conversation (see *Re-reading across turns* — this rule does not apply here). Then apply the routing mechanism above (Read the agent's files, continue as it, silently) with those objects + the athlete's intent (see *Context passing*).
+   - **Concierge** — load only the one artefact **this specific answer** needs: `active_week` to recite today's session, `profile` to summarize it or answer "what sport(s) do I train" (`sports[]`), and so on. Many concierge answers (capabilities, which mode, a greeting) need no additional load at all beyond step 1. See *Re-reading across turns* — here, the dedup rule applies.
 
 ## Onboarding (first run, zero-state)
 
@@ -97,9 +94,28 @@ These are **real plugin commands** (in `commands/`). Each delegates back here wi
 ## Context passing
 
 When you continue into an agent, it must use (not re-read):
-- the **forwarded context bundle** `{config, profile, zones, active_week}` — pre-loaded by you in step 1. Language and surface cannot drift because the agent resolves `[surface]` from the forwarded `config` **once**, at activation, and stays the single voice thereafter.
+- `config`, plus the objects [`references/routing.md`](references/routing.md) §6 lists for **that specific route** — loaded fresh by you in step 4, not a fixed four-object bundle. Language and surface cannot drift because the agent resolves `[surface]` from the forwarded `config` **once**, at activation, and stays the single voice thereafter.
 - any additional **relevant artefacts** the agent needs (e.g. `vision/vision.md` for Build; recent `plan/weeks/*.json` + `log/signals.md` for Run/Debrief; the sport pack for Build/Rolling).
 - the **athlete's intent** in one line, and any **slash-command force** or **proposal choice** that determined the route.
+
+## Re-reading across turns (concierge only)
+
+In a resumed conversation, if you are answering in the **concierge lane** and the artefact
+you need was already surfaced earlier in this same conversation, do not reload it — unless
+a turn since then routed into an agent that writes it. Check
+[`extensions/_artefact_schema.md`](../../extensions/_artefact_schema.md)'s "Written by"
+column: Discovery writes `vision.md`; Planner writes `plan.md`, the `planned` fields of
+`plan/weeks/*.json`, `zones.json` (first draft); Coach writes `rationale`/`adjustment` on
+the active session; Analyst writes `profile.json`, regenerates `zones.json` on a marker
+change, writes `actual`/`debrief`/`summary`. If you cannot point to the specific earlier
+turn where the object was loaded, or you are unsure whether it changed since, **reload it**
+— a stale read costs more than a redundant one.
+
+**This rule applies to the concierge lane only.** `config` is exempt everywhere — always
+read fresh, every turn. **Routing to an agent never uses this rule** — step 4 always loads
+fresh for Discovery/Build/Run/Debrief, regardless of conversation history: a concierge
+answer is never a training judgment, so a stale recitation is a minor correction; a routed
+agent's judgment (a plan, a modulation, a recorded fact) is not a place to risk it.
 
 ## Output discipline
 

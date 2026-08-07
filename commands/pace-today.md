@@ -5,7 +5,7 @@ argument-hint: [time you have / how you feel — optional]
 
 This command **forces the Run route**. Carry it out **in this one turn**, all in the same context — do not split it across turns:
 
-1. **Read `src/pace/SKILL.md`** only to (a) apply the zero-state guard and the Run precondition (no `plan/plan.md` ⇒ no Run) and (b) build the forwarded context bundle `{config, profile, zones, active_week}` from state.
+1. **Read `src/pace/SKILL.md`** only to (a) apply the zero-state guard and the Run precondition (no `plan/plan.md` ⇒ no Run) and (b) load `config`, plus what `references/routing.md` §6 lists for Run (today's session, recent `plan/weeks/*.json` + `log/signals.md`, `athlete/profile.json`, `athlete/zones.json`) — fresh, per `pace/SKILL.md` step 4 (the route is already forced, so no mode/lane detection needed).
 2. **Then immediately `Read src/pace-coach/SKILL.md` and `src/pace-coach/references/checkin.md`** into this same context and **continue as the Daily coach**, running the flow through to the coach's single result message.
 
 This is a **silent context operation, not a handoff**: emit no "routing / handing off / waiting for the coach" text, and **do not end the turn** until the coach's result message is produced. The coach resolves `[surface].language` from the bundle's `config` and speaks it from its first token.

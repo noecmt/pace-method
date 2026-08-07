@@ -13,7 +13,7 @@ A **capability of the Planner** (`pace-planner`), not a separate skill: a local 
 - `athlete/profile.json` (forwarded; test fixture `athlete/sample.json`) — for the constraint cross-check **and the fitness markers, keyed by discipline** under `fitness.<discipline>` (`ftp_watts`, `max_hr`, `lthr_bpm`, `threshold_pace_sec_km`, `css_sec_100m`); `sports[]` lists the disciplines you derive zones for.
 - `athlete/zones.json` (fixture: `athlete/sample-zones.json`) — the **derived** zones artefact you generate (next); the near-horizon sessions reference its concrete bounds.
 
-> If the master forwarded `{config, profile, zones, active_week}` as context, use those objects — do **not** re-read the files from disk.
+> Use what the master forwarded for the Build route (`references/routing.md` §6: `config`, `vision/vision.md`, `profile`) — do **not** re-read those from disk. Build does **not** forward `zones`/`active_week`: you are the **first writer** of `athlete/zones.json` (generated fresh from `profile.fitness` + the sport pack, below), there is no prior copy to read.
 
 ## Pack resolution — override stack (local wins)
 

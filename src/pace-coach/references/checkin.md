@@ -12,7 +12,7 @@ A **capability of the Daily coach** (`pace-coach`), not a separate skill: a loca
 - the [`pace-elicitation`](../../pace-elicitation/) tool + its `methods.csv` — for the targeted questions you suggest on a sensation-free check-in.
 - The **training principles** (load on demand, for the *why this session today* rationale): `knowledge_base/principles/periodization.md`, `intensity_zones.md`, `polarized_training.md`.
 
-> If the master forwarded `{config, profile, zones, active_week}` as context, use those objects — the `active_week` is already the loaded `weeks/<active>.json`; do **not** re-read `profile.json`, `zones.json`, or `index.csv` from disk.
+> Use what the master forwarded for the Run route (`references/routing.md` §6: `config`, `profile`, `zones`, today's session — the `active_week` is already the loaded `weeks/<active>.json`). The master loads these **fresh every time it routes here**, never from an earlier turn — do **not** re-read `profile.json`, `zones.json`, or `index.csv` from disk this turn, you already have them.
 
 ## Connectors (capability-detected)
 

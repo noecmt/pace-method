@@ -30,7 +30,7 @@ Per [`_schema.md`](../../../extensions/connectors/_schema.md): probe, use if pre
 - The **training principles** (load on demand): `knowledge_base/principles/progressive_overload.md` (load/recovery alternation, ~10 %/week cap), `knowledge_base/principles/periodization.md` (what the current phase is for).
 - the validator tool [`pace-validate`](../../pace-validate/) + its plan-checklist.
 
-> If the master forwarded `{config, profile, zones, active_week}` as context, use those objects — do **not** re-read the files from disk.
+> Use what the master forwarded for the Build route (`references/routing.md` §6: `config`, `vision/vision.md`, `profile`) — do **not** re-read those from disk. Rolling is the one Build sub-flow that also needs `index.csv`, the active `plan/weeks/<active_week_id>.json`, and `athlete/zones.json` — none of which the Build route forwards (they're outside its §6 row). Read them yourself, as step 1 of the Procedure below already does.
 
 ## Procedure
 

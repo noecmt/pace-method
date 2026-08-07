@@ -25,7 +25,7 @@ The **Discovery intake creates** `athlete/profile.json` once (markers, level, eq
 - `athlete/zones.json` (fixture: `athlete/sample-zones.json`) + the sport pack `knowledge_base/sports/cycling.json` (zone percentages) — when a fitness marker changes, you **fully regenerate** this derived artefact (below).
 - [`../pace/signals.csv`](../pace/signals.csv) — its **`threshold`** column is *yours* (when an observation is worth emitting); the `proposal` column is the master's.
 
-> If the master forwarded `{config, profile, zones, active_week}` as context, use those objects — the `active_week` is already the loaded `weeks/<active>.json`; do **not** re-read `profile.json`, `zones.json`, or `index.csv` from disk.
+> Use what the master forwarded for the Debrief route (`references/routing.md` §6: `config`, `profile`, `zones`, today's session — the `active_week` is already the loaded `weeks/<active>.json`). The master loads these **fresh every time it routes here**, never from an earlier turn — do **not** re-read `profile.json`, `zones.json`, or `index.csv` from disk this turn, you already have them.
 
 ## Connectors (capability-detected)
 

@@ -22,7 +22,7 @@ Anything else — new intervals, new zones, a new format, a longer *harder* effo
 - `athlete/profile.json` (forwarded; test fixture `athlete/sample.json`) — hard constraints and `learned_behaviors` (e.g. `heat_sensitive`, `left_knee`).
 - The **training principle** behind the rules (load on demand): `knowledge_base/principles/recovery_basics.md`.
 
-> If the master forwarded `{config, profile, zones, active_week}` as context, use those objects — do **not** re-read the files from disk.
+> Use what the master forwarded for the Run route (`references/routing.md` §6: `config`, `profile`, `zones`, today's session) — do **not** re-read those from disk. Today's session is the one your own `checkin` step already located earlier in this same turn — reuse it, don't re-locate it.
 
 ## Connectors (capability-detected)
 
