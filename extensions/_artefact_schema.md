@@ -141,6 +141,18 @@ Top level: `schema_version`, `athlete_id`, **`sports`** (array), `level`, **`cur
 
 Each `fitness.<discipline>` holds that discipline's markers (incl. `max_hr`/`lthr_bpm`, which may differ by sport). A triathlete has one entry per declared sport. **Created once** by the Discovery intake; thereafter the **Analyst is the sole updater** — and writes a marker into the **correct discipline**.
 
+### Weekly availability — the `unavailable_weekdays` constraint
+
+`constraints[]` items are `{id, type, value, hard}` with `type` and `value` free strings. **One `type` is reserved and machine-readable**, because a host has to enforce it deterministically:
+
+```json
+{ "id": "no_weekend", "type": "unavailable_weekdays", "value": "saturday,sunday", "hard": true }
+```
+
+`value` is a **comma-separated list of lowercase English weekday names** (`monday` … `sunday`) — nothing else, no prose, no localisation. It is the *recurring* weekly availability, not a one-off absence (a holiday is a `BREAK` row in `index.csv`). At most one such constraint; an athlete who becomes free again gets the item **removed or its `value` narrowed**, never a second contradicting item.
+
+Why reserved: the Planner resolves named weekdays against the calendar (`plan-write.md` step 7), and `pace-validate` gates "no planned session on an unavailable weekday". Both need the days as data, not as a sentence. An availability stated only in prose (in the vision, or in a free-form constraint `value`) stays advisory — **it cannot be gated**, so the Discovery intake and the Analyst should normalise it into this shape whenever the athlete states a recurring weekly unavailability.
+
 ## Derived zones `athlete/zones.json`
 
 > **Executable contract:** [`zones.schema.json`](zones.schema.json) (JSON Schema, draft 2020-12) is authoritative on shape; this prose explains it. Change both in the same diff. The id-ordering, contiguity, and `fitness_markers == profile.fitness.<d>` invariants are relational and live in the linter, not the schema.
